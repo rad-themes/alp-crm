@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use RadThemes\RadpackCrm\Models\Webhook;
+use RadThemes\RadpackCrm\Support\SafeUrl;
 use Throwable;
 
 class DeliverWebhook implements ShouldQueue
@@ -35,6 +36,12 @@ class DeliverWebhook implements ShouldQueue
         $webhook = Webhook::find($this->webhookId);
 
         if (! $webhook || ! $webhook->active) {
+            return;
+        }
+
+        if (! SafeUrl::allowed($webhook->url)) {
+            $webhook->forceFill(['last_status' => null, 'last_error' => __('Blocked: the URL points to a private or local address.'), 'last_sent_at' => now()])->save();
+
             return;
         }
 

@@ -9,6 +9,9 @@ return [
     // Where client files are stored. Use a private disk.
     'files_disk' => env('RADPACK_CRM_FILES_DISK', 'local'),
 
+    // Let webhooks and automation webhook steps call private or local addresses (e.g. during development).
+    'allow_private_webhooks' => env('RADPACK_CRM_ALLOW_PRIVATE_WEBHOOKS', false),
+
     'secrets' => [
         'stripe_secret_key' => env('RADPACK_CRM_STRIPE_SECRET_KEY'),
         'stripe_webhook_secret' => env('RADPACK_CRM_STRIPE_WEBHOOK_SECRET'),

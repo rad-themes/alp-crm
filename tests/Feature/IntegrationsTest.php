@@ -9,6 +9,7 @@ use RadThemes\RadpackCrm\Models\ApiKey;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Webhook;
+use RadThemes\RadpackCrm\Support\SafeUrl;
 use RadThemes\RadpackCrm\Tests\TestCase;
 use Statamic\Events\UserRegistered;
 use Statamic\Facades\Addon;
@@ -218,5 +219,24 @@ class IntegrationsTest extends TestCase
 
         $this->actingAs($admin)->post(cp_route('radpack-crm.developer.webhooks.store'), ['name' => 'Bad', 'url' => 'ftp://x', 'events' => ['contact.created']])->assertSessionHasErrors('url');
         $this->actingAs($admin)->get(cp_route('radpack-crm.developer'))->assertOk();
+    }
+
+    #[Test]
+    public function webhooks_to_private_addresses_are_blocked(): void
+    {
+        Http::fake();
+        $local = Webhook::create(['name' => 'Local', 'url' => 'http://127.0.0.1:6379/', 'events' => ['contact.created']]);
+        $metadata = Webhook::create(['name' => 'Metadata', 'url' => 'http://169.254.169.254/latest/meta-data', 'events' => ['contact.created']]);
+
+        Contact::factory()->create();
+        app()->terminate();
+
+        Http::assertNothingSent();
+        $this->assertStringStartsWith('Blocked', $local->fresh()->last_error);
+        $this->assertStringStartsWith('Blocked', $metadata->fresh()->last_error);
+
+        config(['radpack-crm.allow_private_webhooks' => true]);
+        $this->assertTrue(SafeUrl::allowed('http://127.0.0.1/'));
+        $this->assertFalse(SafeUrl::allowed('file:///etc/passwd'));
     }
 }

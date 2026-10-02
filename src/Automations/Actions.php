@@ -11,6 +11,7 @@ use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\EmailTemplate;
 use RadThemes\RadpackCrm\Models\Task;
 use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\RadpackCrm\Support\SafeUrl;
 
 /**
  * What an automation can do. Each action returns a short description for the run log,
@@ -183,8 +184,8 @@ class Actions
      */
     private static function webhook(string $url, ?Contact $contact, array $context): string
     {
-        if (! preg_match('#^https?://#i', $url)) {
-            throw new SkipAction(__('Invalid URL'));
+        if (! SafeUrl::allowed($url)) {
+            throw new SkipAction(__('The URL is invalid or points to a private address'));
         }
 
         $response = Http::timeout(10)->post($url, [
