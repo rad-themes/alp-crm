@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@statamic/cms/inertia';
-import { Badge, Button, DropdownItem, Header, Listing } from '@statamic/cms/ui';
+import { Badge, Button, Dropdown, DropdownMenu, DropdownItem, Header, Listing } from '@statamic/cms/ui';
 import StatusBadge from '../../components/StatusBadge.vue';
 import { fromNow, formatDate } from '../../components/dates.js';
 
@@ -9,6 +9,8 @@ defineProps({
     jsonUrl: String,
     actionUrl: String,
     createUrl: String,
+    importUrl: String,
+    exportUrl: String,
     canEdit: Boolean,
 });
 
@@ -28,6 +30,15 @@ const columns = [
     <Head :title="__('Contacts')" />
 
     <Header :title="__('Contacts')" icon="users">
+        <Dropdown>
+            <template #trigger>
+                <Button icon="dots" variant="ghost" :aria-label="__('More')" />
+            </template>
+            <DropdownMenu>
+                <DropdownItem v-if="canEdit" :text="__('Import CSV')" icon="upload" :href="importUrl" />
+                <DropdownItem :text="__('Export CSV')" icon="download" :href="exportUrl" target="_blank" />
+            </DropdownMenu>
+        </Dropdown>
         <Button v-if="canEdit" :href="createUrl" :text="__('Create Contact')" variant="primary" />
     </Header>
 

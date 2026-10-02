@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use RadThemes\RadpackCrm\Database\Factories\QuoteFactory;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\Concerns\HasLineItems;
 use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
 use RadThemes\RadpackCrm\Support\Documents;
@@ -100,6 +101,7 @@ class Quote extends Model
         $this->update(['status' => $accepted ? 'accepted' : 'declined', 'responded_at' => now(), 'responded_by' => $by]);
 
         $this->logActivity($accepted ? 'accepted' : 'declined', $accepted ? __('Quote accepted') : __('Quote declined'), ['by' => $by]);
+        CrmEvent::fire($accepted ? 'quote.accepted' : 'quote.declined', $this, ['by' => $by]);
         $this->contact?->logActivity('quote_'.($accepted ? 'accepted' : 'declined'), __(':number :result', [
             'number' => $this->number,
             'result' => $accepted ? __('accepted') : __('declined'),

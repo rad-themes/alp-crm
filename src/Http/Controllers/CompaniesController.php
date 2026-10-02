@@ -36,6 +36,8 @@ class CompaniesController extends CpController
             'jsonUrl' => cp_route('radpack-crm.companies.json'),
             'actionUrl' => cp_route('radpack-crm.companies.actions.run'),
             'createUrl' => cp_route('radpack-crm.companies.create'),
+            'importUrl' => cp_route('radpack-crm.import.create', ['type' => 'companies']),
+            'exportUrl' => cp_route('radpack-crm.export', ['type' => 'companies']),
             'canEdit' => User::current()->can('edit crm'),
         ]);
     }

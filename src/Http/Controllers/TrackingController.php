@@ -6,6 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use RadThemes\RadpackCrm\Email\Tracking;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\CampaignRecipient;
 use RadThemes\RadpackCrm\Support\Settings;
 
@@ -66,6 +67,7 @@ class TrackingController
 
         if ($contact && $contact->unsubscribed_at === null) {
             $contact->forceFill(['unsubscribed_at' => now()])->saveQuietly();
+            CrmEvent::fire('contact.unsubscribed', $contact);
             $contact->logActivity('unsubscribed', __('Unsubscribed from emails via “:campaign”', ['campaign' => $recipient->campaign?->name]));
         }
 

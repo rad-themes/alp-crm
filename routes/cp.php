@@ -8,8 +8,10 @@ use RadThemes\RadpackCrm\Http\Controllers\CompanyActionController;
 use RadThemes\RadpackCrm\Http\Controllers\ContactActionController;
 use RadThemes\RadpackCrm\Http\Controllers\ContactsController;
 use RadThemes\RadpackCrm\Http\Controllers\DashboardController;
+use RadThemes\RadpackCrm\Http\Controllers\DeveloperController;
 use RadThemes\RadpackCrm\Http\Controllers\EmailsController;
 use RadThemes\RadpackCrm\Http\Controllers\EmailTemplatesController;
+use RadThemes\RadpackCrm\Http\Controllers\ImportExportController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
@@ -69,6 +71,20 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::post('campaigns/{campaign}/send', [CampaignsController::class, 'send'])->name('campaigns.send');
     Route::post('campaigns/{campaign}/cancel', [CampaignsController::class, 'cancel'])->name('campaigns.cancel');
     Route::resource('campaigns', CampaignsController::class);
+
+    Route::get('import', [ImportExportController::class, 'create'])->name('import.create');
+    Route::post('import', [ImportExportController::class, 'upload'])->name('import.upload');
+    Route::get('import/{token}', [ImportExportController::class, 'map'])->name('import.map');
+    Route::post('import/{token}', [ImportExportController::class, 'run'])->name('import.run');
+    Route::get('export/{type}', [ImportExportController::class, 'export'])->whereIn('type', ['contacts', 'companies'])->name('export');
+
+    Route::get('developer', [DeveloperController::class, 'index'])->name('developer');
+    Route::post('developer/keys', [DeveloperController::class, 'storeKey'])->name('developer.keys.store');
+    Route::delete('developer/keys/{key}', [DeveloperController::class, 'destroyKey'])->name('developer.keys.destroy');
+    Route::post('developer/webhooks', [DeveloperController::class, 'storeWebhook'])->name('developer.webhooks.store');
+    Route::patch('developer/webhooks/{webhook}', [DeveloperController::class, 'updateWebhook'])->name('developer.webhooks.update');
+    Route::delete('developer/webhooks/{webhook}', [DeveloperController::class, 'destroyWebhook'])->name('developer.webhooks.destroy');
+    Route::post('developer/webhooks/{webhook}/test', [DeveloperController::class, 'testWebhook'])->name('developer.webhooks.test');
 
     Route::delete('notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
 });

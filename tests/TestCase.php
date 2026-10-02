@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use RadThemes\RadpackCrm\ServiceProvider;
 use Statamic\Contracts\Auth\User as UserContract;
+use Statamic\Facades\Addon;
 use Statamic\Facades\User;
 use Statamic\Testing\AddonTestCase;
 use Statamic\Testing\Concerns\FakesRoles;
@@ -20,6 +21,9 @@ abstract class TestCase extends AddonTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Addon settings are saved to a file; start every test from the defaults.
+        Addon::get('rad-themes/radpack-crm')->settings()->delete();
 
         $this->setTestRoles([
             'crm_viewer' => ['access cp', 'view crm'],

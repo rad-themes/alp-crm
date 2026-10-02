@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use RadThemes\RadpackCrm\Database\Factories\TaskFactory;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use Statamic\Contracts\Auth\User as UserContract;
 use Statamic\Facades\User;
@@ -75,8 +76,13 @@ class Task extends Model
             }
         });
 
+        static::created(function (Task $task) {
+            CrmEvent::fire('task.created', $task);
+        });
+
         static::saved(function (Task $task) {
             if ($task->wasChanged('completed_at') && $task->completed_at && $task->contact) {
+                CrmEvent::fire('task.completed', $task);
                 $task->contact->logActivity('task_completed', __('Completed “:title”', ['title' => $task->title]), ['task_id' => $task->id]);
             }
         });

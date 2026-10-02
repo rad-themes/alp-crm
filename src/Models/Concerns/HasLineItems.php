@@ -5,9 +5,11 @@ namespace RadThemes\RadpackCrm\Models\Concerns;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\LineItem;
+use RadThemes\RadpackCrm\Support\Documents;
 use RadThemes\RadpackCrm\Support\Money;
 use RadThemes\RadpackCrm\Support\Settings;
 
@@ -16,15 +18,27 @@ use RadThemes\RadpackCrm\Support\Settings;
  */
 trait HasLineItems
 {
+    /**
+     * "<type>.created" fires once the first line items are saved, so the payload has totals.
+     */
+    protected bool $createdEventFired = false;
+
     public static function bootHasLineItems(): void
     {
         static::creating(function ($document) {
             $document->token ??= Str::random(48);
             $document->currency ??= Settings::currency();
+            $document->status ??= 'draft';
         });
 
         static::deleting(function ($document) {
             $document->items()->delete();
+        });
+
+        static::updated(function ($document) {
+            if ($document->wasChanged('sent_at') && $document->sent_at && ! $document->getOriginal('sent_at')) {
+                CrmEvent::fire(Documents::type($document).'.sent', $document);
+            }
         });
     }
 
@@ -68,6 +82,12 @@ trait HasLineItems
 
         $this->items()->createMany($lines->map(fn ($line, $i) => $line + ['total' => $totals['lines'][$i]])->all());
         $this->forceFill(collect($totals)->except('lines')->all())->save();
+        $this->unsetRelation('items');
+
+        if ($this->wasRecentlyCreated && ! $this->createdEventFired) {
+            $this->createdEventFired = true;
+            CrmEvent::fire(Documents::type($this).'.created', $this);
+        }
         $this->unsetRelation('items');
     }
 

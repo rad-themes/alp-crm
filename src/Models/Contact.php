@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 use RadThemes\RadpackCrm\Database\Factories\ContactFactory;
+use RadThemes\RadpackCrm\Events\CrmEvent;
+use RadThemes\RadpackCrm\Models\Concerns\FiresCrmEvents;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use RadThemes\RadpackCrm\Models\Concerns\HasTags;
 use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
@@ -29,7 +31,7 @@ use Statamic\Facades\User;
  */
 class Contact extends Model
 {
-    use HasBlueprint, HasFactory, HasTags, LogsActivity;
+    use FiresCrmEvents, HasBlueprint, HasFactory, HasTags, LogsActivity;
 
     protected $table = 'crm_contacts';
 
@@ -67,6 +69,12 @@ class Contact extends Model
             }
         });
 
+        static::updated(function (Contact $contact) {
+            if ($contact->wasChanged('status')) {
+                CrmEvent::fire('contact.status_changed', $contact, ['from' => $contact->getOriginal('status'), 'to' => $contact->status]);
+            }
+        });
+
         static::saved(function (Contact $contact) {
             if ($contact->pendingAliases !== null) {
                 $contact->aliases()->delete();
@@ -74,6 +82,11 @@ class Contact extends Model
                 $contact->pendingAliases = null;
             }
         });
+    }
+
+    public static function crmEventType(): string
+    {
+        return 'contact';
     }
 
     public static function blueprintHandle(): string

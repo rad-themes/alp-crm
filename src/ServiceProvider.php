@@ -9,11 +9,17 @@ use RadThemes\RadpackCrm\Actions\CompleteTasks;
 use RadThemes\RadpackCrm\Actions\DeleteRecords;
 use RadThemes\RadpackCrm\Console\SendEmails;
 use RadThemes\RadpackCrm\Console\SendTaskReminders;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Fieldtypes\CrmCompanies;
 use RadThemes\RadpackCrm\Fieldtypes\CrmContacts;
+use RadThemes\RadpackCrm\Listeners\CaptureFormSubmission;
+use RadThemes\RadpackCrm\Listeners\CaptureRegisteredUser;
+use RadThemes\RadpackCrm\Listeners\SendWebhooks;
 use RadThemes\RadpackCrm\Scopes\CrmSegment;
 use RadThemes\RadpackCrm\Scopes\CrmStatus;
 use RadThemes\RadpackCrm\Scopes\CrmTag;
+use Statamic\Events\SubmissionCreated;
+use Statamic\Events\UserRegistered;
 use Statamic\Facades\Addon;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
@@ -24,6 +30,12 @@ class ServiceProvider extends AddonServiceProvider
     protected $vite = [
         'input' => ['resources/css/cp.css', 'resources/js/cp.js'],
         'publicDirectory' => 'resources/dist',
+    ];
+
+    protected $listen = [
+        CrmEvent::class => [SendWebhooks::class],
+        SubmissionCreated::class => [CaptureFormSubmission::class],
+        UserRegistered::class => [CaptureRegisteredUser::class],
     ];
 
     protected $fieldtypes = [
@@ -76,6 +88,7 @@ class ServiceProvider extends AddonServiceProvider
             $nav->create(__('Segments'))->section('CRM')->route('radpack-crm.segments.index')->icon('filter')->can('view crm');
             $nav->create(__('Campaigns'))->section('CRM')->route('radpack-crm.campaigns.index')->icon('mail-send-email-attachment-document')->can('view crm');
             $nav->create(__('Email templates'))->section('CRM')->route('radpack-crm.email-templates.index')->icon('mail-chat-bubble-text')->can('view crm');
+            $nav->create(__('API & webhooks'))->section('CRM')->route('radpack-crm.developer')->icon('git')->can('configure addons');
             $nav->create(__('Settings'))->section('CRM')->url(Addon::get('rad-themes/radpack-crm')->settingsUrl())->icon('cog')->can('configure addons');
         });
     }

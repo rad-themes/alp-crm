@@ -27,6 +27,7 @@ class SegmentsController extends CpController
                 'rules' => count((array) $segment->conditions),
                 'contacts' => $segment->contacts()->count(),
                 'url' => CrmSegment::url($segment),
+                'export_url' => cp_route('radpack-crm.export', ['type' => 'contacts', 'segment' => $segment->id]),
                 'tag_url' => cp_route('radpack-crm.segments.tag', $segment),
                 'edit_url' => cp_route('radpack-crm.segments.edit', $segment),
                 'destroy_url' => cp_route('radpack-crm.segments.destroy', $segment),
@@ -85,12 +86,12 @@ class SegmentsController extends CpController
     {
         $this->authorize('edit crm');
 
-        $tags = Tag::findOrCreateMany($request->validate(['tags' => ['required', 'array', 'min:1'], 'tags.*' => ['string', 'max:100']])['tags'])->pluck('id');
+        $tags = $request->validate(['tags' => ['required', 'array', 'min:1'], 'tags.*' => ['string', 'max:100']])['tags'];
 
         $count = 0;
-        $segment->contacts()->select('id')->chunkById(500, function ($contacts) use ($tags, &$count) {
+        $segment->contacts()->chunkById(200, function ($contacts) use ($tags, &$count) {
             foreach ($contacts as $contact) {
-                $contact->tags()->syncWithoutDetaching($tags);
+                $contact->attachTags($tags);
                 $count++;
             }
         });

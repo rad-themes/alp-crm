@@ -38,6 +38,8 @@ class ContactsController extends CpController
             'jsonUrl' => cp_route('radpack-crm.contacts.json'),
             'actionUrl' => cp_route('radpack-crm.contacts.actions.run'),
             'createUrl' => cp_route('radpack-crm.contacts.create'),
+            'importUrl' => cp_route('radpack-crm.import.create', ['type' => 'contacts']),
+            'exportUrl' => cp_route('radpack-crm.export', ['type' => 'contacts']),
             'canEdit' => $this->canEdit(),
         ]);
     }

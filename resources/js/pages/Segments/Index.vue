@@ -69,6 +69,7 @@ function destroy() {
                         </template>
                         <DropdownMenu>
                             <DropdownItem :text="__('View contacts')" icon="users" :href="segment.url" />
+                            <DropdownItem :text="__('Export CSV')" icon="download" :href="segment.export_url" target="_blank" />
                             <template v-if="canEdit">
                                 <DropdownItem :text="__('Edit rules')" icon="edit" :href="segment.edit_url" />
                                 <DropdownItem :text="__('Tag everyone…')" icon="add-tag" @click="openTagger(segment)" />

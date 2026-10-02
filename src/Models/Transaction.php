@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RadThemes\RadpackCrm\Database\Factories\TransactionFactory;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use RadThemes\RadpackCrm\Models\Concerns\HasTags;
 use RadThemes\RadpackCrm\Support\Money;
@@ -58,6 +59,8 @@ class Transaction extends Model
         });
 
         static::created(function (Transaction $transaction) {
+            CrmEvent::fire('transaction.created', $transaction);
+
             if ($transaction->contact && $transaction->status === 'succeeded') {
                 $transaction->contact->logActivity('transaction', __(':type of :amount', [
                     'type' => $transaction->type === 'refund' ? __('Refund') : __('Payment'),

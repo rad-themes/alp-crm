@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use RadThemes\RadpackCrm\Database\Factories\InvoiceFactory;
+use RadThemes\RadpackCrm\Events\CrmEvent;
 use RadThemes\RadpackCrm\Models\Concerns\HasLineItems;
 use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
 use RadThemes\RadpackCrm\Support\Documents;
@@ -172,6 +173,7 @@ class Invoice extends Model
 
         if ($status === 'paid' && ! $wasPaid) {
             $this->contact?->logActivity('invoice_paid', __(':number paid', ['number' => $this->number]));
+            CrmEvent::fire('invoice.paid', $this);
         }
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use RadThemes\RadpackCrm\Database\Factories\CompanyFactory;
+use RadThemes\RadpackCrm\Models\Concerns\FiresCrmEvents;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use RadThemes\RadpackCrm\Models\Concerns\HasTags;
 use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
@@ -26,7 +27,7 @@ use Statamic\Facades\User;
  */
 class Company extends Model
 {
-    use HasBlueprint, HasFactory, HasTags, LogsActivity;
+    use FiresCrmEvents, HasBlueprint, HasFactory, HasTags, LogsActivity;
 
     protected $table = 'crm_companies';
 
@@ -52,6 +53,11 @@ class Company extends Model
                 $model::where('company_id', $company->id)->update(['company_id' => null]);
             }
         });
+    }
+
+    public static function crmEventType(): string
+    {
+        return 'company';
     }
 
     public static function blueprintHandle(): string

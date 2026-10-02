@@ -132,6 +132,60 @@ tabs:
             field:
               type: textarea
               display: 'Quote terms'
+  capture:
+    display: 'Lead capture'
+    sections:
+      -
+        display: Forms
+        instructions: 'Submissions to these Statamic forms create or update contacts, matched by email. Fields named like email, name, first_name, last_name, phone and company — or any contact field handle — are mapped automatically.'
+        fields:
+          -
+            handle: capture_forms
+            field:
+              type: form
+              display: 'Capture these forms'
+              max_items: 50
+          -
+            handle: capture_status
+            field:
+              type: text
+              display: 'Status for new contacts'
+              default: lead
+              width: 50
+          -
+            handle: capture_tags
+            field:
+              type: list
+              display: 'Tags to add'
+              instructions: 'The form’s title is added as a tag too.'
+              width: 50
+          -
+            handle: capture_note
+            field:
+              type: toggle
+              display: 'Save other fields as a note'
+              default: true
+      -
+        display: Registrations
+        fields:
+          -
+            handle: capture_registrations
+            field:
+              type: toggle
+              display: 'Add users who register to the CRM'
+          -
+            handle: registration_status
+            field:
+              type: text
+              display: 'Status for new contacts'
+              default: lead
+              width: 50
+          -
+            handle: registration_tags
+            field:
+              type: list
+              display: 'Tags to add'
+              width: 50
   email:
     display: Email
     sections:

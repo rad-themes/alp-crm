@@ -5,6 +5,8 @@ namespace RadThemes\RadpackCrm\Models\Concerns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
+use RadThemes\RadpackCrm\Events\CrmEvent;
+use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Tag;
 
 trait HasTags
@@ -40,7 +42,7 @@ trait HasTags
      */
     public function syncTags(array $names): void
     {
-        $this->tags()->sync(Tag::findOrCreateMany($names)->pluck('id'));
+        $this->fireTagged($this->tags()->sync(Tag::findOrCreateMany($names)->pluck('id'))['attached']);
         $this->unsetRelation('tags');
     }
 
@@ -49,8 +51,18 @@ trait HasTags
      */
     public function attachTags(array $names): void
     {
-        $this->tags()->syncWithoutDetaching(Tag::findOrCreateMany($names)->pluck('id'));
+        $this->fireTagged($this->tags()->syncWithoutDetaching(Tag::findOrCreateMany($names)->pluck('id'))['attached']);
         $this->unsetRelation('tags');
+    }
+
+    /**
+     * @param  array<int, int>  $tagIds  newly attached tags
+     */
+    protected function fireTagged(array $tagIds): void
+    {
+        if ($tagIds && $this instanceof Contact) {
+            CrmEvent::fire('contact.tagged', $this, ['tags' => Tag::whereIn('id', $tagIds)->pluck('name')->all()]);
+        }
     }
 
     /**
