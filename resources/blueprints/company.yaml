@@ -1,0 +1,107 @@
+title: Company
+tabs:
+  main:
+    display: Details
+    sections:
+      -
+        display: Company
+        fields:
+          -
+            handle: name
+            field:
+              type: text
+              display: Name
+              validate:
+                - required
+          -
+            handle: email
+            field:
+              type: text
+              input_type: email
+              display: Email
+              width: 50
+              validate:
+                - nullable
+                - email
+          -
+            handle: phone
+            field:
+              type: text
+              input_type: tel
+              display: Phone
+              width: 50
+          -
+            handle: website
+            field:
+              type: text
+              input_type: url
+              display: Website
+      -
+        display: Address
+        fields:
+          -
+            handle: address_line_1
+            field:
+              type: text
+              display: 'Address line 1'
+          -
+            handle: address_line_2
+            field:
+              type: text
+              display: 'Address line 2'
+          -
+            handle: city
+            field:
+              type: text
+              display: City
+              width: 50
+          -
+            handle: region
+            field:
+              type: text
+              display: 'State / county'
+              width: 50
+          -
+            handle: postcode
+            field:
+              type: text
+              display: Postcode
+              width: 50
+          -
+            handle: country
+            field:
+              type: dictionary
+              dictionary: countries
+              display: Country
+              max_items: 1
+              width: 50
+  sidebar:
+    display: Sidebar
+    sections:
+      -
+        fields:
+          -
+            handle: status
+            field:
+              type: select
+              display: Status
+              default: lead
+              options:
+                lead: Lead
+                customer: Customer
+                partner: Partner
+                former: 'Former customer'
+              validate:
+                - required
+          -
+            handle: owner
+            field:
+              type: users
+              display: Owner
+              max_items: 1
+              mode: select
+          -
+            handle: tags
+            field:
+              type: taggable
+              display: Tags

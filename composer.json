@@ -1,0 +1,54 @@
+{
+    "name": "rad-themes/radpack-crm",
+    "description": "A free, full-featured CRM for Statamic: contacts, companies, quotes, invoices, tasks, email and more.",
+    "type": "statamic-addon",
+    "license": "MIT",
+    "keywords": [
+        "statamic",
+        "crm",
+        "contacts",
+        "invoices",
+        "addon"
+    ],
+    "homepage": "https://github.com/rad-themes/radpack-crm",
+    "support": {
+        "issues": "https://github.com/rad-themes/radpack-crm/issues",
+        "source": "https://github.com/rad-themes/radpack-crm"
+    },
+    "autoload": {
+        "psr-4": {
+            "RadThemes\\RadpackCrm\\": "src",
+            "RadThemes\\RadpackCrm\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RadThemes\\RadpackCrm\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "statamic/cms": "^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.8"
+    },
+    "config": {
+        "allow-plugins": {
+            "pixelfear/composer-dist-plugin": true
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Radpack CRM",
+            "description": "A free, full-featured CRM for Statamic."
+        },
+        "laravel": {
+            "providers": [
+                "RadThemes\\RadpackCrm\\ServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

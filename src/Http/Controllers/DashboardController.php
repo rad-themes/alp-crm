@@ -1,0 +1,59 @@
+<?php
+
+namespace RadThemes\RadpackCrm\Http\Controllers;
+
+use Inertia\Inertia;
+use Inertia\Response;
+use RadThemes\RadpackCrm\Models\Activity;
+use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Support\Presenter;
+use Statamic\Facades\User;
+use Statamic\Http\Controllers\CP\CpController;
+
+class DashboardController extends CpController
+{
+    public function __invoke(): Response
+    {
+        $this->authorize('view crm');
+
+        $statusOptions = Contact::blueprint()->field('status')?->get('options') ?? [];
+        $byStatus = Contact::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
+
+        return Inertia::render('radpack-crm::Dashboard', [
+            'stats' => [
+                ['label' => __('Contacts'), 'value' => Contact::count(), 'url' => cp_route('radpack-crm.contacts.index')],
+                ['label' => __('Companies'), 'value' => Company::count(), 'url' => cp_route('radpack-crm.companies.index')],
+                ['label' => __('New contacts this month'), 'value' => Contact::where('created_at', '>=', now()->startOfMonth())->count(), 'url' => null],
+            ],
+            'statuses' => collect($statusOptions)->map(fn ($label, $value) => [
+                'value' => $value,
+                'label' => $label,
+                'total' => (int) ($byStatus[$value] ?? 0),
+            ])->values(),
+            'recentContacts' => Contact::query()->with('company')->latest()->latest('id')->limit(6)->get()->map(fn (Contact $contact) => [
+                'id' => $contact->id,
+                'name' => $contact->name(),
+                'initials' => Presenter::initials($contact->name()),
+                'company' => $contact->company?->name,
+                'status_label' => Presenter::optionLabel(Contact::blueprint(), 'status', $contact->status),
+                'url' => cp_route('radpack-crm.contacts.show', $contact),
+            ]),
+            'activity' => Activity::query()->with('subject')->latest('created_at')->latest('id')->limit(10)->get()
+                ->filter(fn (Activity $activity) => $activity->subject !== null)
+                ->map(fn (Activity $activity) => [
+                    'id' => $activity->id,
+                    'description' => $activity->description,
+                    'subject' => $activity->subject->name(),
+                    'url' => cp_route($activity->subject instanceof Company ? 'radpack-crm.companies.show' : 'radpack-crm.contacts.show', $activity->subject),
+                    'causer' => $activity->causer()?->name(),
+                    'created_at' => $activity->created_at?->toIso8601String(),
+                ])->values(),
+            'urls' => [
+                'createContact' => cp_route('radpack-crm.contacts.create'),
+                'createCompany' => cp_route('radpack-crm.companies.create'),
+            ],
+            'canEdit' => User::current()->can('edit crm'),
+        ]);
+    }
+}
