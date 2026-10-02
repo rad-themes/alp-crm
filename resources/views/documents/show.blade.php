@@ -33,7 +33,8 @@
         .totals td { padding: 4px 6px; }
         .totals .grand td { font-size: 16px; font-weight: bold; border-top: 2px solid #18181b; padding-top: 8px; }
         .block { margin-top: 28px; white-space: pre-line; }
-        .actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .actions form { margin: 0; }
         .button { display: inline-block; border: 0; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; background: #18181b; color: #fff; }
         .button.secondary { background: #f4f4f5; color: #18181b; }
         .notice { margin-top: 24px; padding: 12px 16px; border-radius: 8px; background: #f0fdf4; color: #166534; }
@@ -164,6 +165,14 @@
                     <input type="hidden" name="accepted" value="0">
                     <button class="button secondary" type="submit">{{ __('Decline') }}</button>
                 </form>
+            @endif
+            @if ($isInvoice && $document->isPayable() && $document->balance() > 0)
+                @foreach (\RadThemes\RadpackCrm\Payments\Payments::gateways() as $gateway => $label)
+                    <form method="POST" action="{{ route('statamic.radpack-crm.public.invoice.pay', [$document->token, $gateway]) }}">
+                        @csrf
+                        <button class="button" type="submit">{{ $label }} · {{ $document->money($document->balance()) }}</button>
+                    </form>
+                @endforeach
             @endif
             <a class="button secondary" href="{{ route('statamic.radpack-crm.public.'.$type.'.pdf', $document->token) }}">{{ __('Download PDF') }}</a>
         </div>

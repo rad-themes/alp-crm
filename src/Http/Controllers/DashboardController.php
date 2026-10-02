@@ -27,6 +27,7 @@ class DashboardController extends CpController
         $byStatus = Contact::query()->selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
 
         return Inertia::render('radpack-crm::Dashboard', [
+            'crmName' => Settings::get('crm_name') ?: __('CRM'),
             'stats' => [
                 ['label' => __('Contacts'), 'value' => Contact::count(), 'url' => cp_route('radpack-crm.contacts.index')],
                 ['label' => __('Companies'), 'value' => Company::count(), 'url' => cp_route('radpack-crm.companies.index')],

@@ -14,12 +14,14 @@ use RadThemes\RadpackCrm\Http\Controllers\EmailsController;
 use RadThemes\RadpackCrm\Http\Controllers\EmailTemplatesController;
 use RadThemes\RadpackCrm\Http\Controllers\FilesController;
 use RadThemes\RadpackCrm\Http\Controllers\ImportExportController;
+use RadThemes\RadpackCrm\Http\Controllers\IntegrationsController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
 use RadThemes\RadpackCrm\Http\Controllers\PasswordsController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
 use RadThemes\RadpackCrm\Http\Controllers\ReportsController;
 use RadThemes\RadpackCrm\Http\Controllers\SegmentsController;
+use RadThemes\RadpackCrm\Http\Controllers\SmsController;
 use RadThemes\RadpackCrm\Http\Controllers\TaskActionController;
 use RadThemes\RadpackCrm\Http\Controllers\TasksController;
 use RadThemes\RadpackCrm\Http\Controllers\TransactionsController;
@@ -85,6 +87,13 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::get('import/{token}', [ImportExportController::class, 'map'])->name('import.map');
     Route::post('import/{token}', [ImportExportController::class, 'run'])->name('import.run');
     Route::get('export/{type}', [ImportExportController::class, 'export'])->whereIn('type', ['contacts', 'companies'])->name('export');
+
+    Route::get('integrations', [IntegrationsController::class, 'index'])->name('integrations');
+    Route::get('integrations/{service}/connect', [IntegrationsController::class, 'connect'])->whereIn('service', ['google', 'aweber'])->name('integrations.connect');
+    Route::get('integrations/{service}/callback', [IntegrationsController::class, 'callback'])->whereIn('service', ['google', 'aweber'])->name('integrations.callback');
+    Route::post('integrations/{service}/disconnect', [IntegrationsController::class, 'disconnect'])->whereIn('service', ['google', 'aweber'])->name('integrations.disconnect');
+    Route::post('integrations/{service}/sync', [IntegrationsController::class, 'sync'])->whereIn('service', ['stripe', 'paypal', 'lists', 'google'])->name('integrations.sync');
+    Route::post('contacts/{contact}/sms', [SmsController::class, 'store'])->name('contacts.sms.store');
 
     Route::get('developer', [DeveloperController::class, 'index'])->name('developer');
     Route::post('developer/keys', [DeveloperController::class, 'storeKey'])->name('developer.keys.store');

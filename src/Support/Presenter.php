@@ -142,6 +142,7 @@ class Presenter
             'call' => __('Call'),
             'meeting' => __('Meeting'),
             'email' => __('Email'),
+            'sms' => __('SMS'),
         ];
     }
 }

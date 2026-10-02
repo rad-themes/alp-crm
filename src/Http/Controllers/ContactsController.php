@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use RadThemes\RadpackCrm\Email\MergeTags;
 use RadThemes\RadpackCrm\Http\Resources\ContactResource;
+use RadThemes\RadpackCrm\Integrations\Twilio;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Email;
 use RadThemes\RadpackCrm\Models\EmailTemplate;
@@ -158,6 +159,7 @@ class ContactsController extends CpController
             ]),
             'templates' => EmailTemplate::orderBy('name')->get(['id', 'name', 'subject', 'body']),
             'mergeTags' => MergeTags::available(),
+            'sms' => Twilio::configured() ? ['url' => cp_route('radpack-crm.contacts.sms.store', $contact), 'phone' => $contact->phone] : null,
             'urls' => [
                 'edit' => cp_route('radpack-crm.contacts.edit', $contact),
                 'email' => cp_route('radpack-crm.contacts.emails.store', $contact),

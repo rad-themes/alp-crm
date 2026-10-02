@@ -29,6 +29,24 @@ class Settings
         return $value;
     }
 
+    /**
+     * A setting as stored, without Statamic resolving Antlers in it — for templates with merge tags.
+     */
+    public static function raw(string $key): ?string
+    {
+        $value = Addon::get('rad-themes/radpack-crm')->settings()->raw()[$key] ?? null;
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /**
+     * An API secret: from config/.env (config('radpack-crm.secrets.<key>')) if set, else from the settings.
+     */
+    public static function secret(string $key): ?string
+    {
+        return config("radpack-crm.secrets.{$key}") ?: self::raw($key);
+    }
+
     public static function currency(): string
     {
         return strtoupper((string) collect(self::get('currency'))->first() ?: 'USD');

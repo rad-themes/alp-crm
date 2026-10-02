@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const typeOptions = Object.entries(props.noteTypes).map(([value, label]) => ({ value, label }));
-const typeColors = { note: 'default', call: 'green', meeting: 'violet', email: 'blue' };
+const typeColors = { note: 'default', call: 'green', meeting: 'violet', email: 'blue', sms: 'amber' };
 
 const form = useForm({ type: 'note', body: '' });
 const deleting = ref(null);

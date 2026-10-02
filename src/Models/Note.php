@@ -16,7 +16,7 @@ use Statamic\Facades\User;
  */
 class Note extends Model
 {
-    public const TYPES = ['note', 'call', 'meeting', 'email'];
+    public const TYPES = ['note', 'call', 'meeting', 'email', 'sms'];
 
     protected $table = 'crm_notes';
 

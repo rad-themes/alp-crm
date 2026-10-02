@@ -6,6 +6,7 @@ import ActivityTimeline from '../components/ActivityTimeline.vue';
 import TaskList from '../components/TaskList.vue';
 
 const props = defineProps({
+    crmName: String,
     stats: Array,
     statuses: Array,
     recentContacts: Array,
@@ -20,9 +21,9 @@ const statusTotal = computed(() => Math.max(1, props.statuses.reduce((sum, statu
 </script>
 
 <template>
-    <Head :title="__('CRM')" />
+    <Head :title="crmName" />
 
-    <Header :title="__('CRM')" icon="users">
+    <Header :title="crmName" icon="users">
         <template v-if="canEdit">
             <Button :href="urls.createCompany" :text="__('Create Company')" />
             <Button :href="urls.createContact" :text="__('Create Contact')" variant="primary" />

@@ -31,6 +31,7 @@ const props = defineProps({
     emails: Array,
     templates: Array,
     mergeTags: Array,
+    sms: Object,
     urls: Object,
     canEdit: Boolean,
 });
@@ -114,7 +115,7 @@ function destroy() {
                     <NotesPanel :notes="notes" :note-types="noteTypes" :store-url="urls.notes" :can-edit="canEdit" />
                 </TabContent>
                 <TabContent name="emails">
-                    <EmailsPanel :emails="emails" :templates="templates" :merge-tags="mergeTags" :store-url="urls.email" :has-email="!!contact.email" :can-edit="canEdit" />
+                    <EmailsPanel :emails="emails" :templates="templates" :merge-tags="mergeTags" :store-url="urls.email" :sms="sms" :has-email="!!contact.email" :can-edit="canEdit" />
                 </TabContent>
                 <TabContent name="tasks">
                     <Panel :heading="__('Tasks')">

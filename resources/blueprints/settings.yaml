@@ -143,6 +143,232 @@ tabs:
               type: list
               display: 'Funnel stages'
               instructions: 'Contact status handles in funnel order, e.g. lead, prospect, customer. Leave empty to use every status except refused and blacklisted.'
+  payments:
+    display: Payments
+    sections:
+      -
+        display: Stripe
+        instructions: 'Adds a “Pay by card” button to invoices. Create a webhook in Stripe pointing to the URL shown on CRM → Integrations.'
+        fields:
+          -
+            handle: stripe_secret_key
+            field:
+              type: text
+              input_type: password
+              display: 'Secret key'
+              instructions: 'Or set RADPACK_CRM_STRIPE_SECRET_KEY in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: stripe_webhook_secret
+            field:
+              type: text
+              input_type: password
+              display: 'Webhook signing secret'
+              instructions: 'Or set RADPACK_CRM_STRIPE_WEBHOOK_SECRET in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: stripe_sync
+            field:
+              type: toggle
+              display: 'Import Stripe payments as transactions'
+              instructions: 'Charges and refunds, every hour and as they happen.'
+      -
+        display: PayPal
+        instructions: 'Adds a “Pay with PayPal” button to invoices. Create a REST app at developer.paypal.com.'
+        fields:
+          -
+            handle: paypal_client_id
+            field:
+              type: text
+              input_type: password
+              display: 'Client ID'
+              instructions: 'Or set RADPACK_CRM_PAYPAL_CLIENT_ID in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: paypal_secret
+            field:
+              type: text
+              input_type: password
+              display: 'Secret'
+              instructions: 'Or set RADPACK_CRM_PAYPAL_SECRET in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: paypal_mode
+            field:
+              type: button_group
+              display: Mode
+              options:
+                live: Live
+                sandbox: Sandbox
+              default: live
+          -
+            handle: paypal_sync
+            field:
+              type: toggle
+              display: 'Import PayPal transactions'
+              instructions: 'Hourly. Needs “Transaction search” enabled on the PayPal app.'
+      -
+        display: Imports
+        fields:
+          -
+            handle: sync_create_contacts
+            field:
+              type: toggle
+              display: 'Create contacts for new payers'
+              default: true
+  integrations:
+    display: Integrations
+    sections:
+      -
+        display: Mailchimp
+        fields:
+          -
+            handle: mailchimp_api_key
+            field:
+              type: text
+              input_type: password
+              display: 'API key'
+              instructions: 'Or set RADPACK_CRM_MAILCHIMP_API_KEY in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: mailchimp_list_id
+            field:
+              type: text
+              display: 'Audience ID'
+              width: 50
+          -
+            handle: mailchimp_double_optin
+            field:
+              type: toggle
+              display: 'Double opt-in'
+              instructions: 'New subscribers confirm by email first.'
+      -
+        display: Kit
+        fields:
+          -
+            handle: kit_api_key
+            field:
+              type: text
+              input_type: password
+              display: 'API key (v4)'
+              instructions: 'Or set RADPACK_CRM_KIT_API_KEY in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: kit_form_id
+            field:
+              type: text
+              display: 'Form ID'
+              width: 50
+              instructions: 'Optional: also add subscribers to this form.'
+      -
+        display: AWeber
+        instructions: 'Create an app at labs.aweber.com, then connect it from CRM → Integrations.'
+        fields:
+          -
+            handle: aweber_client_id
+            field:
+              type: text
+              input_type: password
+              display: 'Client ID'
+              instructions: 'Or set RADPACK_CRM_AWEBER_CLIENT_ID in .env to keep it out of version control.'
+              width: 33
+          -
+            handle: aweber_client_secret
+            field:
+              type: text
+              input_type: password
+              display: 'Client secret'
+              instructions: 'Or set RADPACK_CRM_AWEBER_CLIENT_SECRET in .env to keep it out of version control.'
+              width: 33
+          -
+            handle: aweber_list_id
+            field:
+              type: text
+              display: 'List ID'
+              width: 33
+      -
+        display: 'Mailing list sync'
+        fields:
+          -
+            handle: list_sync_tags
+            field:
+              type: list
+              display: 'Only sync contacts with these tags'
+              width: 100
+              instructions: 'Leave empty to sync every contact with an email address. Unsubscribed contacts are unsubscribed in the lists.'
+      -
+        display: Twilio
+        instructions: 'Send text messages from contact profiles and automations.'
+        fields:
+          -
+            handle: twilio_sid
+            field:
+              type: text
+              input_type: password
+              display: 'Account SID'
+              instructions: 'Or set RADPACK_CRM_TWILIO_SID in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: twilio_token
+            field:
+              type: text
+              input_type: password
+              display: 'Auth token'
+              instructions: 'Or set RADPACK_CRM_TWILIO_TOKEN in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: twilio_from
+            field:
+              type: text
+              display: 'From number or sender ID'
+              width: 50
+              instructions: 'e.g. +14155550100'
+          -
+            handle: twilio_country_code
+            field:
+              type: text
+              display: 'Default country code'
+              width: 50
+              instructions: 'Used for numbers without one, e.g. 44 or 1.'
+      -
+        display: 'Google Contacts'
+        instructions: 'Create an OAuth client (web application) in Google Cloud with the People API enabled, then connect from CRM → Integrations.'
+        fields:
+          -
+            handle: google_client_id
+            field:
+              type: text
+              input_type: password
+              display: 'Client ID'
+              instructions: 'Or set RADPACK_CRM_GOOGLE_CLIENT_ID in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: google_client_secret
+            field:
+              type: text
+              input_type: password
+              display: 'Client secret'
+              instructions: 'Or set RADPACK_CRM_GOOGLE_CLIENT_SECRET in .env to keep it out of version control.'
+              width: 50
+          -
+            handle: google_status
+            field:
+              type: text
+              display: 'Status for imported contacts'
+              width: 50
+              default: 'lead'
+          -
+            handle: google_tags
+            field:
+              type: list
+              display: 'Tags to add'
+              width: 50
+              instructions: '“Google Contacts” is always added.'
+          -
+            handle: google_sync
+            field:
+              type: toggle
+              display: 'Import new Google contacts every hour'
   capture:
     display: 'Lead capture'
     sections:
@@ -212,3 +438,44 @@ tabs:
               default: 100
               validate:
                 - 'min:1'
+      -
+        display: 'Invoice and quote emails'
+        instructions: 'Default wording when sending documents. Merge tags: {{ name }}, {{ number }}, {{ total }}, {{ due_date }}, {{ valid_until }}, {{ business_name }}. A personal message typed when sending replaces the message.'
+        fields:
+          -
+            handle: invoice_email_subject
+            field:
+              type: text
+              display: 'Invoice subject'
+              width: 50
+          -
+            handle: quote_email_subject
+            field:
+              type: text
+              display: 'Quote subject'
+              width: 50
+          -
+            handle: invoice_email_message
+            field:
+              type: textarea
+              display: 'Invoice message'
+              width: 50
+          -
+            handle: quote_email_message
+            field:
+              type: textarea
+              display: 'Quote message'
+              width: 50
+  branding:
+    display: 'White label'
+    sections:
+      -
+        fields:
+          -
+            handle: crm_name
+            field:
+              type: text
+              display: 'CRM name'
+              width: 50
+              instructions: 'Shown in the Control Panel navigation and on the dashboard, e.g. your agency’s name for it.'
+              default: 'CRM'

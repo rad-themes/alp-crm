@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useForm, router } from '@statamic/cms/inertia';
-import { Badge, Button, Card, Description, Field, Input, Select, Switch, Text, Textarea } from '@statamic/cms/ui';
+import { Badge, Button, Card, Description, Field, Input, Select, Switch, Text, Textarea, ToggleGroup, ToggleItem } from '@statamic/cms/ui';
 import { formatDateTime, fromNow } from './dates.js';
 import MergeTagHint from './MergeTagHint.vue';
 
@@ -10,6 +10,7 @@ const props = defineProps({
     templates: Array,
     mergeTags: Array,
     storeUrl: String,
+    sms: Object,
     hasEmail: Boolean,
     canEdit: Boolean,
 });
@@ -18,6 +19,12 @@ const statusColors = { sent: 'green', scheduled: 'blue', failed: 'red', cancelle
 const statusLabels = { sent: __('Sent'), scheduled: __('Scheduled'), failed: __('Failed'), cancelled: __('Cancelled'), sending: __('Sending') };
 
 const form = useForm({ subject: '', body: '', send_at: null });
+const mode = ref('email');
+const smsForm = useForm({ body: '' });
+
+function sendSms() {
+    smsForm.post(props.sms.url, { preserveScroll: true, onSuccess: () => smsForm.reset() });
+}
 const template = ref(null);
 const scheduling = ref(false);
 const expanded = ref(null);
@@ -50,7 +57,25 @@ function cancel(email) {
 
 <template>
     <div class="space-y-4">
-        <Card v-if="canEdit && hasEmail">
+        <ToggleGroup v-if="canEdit && sms" v-model="mode" size="sm">
+            <ToggleItem value="email" :label="__('Email')" />
+            <ToggleItem value="sms" :label="__('Text message')" />
+        </ToggleGroup>
+
+        <Card v-if="canEdit && sms && mode === 'sms'">
+            <form v-if="sms.phone" class="space-y-3" @submit.prevent="sendSms">
+                <Field :label="__('Text to :phone', { phone: sms.phone })" :error="smsForm.errors.body">
+                    <Textarea v-model="smsForm.body" :rows="3" elastic />
+                </Field>
+                <div class="flex items-center justify-between">
+                    <Text size="sm" variant="subtle" :text="__(':count characters', { count: smsForm.body.length })" />
+                    <Button type="submit" variant="primary" :text="__('Send text')" :loading="smsForm.processing" :disabled="!smsForm.body.trim()" />
+                </div>
+            </form>
+            <Description v-else :text="__('Add a phone number to this contact to text them.')" />
+        </Card>
+
+        <Card v-else-if="canEdit && hasEmail">
             <form class="space-y-3" @submit.prevent="submit">
                 <Field v-if="templates.length" :label="__('Template')">
                     <Select v-model="template" :options="templateOptions" :placeholder="__('Start from a template…')" clearable class="w-full sm:w-72" @update:model-value="applyTemplate" />

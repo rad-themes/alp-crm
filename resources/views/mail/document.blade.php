@@ -1,6 +1,6 @@
 <x-mail::message>
-@if ($personalMessage)
-{{ $personalMessage }}
+@if ($introMessage)
+{{ $introMessage }}
 
 @else
 @if ($isInvoice)
