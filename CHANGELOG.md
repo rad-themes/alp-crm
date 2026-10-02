@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 — 2026-10-02
+
+- A **CRM** link at the top of the Control Panel sidebar, under Dashboard. Statamic lists addon sections last, so the CRM section alone was easy to miss.
+
 ## 1.0.0 — 2026-10-02
 
 First release, free and open source under the MIT license.

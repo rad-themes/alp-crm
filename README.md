@@ -73,7 +73,7 @@ composer require rad-themes/radpack-crm
 php artisan migrate
 ```
 
-The CRM appears in the Control Panel navigation. Super users can use everything straight away.
+Open the CRM from **CRM** at the top of the Control Panel sidebar, under Dashboard. All its pages are also in the **CRM** section at the bottom of the sidebar; drag sections into the order you like in **Preferences → CP Navigation**. Super users can use everything straight away; other users need the permissions below.
 
 ### Permissions
 

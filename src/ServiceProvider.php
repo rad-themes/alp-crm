@@ -105,6 +105,9 @@ class ServiceProvider extends AddonServiceProvider
         Nav::extend(function ($nav) {
             $section = Settings::get('crm_name') ?: 'CRM';
 
+            // Statamic lists addon sections last, below Users; this link keeps the CRM in view at the top.
+            $nav->create($section)->section('Top Level')->route('radpack-crm.dashboard')->icon('users')->can('view crm');
+
             $nav->create(__('Dashboard'))->section($section)->route('radpack-crm.dashboard')->icon('dashboard')->can('view crm');
             $nav->create(__('Contacts'))->section($section)->route('radpack-crm.contacts.index')->icon('users')->can('view crm')->children([
                 Nav::item(__('Segments'))->route('radpack-crm.segments.index')->can('view crm'),
