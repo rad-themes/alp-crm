@@ -12,6 +12,7 @@ use RadThemes\RadpackCrm\Database\Factories\ContactFactory;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use RadThemes\RadpackCrm\Models\Concerns\HasTags;
 use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
+use RadThemes\RadpackCrm\Support\Settings;
 use Statamic\Facades\User;
 
 /**
@@ -123,6 +124,29 @@ class Contact extends Model
     public function aliases(): HasMany
     {
         return $this->hasMany(ContactAlias::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class)->latest('date')->latest('id');
+    }
+
+    public function quotes(): HasMany
+    {
+        return $this->hasMany(Quote::class)->latest('issue_date')->latest('id');
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class)->latest('issue_date')->latest('id');
+    }
+
+    /**
+     * Lifetime value: succeeded sales minus refunds, in the default currency.
+     */
+    public function lifetimeValue(): float
+    {
+        return Transaction::revenue($this->transactions()->getQuery()->reorder()->where('currency', Settings::currency()));
     }
 
     public function notes(): MorphMany

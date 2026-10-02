@@ -2,9 +2,15 @@
 
 namespace RadThemes\RadpackCrm\Support;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use RadThemes\RadpackCrm\Models\Activity;
+use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Models\Invoice;
 use RadThemes\RadpackCrm\Models\Note;
+use RadThemes\RadpackCrm\Models\Quote;
+use RadThemes\RadpackCrm\Models\Transaction;
 use Statamic\Facades\Dictionary;
 use Statamic\Fields\Blueprint;
 use Statamic\Fields\Field;
@@ -21,6 +27,23 @@ class Presenter
         }
 
         return $blueprint->field($handle)?->get('options')[$value] ?? ucfirst($value);
+    }
+
+    /**
+     * The Control Panel page for a CRM record.
+     */
+    public static function url(Model $record): ?string
+    {
+        $route = match (true) {
+            $record instanceof Contact => 'radpack-crm.contacts.show',
+            $record instanceof Company => 'radpack-crm.companies.show',
+            $record instanceof Invoice => 'radpack-crm.invoices.show',
+            $record instanceof Quote => 'radpack-crm.quotes.show',
+            $record instanceof Transaction => 'radpack-crm.transactions.edit',
+            default => null,
+        };
+
+        return $route ? cp_route($route, $record) : null;
     }
 
     public static function initials(string $name): string

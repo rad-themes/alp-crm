@@ -1,0 +1,100 @@
+title: Transaction
+tabs:
+  main:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: Title
+              instructions: 'What was sold, e.g. "Annual subscription".'
+          -
+            handle: contact
+            field:
+              type: crm_contacts
+              display: Contact
+              max_items: 1
+              mode: select
+          -
+            handle: amount
+            field:
+              type: float
+              display: Amount
+              width: 33
+              validate:
+                - required
+                - numeric
+                - min:0
+          -
+            handle: currency
+            field:
+              type: dictionary
+              dictionary: currencies
+              display: Currency
+              max_items: 1
+              width: 33
+          -
+            handle: fee
+            field:
+              type: float
+              display: 'Fees'
+              width: 33
+              validate:
+                - nullable
+                - numeric
+                - min:0
+          -
+            handle: reference
+            field:
+              type: text
+              display: Reference
+              instructions: 'An order number or payment ID.'
+          -
+            handle: description
+            field:
+              type: textarea
+              display: Notes
+  sidebar:
+    display: Sidebar
+    sections:
+      -
+        fields:
+          -
+            handle: date
+            field:
+              type: date
+              display: Date
+              format: Y-m-d
+              validate:
+                - required
+          -
+            handle: type
+            field:
+              type: button_group
+              display: Type
+              default: sale
+              options:
+                sale: Sale
+                refund: Refund
+          -
+            handle: status
+            field:
+              type: select
+              display: Status
+              default: succeeded
+              options:
+                succeeded: Succeeded
+                pending: Pending
+                failed: Failed
+                refunded: Refunded
+                cancelled: Cancelled
+              validate:
+                - required
+          -
+            handle: tags
+            field:
+              type: taggable
+              display: Tags

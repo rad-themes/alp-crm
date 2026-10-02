@@ -9,6 +9,7 @@ import StatusBadge from '../../components/StatusBadge.vue';
 import DetailList from '../../components/DetailList.vue';
 import NotesPanel from '../../components/NotesPanel.vue';
 import ActivityTimeline from '../../components/ActivityTimeline.vue';
+import SalesPanel from '../../components/SalesPanel.vue';
 import { formatDate } from '../../components/dates.js';
 
 const props = defineProps({
@@ -16,6 +17,7 @@ const props = defineProps({
     contacts: Array,
     details: Array,
     notes: Array,
+    sales: Object,
     activities: Array,
     noteTypes: Object,
     urls: Object,
@@ -87,6 +89,7 @@ function destroy() {
                 <TabList class="mb-4">
                     <TabTrigger name="contacts" :text="__('Contacts') + ` (${contacts.length})`" />
                     <TabTrigger name="notes" :text="__('Notes & calls')" />
+                    <TabTrigger name="sales" :text="__('Sales')" />
                     <TabTrigger name="activity" :text="__('Activity')" />
                 </TabList>
                 <TabContent name="contacts">
@@ -105,6 +108,9 @@ function destroy() {
                 </TabContent>
                 <TabContent name="notes">
                     <NotesPanel :notes="notes" :note-types="noteTypes" :store-url="urls.notes" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent name="sales">
+                    <SalesPanel :sales="sales" :can-edit="canEdit" />
                 </TabContent>
                 <TabContent name="activity">
                     <Card>

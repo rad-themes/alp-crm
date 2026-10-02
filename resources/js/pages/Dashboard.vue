@@ -13,7 +13,7 @@ const props = defineProps({
     canEdit: Boolean,
 });
 
-const isEmpty = computed(() => props.stats.every((stat) => stat.value === 0));
+const isEmpty = computed(() => props.stats[0].value === 0 && props.stats[1].value === 0);
 const statusTotal = computed(() => Math.max(1, props.statuses.reduce((sum, status) => sum + status.total, 0)));
 </script>
 
@@ -33,7 +33,7 @@ const statusTotal = computed(() => Math.max(1, props.statuses.reduce((sum, statu
     </EmptyStateMenu>
 
     <template v-else>
-        <div class="mb-6 grid gap-4 sm:grid-cols-3">
+        <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <component :is="stat.url ? Link : 'div'" v-for="stat in stats" :key="stat.label" :href="stat.url">
                 <Card class="h-full">
                     <Description :text="stat.label" />

@@ -27,6 +27,14 @@ trait HasBlueprint
     }
 
     /**
+     * The label for a status option as defined in the blueprint (so custom statuses read nicely).
+     */
+    public function statusLabel(?string $status): string
+    {
+        return static::blueprint()->field('status')?->get('options')[$status] ?? ucfirst((string) $status);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function blueprintValues(): array

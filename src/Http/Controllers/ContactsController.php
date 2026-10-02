@@ -10,6 +10,7 @@ use Inertia\Response;
 use RadThemes\RadpackCrm\Http\Resources\ContactResource;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Support\Presenter;
+use RadThemes\RadpackCrm\Support\Sales;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -61,6 +62,29 @@ class ContactsController extends CpController
             ->response();
     }
 
+    /**
+     * Search contacts for pickers, e.g. the client field on quotes and invoices.
+     *
+     * @return array<int, array{value: int, label: string, company: ?string}>
+     */
+    public function search(Request $request): array
+    {
+        $this->authorize('view crm');
+
+        return Contact::query()
+            ->with('company')
+            ->when($request->input('q'), fn ($query, $term) => $query->search($term))
+            ->orderBy('first_name')->orderBy('last_name')
+            ->limit(20)
+            ->get()
+            ->map(fn (Contact $contact) => [
+                'value' => $contact->id,
+                'label' => $contact->name().($contact->company ? " · {$contact->company->name}" : ''),
+                'company' => $contact->company?->name,
+            ])
+            ->all();
+    }
+
     public function create(): PublishForm
     {
         $this->authorize('edit crm');
@@ -110,6 +134,7 @@ class ContactsController extends CpController
             ],
             'details' => Presenter::details(Contact::blueprint(), $contact->blueprintValues(), ['first_name', 'last_name', 'email', 'phone', 'status', 'company', 'owner', 'tags', 'aliases']),
             'notes' => Presenter::notes($contact->notes),
+            'sales' => Sales::for($contact),
             'activities' => Presenter::activities($contact->activities),
             'noteTypes' => Presenter::noteTypes(),
             'urls' => [

@@ -19,9 +19,9 @@ trait LogsActivity
 
         static::updated(function ($model) {
             if ($model->wasChanged('status')) {
-                $model->logActivity('status_changed', __('Status changed from :from to :to', [
-                    'from' => $model->getOriginal('status'),
-                    'to' => $model->status,
+                $model->logActivity('status_changed', __('Status changed: :from → :to', [
+                    'from' => $model->statusLabel($model->getOriginal('status')),
+                    'to' => $model->statusLabel($model->status),
                 ]), ['from' => $model->getOriginal('status'), 'to' => $model->status]);
             }
         });
@@ -51,4 +51,6 @@ trait LogsActivity
     }
 
     abstract public function activityLabel(): string;
+
+    abstract public function statusLabel(?string $status): string;
 }

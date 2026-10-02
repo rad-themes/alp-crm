@@ -6,8 +6,10 @@ use RadThemes\RadpackCrm\Actions\AddTags;
 use RadThemes\RadpackCrm\Actions\ChangeStatus;
 use RadThemes\RadpackCrm\Actions\DeleteRecords;
 use RadThemes\RadpackCrm\Fieldtypes\CrmCompanies;
+use RadThemes\RadpackCrm\Fieldtypes\CrmContacts;
 use RadThemes\RadpackCrm\Scopes\CrmStatus;
 use RadThemes\RadpackCrm\Scopes\CrmTag;
+use Statamic\Facades\Addon;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -21,6 +23,7 @@ class ServiceProvider extends AddonServiceProvider
 
     protected $fieldtypes = [
         CrmCompanies::class,
+        CrmContacts::class,
     ];
 
     protected $scopes = [
@@ -53,6 +56,10 @@ class ServiceProvider extends AddonServiceProvider
             $nav->create(__('Dashboard'))->section('CRM')->route('radpack-crm.dashboard')->icon('dashboard')->can('view crm');
             $nav->create(__('Contacts'))->section('CRM')->route('radpack-crm.contacts.index')->icon('users')->can('view crm');
             $nav->create(__('Companies'))->section('CRM')->route('radpack-crm.companies.index')->icon('building-generic')->can('view crm');
+            $nav->create(__('Quotes'))->section('CRM')->route('radpack-crm.quotes.index')->icon('file-content-list')->can('view crm');
+            $nav->create(__('Invoices'))->section('CRM')->route('radpack-crm.invoices.index')->icon('money-cashier-price-tag')->can('view crm');
+            $nav->create(__('Transactions'))->section('CRM')->route('radpack-crm.transactions.index')->icon('money-cash-bill')->can('view crm');
+            $nav->create(__('Settings'))->section('CRM')->url(Addon::get('rad-themes/radpack-crm')->settingsUrl())->icon('cog')->can('configure addons');
         });
     }
 }

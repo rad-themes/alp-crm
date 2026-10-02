@@ -11,6 +11,7 @@ use RadThemes\RadpackCrm\Http\Resources\CompanyResource;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Support\Presenter;
+use RadThemes\RadpackCrm\Support\Sales;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -111,6 +112,7 @@ class CompaniesController extends CpController
             ]),
             'details' => Presenter::details(Company::blueprint(), $company->blueprintValues(), ['name', 'email', 'phone', 'website', 'status', 'owner', 'tags']),
             'notes' => Presenter::notes($company->notes),
+            'sales' => Sales::for($company),
             'activities' => Presenter::activities($company->activities),
             'noteTypes' => Presenter::noteTypes(),
             'urls' => [

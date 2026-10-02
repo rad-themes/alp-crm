@@ -1,0 +1,134 @@
+tabs:
+  business:
+    display: Business
+    sections:
+      -
+        instructions: 'Shown on quotes, invoices and emails.'
+        fields:
+          -
+            handle: business_name
+            field:
+              type: text
+              display: 'Business name'
+          -
+            handle: business_logo
+            field:
+              type: assets
+              display: Logo
+              container: assets
+              max_files: 1
+          -
+            handle: business_address
+            field:
+              type: textarea
+              display: Address
+          -
+            handle: business_email
+            field:
+              type: text
+              input_type: email
+              display: Email
+              width: 50
+          -
+            handle: business_phone
+            field:
+              type: text
+              display: Phone
+              width: 50
+          -
+            handle: business_tax_number
+            field:
+              type: text
+              display: 'Tax / VAT number'
+              width: 50
+  sales:
+    display: Sales
+    sections:
+      -
+        display: Currency
+        fields:
+          -
+            handle: currency
+            field:
+              type: dictionary
+              dictionary: currencies
+              display: 'Default currency'
+              max_items: 1
+              default: USD
+      -
+        display: Numbering
+        fields:
+          -
+            handle: invoice_prefix
+            field:
+              type: text
+              display: 'Invoice number prefix'
+              default: INV-
+              width: 50
+          -
+            handle: quote_prefix
+            field:
+              type: text
+              display: 'Quote number prefix'
+              default: QUO-
+              width: 50
+          -
+            handle: payment_terms_days
+            field:
+              type: integer
+              display: 'Invoices are due after (days)'
+              default: 30
+              width: 50
+          -
+            handle: quote_valid_days
+            field:
+              type: integer
+              display: 'Quotes are valid for (days)'
+              default: 30
+              width: 50
+      -
+        display: Taxes
+        fields:
+          -
+            handle: tax_rates
+            field:
+              type: grid
+              display: 'Tax rates'
+              instructions: 'Pick one of these on each line of a quote or invoice.'
+              add_row: 'Add tax rate'
+              fields:
+                -
+                  handle: name
+                  field:
+                    type: text
+                    display: Name
+                    validate:
+                      - required
+                -
+                  handle: rate
+                  field:
+                    type: float
+                    display: 'Rate (%)'
+                    validate:
+                      - required
+                      - numeric
+                      - min:0
+          -
+            handle: prices_include_tax
+            field:
+              type: toggle
+              display: 'Prices include tax'
+              instructions: 'Off: tax is added on top of line prices. On: line prices already include tax.'
+      -
+        display: 'Default text'
+        fields:
+          -
+            handle: invoice_terms
+            field:
+              type: textarea
+              display: 'Invoice terms / payment instructions'
+          -
+            handle: quote_terms
+            field:
+              type: textarea
+              display: 'Quote terms'

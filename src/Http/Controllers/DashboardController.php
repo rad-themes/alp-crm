@@ -7,7 +7,11 @@ use Inertia\Response;
 use RadThemes\RadpackCrm\Models\Activity;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Models\Invoice;
+use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\RadpackCrm\Support\Money;
 use RadThemes\RadpackCrm\Support\Presenter;
+use RadThemes\RadpackCrm\Support\Settings;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 
@@ -25,6 +29,9 @@ class DashboardController extends CpController
                 ['label' => __('Contacts'), 'value' => Contact::count(), 'url' => cp_route('radpack-crm.contacts.index')],
                 ['label' => __('Companies'), 'value' => Company::count(), 'url' => cp_route('radpack-crm.companies.index')],
                 ['label' => __('New contacts this month'), 'value' => Contact::where('created_at', '>=', now()->startOfMonth())->count(), 'url' => null],
+                ['label' => __('Revenue this month'), 'value' => Money::format(Transaction::revenue(Transaction::query()->where('currency', Settings::currency())->whereDate('date', '>=', now()->startOfMonth())), Settings::currency()), 'url' => cp_route('radpack-crm.transactions.index')],
+                ['label' => __('Outstanding invoices'), 'value' => Money::format(Invoice::outstanding()->where('currency', Settings::currency())->get()->sum(fn (Invoice $invoice) => $invoice->balance()), Settings::currency()), 'url' => cp_route('radpack-crm.invoices.index')],
+                ['label' => __('Overdue invoices'), 'value' => Invoice::overdue()->count(), 'url' => cp_route('radpack-crm.invoices.index')],
             ],
             'statuses' => collect($statusOptions)->map(fn ($label, $value) => [
                 'value' => $value,
@@ -45,7 +52,7 @@ class DashboardController extends CpController
                     'id' => $activity->id,
                     'description' => $activity->description,
                     'subject' => $activity->subject->name(),
-                    'url' => cp_route($activity->subject instanceof Company ? 'radpack-crm.companies.show' : 'radpack-crm.contacts.show', $activity->subject),
+                    'url' => Presenter::url($activity->subject),
                     'causer' => $activity->causer()?->name(),
                     'created_at' => $activity->created_at?->toIso8601String(),
                 ])->values(),
