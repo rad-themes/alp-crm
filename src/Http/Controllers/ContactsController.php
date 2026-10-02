@@ -12,6 +12,7 @@ use RadThemes\RadpackCrm\Http\Resources\ContactResource;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Email;
 use RadThemes\RadpackCrm\Models\EmailTemplate;
+use RadThemes\RadpackCrm\Support\Attachments;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
 use RadThemes\RadpackCrm\Support\Tasks;
@@ -121,7 +122,7 @@ class ContactsController extends CpController
 
         $contact->load(['company', 'tags', 'aliases', 'notes', 'activities']);
 
-        return Inertia::render('radpack-crm::Contacts/Show', [
+        return Inertia::render('radpack-crm::Contacts/Show', Attachments::for($contact) + [
             'contact' => [
                 'id' => $contact->id,
                 'name' => $contact->name(),

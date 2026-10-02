@@ -17,6 +17,7 @@ use RadThemes\RadpackCrm\Fieldtypes\CrmContacts;
 use RadThemes\RadpackCrm\Listeners\CaptureFormSubmission;
 use RadThemes\RadpackCrm\Listeners\CaptureRegisteredUser;
 use RadThemes\RadpackCrm\Listeners\SendWebhooks;
+use RadThemes\RadpackCrm\Portal\PortalPages;
 use RadThemes\RadpackCrm\Scopes\CrmSegment;
 use RadThemes\RadpackCrm\Scopes\CrmStatus;
 use RadThemes\RadpackCrm\Scopes\CrmTag;
@@ -70,6 +71,7 @@ class ServiceProvider extends AddonServiceProvider
 
         Permission::extend(function () {
             Permission::group('radpack_crm', 'Radpack CRM', function () {
+                Permission::register('manage crm passwords')->label(__('Manage client passwords'))->description(__('See, add and change saved client passwords.'));
                 Permission::register('view crm', function ($permission) {
                     $permission->label(__('View CRM'))->children([
                         Permission::make('edit crm')->label(__('Create and edit CRM records')),
@@ -78,6 +80,8 @@ class ServiceProvider extends AddonServiceProvider
                 });
             });
         });
+
+        PortalPages::register();
 
         Nav::extend(function ($nav) {
             $nav->create(__('Dashboard'))->section('CRM')->route('radpack-crm.dashboard')->icon('dashboard')->can('view crm');

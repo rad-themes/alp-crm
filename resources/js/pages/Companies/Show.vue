@@ -11,9 +11,15 @@ import NotesPanel from '../../components/NotesPanel.vue';
 import ActivityTimeline from '../../components/ActivityTimeline.vue';
 import SalesPanel from '../../components/SalesPanel.vue';
 import TaskList from '../../components/TaskList.vue';
+import FilesPanel from '../../components/FilesPanel.vue';
+import PasswordsPanel from '../../components/PasswordsPanel.vue';
 import { formatDate } from '../../components/dates.js';
 
 const props = defineProps({
+    files: Array,
+    passwords: Array,
+    attachmentUrls: Object,
+    portalInstalled: Boolean,
     company: Object,
     contacts: Array,
     details: Array,
@@ -94,6 +100,8 @@ function destroy() {
                     <TabTrigger name="notes" :text="__('Notes & calls')" />
                     <TabTrigger name="tasks" :text="__('Tasks') + (openTasks ? ` (${openTasks})` : '')" />
                     <TabTrigger name="sales" :text="__('Sales')" />
+                    <TabTrigger name="files" :text="__('Files') + (files.length ? ` (${files.length})` : '')" />
+                    <TabTrigger v-if="passwords" name="passwords" :text="__('Passwords')" />
                     <TabTrigger name="activity" :text="__('Activity')" />
                 </TabList>
                 <TabContent name="contacts">
@@ -125,6 +133,12 @@ function destroy() {
                 </TabContent>
                 <TabContent name="sales">
                     <SalesPanel :sales="sales" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent name="files">
+                    <FilesPanel :files="files" :store-url="attachmentUrls.files" :portal-installed="portalInstalled" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent v-if="passwords" name="passwords">
+                    <PasswordsPanel :passwords="passwords" :store-url="attachmentUrls.passwords" />
                 </TabContent>
                 <TabContent name="activity">
                     <Card>

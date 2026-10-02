@@ -46,6 +46,8 @@ class Company extends Model
     protected static function booted(): void
     {
         static::deleting(function (Company $company) {
+            File::where('company_id', $company->id)->get()->each->delete();
+            Password::where('company_id', $company->id)->delete();
             $company->notes()->delete();
 
             // Keep contacts, sales records and tasks, unlinked (foreign keys aren't enforced on every database).

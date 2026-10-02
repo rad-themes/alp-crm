@@ -4,6 +4,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
+use RadThemes\RadpackCrm\Http\Controllers\PortalFilesController;
 use RadThemes\RadpackCrm\Http\Controllers\PublicDocumentsController;
 use RadThemes\RadpackCrm\Http\Controllers\TrackingController;
 
@@ -17,6 +18,7 @@ Route::name('radpack-crm.public.')->middleware('throttle:60,1')->group(function 
 });
 
 Route::name('radpack-crm.')->group(function () {
+    Route::get('portal/files/{file}', PortalFilesController::class)->whereNumber('file')->middleware('throttle:60,1')->name('portal.file');
     Route::get('t/{token}/open.gif', [TrackingController::class, 'open'])->name('track.open');
     Route::get('t/{token}/click', [TrackingController::class, 'click'])->middleware('throttle:120,1')->name('track.click');
     Route::get('unsubscribe/{token}', [TrackingController::class, 'confirm'])->middleware('throttle:30,1')->name('unsubscribe');

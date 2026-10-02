@@ -19,9 +19,13 @@ const revoking = ref(null);
 const showNewKey = ref(!!props.newKey);
 const copied = ref(false);
 function copy(text) {
-    navigator.clipboard?.writeText(text);
-    copied.value = true;
-    setTimeout(() => (copied.value = false), 1500);
+    navigator.clipboard
+        ?.writeText(text)
+        .then(() => {
+            copied.value = true;
+            setTimeout(() => (copied.value = false), 1500);
+        })
+        .catch(() => Statamic.$toast.error(__('Couldn’t copy to the clipboard')));
 }
 
 // Webhooks

@@ -61,6 +61,8 @@ class Contact extends Model
     protected static function booted(): void
     {
         static::deleting(function (Contact $contact) {
+            File::where('contact_id', $contact->id)->get()->each->delete();
+            Password::where('contact_id', $contact->id)->delete();
             $contact->notes()->delete();
 
             // Keep sales records and tasks, unlinked (foreign keys aren't enforced on every database).

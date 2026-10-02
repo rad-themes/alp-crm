@@ -10,6 +10,7 @@ use Inertia\Response;
 use RadThemes\RadpackCrm\Http\Resources\CompanyResource;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Support\Attachments;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
 use RadThemes\RadpackCrm\Support\Tasks;
@@ -92,7 +93,7 @@ class CompaniesController extends CpController
 
         $company->load(['tags', 'contacts', 'notes', 'activities']);
 
-        return Inertia::render('radpack-crm::Companies/Show', [
+        return Inertia::render('radpack-crm::Companies/Show', Attachments::for($company) + [
             'company' => [
                 'id' => $company->id,
                 'name' => $company->name,

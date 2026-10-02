@@ -12,9 +12,11 @@ use RadThemes\RadpackCrm\Http\Controllers\DashboardController;
 use RadThemes\RadpackCrm\Http\Controllers\DeveloperController;
 use RadThemes\RadpackCrm\Http\Controllers\EmailsController;
 use RadThemes\RadpackCrm\Http\Controllers\EmailTemplatesController;
+use RadThemes\RadpackCrm\Http\Controllers\FilesController;
 use RadThemes\RadpackCrm\Http\Controllers\ImportExportController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
+use RadThemes\RadpackCrm\Http\Controllers\PasswordsController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
 use RadThemes\RadpackCrm\Http\Controllers\ReportsController;
 use RadThemes\RadpackCrm\Http\Controllers\SegmentsController;
@@ -91,6 +93,16 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::patch('developer/webhooks/{webhook}', [DeveloperController::class, 'updateWebhook'])->name('developer.webhooks.update');
     Route::delete('developer/webhooks/{webhook}', [DeveloperController::class, 'destroyWebhook'])->name('developer.webhooks.destroy');
     Route::post('developer/webhooks/{webhook}/test', [DeveloperController::class, 'testWebhook'])->name('developer.webhooks.test');
+
+    Route::post('files/{type}/{id}', [FilesController::class, 'store'])->whereIn('type', ['contact', 'company'])->whereNumber('id')->name('files.store');
+    Route::get('files/{file}', [FilesController::class, 'download'])->name('files.download');
+    Route::patch('files/{file}', [FilesController::class, 'update'])->name('files.update');
+    Route::delete('files/{file}', [FilesController::class, 'destroy'])->name('files.destroy');
+
+    Route::post('passwords/{type}/{id}', [PasswordsController::class, 'store'])->whereIn('type', ['contact', 'company'])->whereNumber('id')->name('passwords.store');
+    Route::post('passwords/{password}/reveal', [PasswordsController::class, 'reveal'])->name('passwords.reveal');
+    Route::patch('passwords/{password}', [PasswordsController::class, 'update'])->name('passwords.update');
+    Route::delete('passwords/{password}', [PasswordsController::class, 'destroy'])->name('passwords.destroy');
 
     Route::delete('notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
 });
