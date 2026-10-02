@@ -6,6 +6,7 @@ import DocumentStatusBadge from '../../components/DocumentStatusBadge.vue';
 import { formatDate } from '../../components/dates.js';
 
 defineProps({
+    columns: Array,
     jsonUrl: String,
     createUrl: String,
     statuses: Array,
@@ -16,16 +17,6 @@ defineProps({
 const status = ref(null);
 const parameters = computed(() => (status.value ? { status: status.value } : {}));
 
-const columns = [
-    { field: 'date', label: __('Date'), sortable: true, visible: true },
-    { field: 'title', label: __('Title'), sortable: true, visible: true },
-    { field: 'contact', label: __('Contact'), sortable: false, visible: true },
-    { field: 'invoice', label: __('Invoice'), sortable: false, visible: true },
-    { field: 'reference', label: __('Reference'), sortable: false, visible: false },
-    { field: 'source', label: __('Source'), sortable: false, visible: false },
-    { field: 'amount', label: __('Amount'), sortable: true, visible: true },
-    { field: 'status', label: __('Status'), sortable: true, visible: true },
-];
 </script>
 
 <template>

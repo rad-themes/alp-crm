@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\RadpackCrm\Support\ListingColumns;
 use RadThemes\RadpackCrm\Support\Money;
 use RadThemes\RadpackCrm\Support\Settings;
 use Statamic\CP\PublishForm;
@@ -25,6 +26,7 @@ class TransactionsController extends CpController
         $lastMonth = Transaction::query()->where('currency', Settings::currency())->whereBetween('date', [now()->subMonthNoOverflow()->startOfMonth(), now()->subMonthNoOverflow()->endOfMonth()]);
 
         return Inertia::render('radpack-crm::Transactions/Index', [
+            'columns' => ListingColumns::for('transactions'),
             'jsonUrl' => cp_route('radpack-crm.transactions.json'),
             'createUrl' => cp_route('radpack-crm.transactions.create'),
             'statuses' => collect(Transaction::STATUSES)->map(fn ($status) => ['value' => $status, 'label' => __(ucfirst($status))]),
@@ -74,6 +76,7 @@ class TransactionsController extends CpController
                 'edit_url' => cp_route('radpack-crm.transactions.edit', $transaction),
             ])->all(),
             'meta' => [
+                'columns' => ListingColumns::fromRequest($request, 'transactions'),
                 'current_page' => $page->currentPage(),
                 'last_page' => $page->lastPage(),
                 'per_page' => $page->perPage(),

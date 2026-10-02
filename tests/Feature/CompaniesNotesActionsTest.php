@@ -156,4 +156,20 @@ class CompaniesNotesActionsTest extends TestCase
 
         $this->actingAs($this->admin())->get(cp_route('radpack-crm.home'))->assertRedirect(cp_route('radpack-crm.dashboard'));
     }
+
+    #[Test]
+    public function every_listing_returns_its_columns_for_the_listing_component(): void
+    {
+        $admin = $this->admin();
+
+        foreach (['contacts', 'companies', 'quotes', 'invoices', 'transactions', 'tasks'] as $listing) {
+            $this->actingAs($admin)->getJson(cp_route("radpack-crm.{$listing}.json", ['columns' => 'title,name,number,date']))
+                ->assertOk()
+                ->assertJsonStructure(['meta' => ['columns' => [['field', 'label', 'sortable', 'visible']]]]);
+        }
+
+        $columns = collect($this->actingAs($admin)->getJson(cp_route('radpack-crm.contacts.json', ['columns' => 'name,phone']))->json('meta.columns'))->pluck('visible', 'field');
+        $this->assertTrue($columns['phone']);
+        $this->assertFalse($columns['email']);
+    }
 }

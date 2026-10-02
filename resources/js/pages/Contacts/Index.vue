@@ -5,6 +5,7 @@ import StatusBadge from '../../components/StatusBadge.vue';
 import { fromNow, formatDate } from '../../components/dates.js';
 
 defineProps({
+    columns: Array,
     filters: Array,
     jsonUrl: String,
     actionUrl: String,
@@ -14,16 +15,6 @@ defineProps({
     canEdit: Boolean,
 });
 
-const columns = [
-    { field: 'name', label: __('Name'), sortable: true, visible: true },
-    { field: 'email', label: __('Email'), sortable: true, visible: true },
-    { field: 'phone', label: __('Phone'), sortable: false, visible: false },
-    { field: 'company', label: __('Company'), sortable: false, visible: true },
-    { field: 'status', label: __('Status'), sortable: true, visible: true },
-    { field: 'tags', label: __('Tags'), sortable: false, visible: true },
-    { field: 'last_contacted_at', label: __('Last contacted'), sortable: true, visible: false },
-    { field: 'created_at', label: __('Added'), sortable: true, visible: true },
-];
 </script>
 
 <template>

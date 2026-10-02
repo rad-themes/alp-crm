@@ -11,6 +11,7 @@ use RadThemes\RadpackCrm\Http\Resources\CompanyResource;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Support\Attachments;
+use RadThemes\RadpackCrm\Support\ListingColumns;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
 use RadThemes\RadpackCrm\Support\Tasks;
@@ -34,6 +35,7 @@ class CompaniesController extends CpController
 
         return Inertia::render('radpack-crm::Companies/Index', [
             'filters' => Scope::filters('radpack-crm.companies', ['model' => 'company']),
+            'columns' => ListingColumns::for('companies'),
             'jsonUrl' => cp_route('radpack-crm.companies.json'),
             'actionUrl' => cp_route('radpack-crm.companies.actions.run'),
             'createUrl' => cp_route('radpack-crm.companies.create'),
@@ -59,7 +61,7 @@ class CompaniesController extends CpController
         $query->orderBy($sort, $request->input('order') === 'desc' ? 'desc' : 'asc');
 
         return CompanyResource::collection($query->paginate(Statamic::cpPerPage($request->input('perPage'))))
-            ->additional(['meta' => ['activeFilterBadges' => $badges]])
+            ->additional(['meta' => ['activeFilterBadges' => $badges, 'columns' => ListingColumns::fromRequest($request, 'companies')]])
             ->response();
     }
 

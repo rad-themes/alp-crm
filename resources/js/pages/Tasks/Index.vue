@@ -5,6 +5,7 @@ import { Badge, Button, Checkbox, DropdownItem, Header, Listing, ToggleGroup, To
 import { formatDate, formatDateTime } from '../../components/dates.js';
 
 const props = defineProps({
+    columns: Array,
     jsonUrl: String,
     createUrl: String,
     calendarUrl: String,
@@ -18,14 +19,6 @@ const currentView = ref(props.view);
 const parameters = computed(() => ({ view: currentView.value }));
 const listing = ref(0);
 
-const columns = [
-    { field: 'done', label: '', sortable: false, visible: true },
-    { field: 'title', label: __('Task'), sortable: true, visible: true },
-    { field: 'starts_at', label: __('Due'), sortable: true, visible: true },
-    { field: 'contact', label: __('Contact'), sortable: false, visible: true },
-    { field: 'assignee', label: __('Assigned to'), sortable: false, visible: true },
-    { field: 'priority', label: __('Priority'), sortable: true, visible: true },
-];
 
 function toggle(task, done) {
     router.post(task.toggle_url, { done }, { preserveScroll: true, onSuccess: () => listing.value++ });

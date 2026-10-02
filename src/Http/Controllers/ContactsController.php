@@ -14,6 +14,7 @@ use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Email;
 use RadThemes\RadpackCrm\Models\EmailTemplate;
 use RadThemes\RadpackCrm\Support\Attachments;
+use RadThemes\RadpackCrm\Support\ListingColumns;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
 use RadThemes\RadpackCrm\Support\Tasks;
@@ -37,6 +38,7 @@ class ContactsController extends CpController
 
         return Inertia::render('radpack-crm::Contacts/Index', [
             'filters' => Scope::filters('radpack-crm.contacts'),
+            'columns' => ListingColumns::for('contacts'),
             'jsonUrl' => cp_route('radpack-crm.contacts.json'),
             'actionUrl' => cp_route('radpack-crm.contacts.actions.run'),
             'createUrl' => cp_route('radpack-crm.contacts.create'),
@@ -66,7 +68,7 @@ class ContactsController extends CpController
         }
 
         return ContactResource::collection($query->paginate(Statamic::cpPerPage($request->input('perPage'))))
-            ->additional(['meta' => ['activeFilterBadges' => $badges]])
+            ->additional(['meta' => ['activeFilterBadges' => $badges, 'columns' => ListingColumns::fromRequest($request, 'contacts')]])
             ->response();
     }
 

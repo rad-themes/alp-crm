@@ -15,6 +15,7 @@ use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Invoice;
 use RadThemes\RadpackCrm\Models\Quote;
 use RadThemes\RadpackCrm\Support\Documents;
+use RadThemes\RadpackCrm\Support\ListingColumns;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Settings;
 use Statamic\Facades\User;
@@ -44,6 +45,7 @@ abstract class DocumentsController extends CpController
         return Inertia::render('radpack-crm::Documents/Index', [
             'type' => $this->type(),
             'title' => $this->type() === 'invoice' ? __('Invoices') : __('Quotes'),
+            'columns' => ListingColumns::for('documents', $this->type()),
             'jsonUrl' => cp_route("radpack-crm.{$this->plural()}.json"),
             'createUrl' => cp_route("radpack-crm.{$this->plural()}.create"),
             'statuses' => $this->statusOptions(),
@@ -81,6 +83,7 @@ abstract class DocumentsController extends CpController
                 'edit_url' => cp_route("radpack-crm.{$this->plural()}.edit", $document),
             ]))->all(),
             'meta' => [
+                'columns' => ListingColumns::fromRequest($request, 'documents', $this->type()),
                 'current_page' => $page->currentPage(),
                 'last_page' => $page->lastPage(),
                 'per_page' => $page->perPage(),

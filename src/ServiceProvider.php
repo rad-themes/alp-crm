@@ -106,21 +106,26 @@ class ServiceProvider extends AddonServiceProvider
             $section = Settings::get('crm_name') ?: 'CRM';
 
             $nav->create(__('Dashboard'))->section($section)->route('radpack-crm.dashboard')->icon('dashboard')->can('view crm');
-            $nav->create(__('Contacts'))->section($section)->route('radpack-crm.contacts.index')->icon('users')->can('view crm');
+            $nav->create(__('Contacts'))->section($section)->route('radpack-crm.contacts.index')->icon('users')->can('view crm')->children([
+                Nav::item(__('Segments'))->route('radpack-crm.segments.index')->can('view crm'),
+                Nav::item(__('Import'))->route('radpack-crm.import.create')->can('edit crm'),
+            ]);
             $nav->create(__('Companies'))->section($section)->route('radpack-crm.companies.index')->icon('building-generic')->can('view crm');
-            $nav->create(__('Tasks'))->section($section)->route('radpack-crm.tasks.index')->icon('checkbox')->can('view crm');
-            $nav->create(__('Calendar'))->section($section)->route('radpack-crm.calendar')->icon('calendar')->can('view crm');
+            $nav->create(__('Tasks'))->section($section)->route('radpack-crm.tasks.index')->icon('checkbox')->can('view crm')->children([
+                Nav::item(__('Calendar'))->route('radpack-crm.calendar')->can('view crm'),
+            ]);
             $nav->create(__('Quotes'))->section($section)->route('radpack-crm.quotes.index')->icon('file-content-list')->can('view crm');
             $nav->create(__('Invoices'))->section($section)->route('radpack-crm.invoices.index')->icon('money-cashier-price-tag')->can('view crm');
             $nav->create(__('Transactions'))->section($section)->route('radpack-crm.transactions.index')->icon('money-cash-bill')->can('view crm');
-            $nav->create(__('Segments'))->section($section)->route('radpack-crm.segments.index')->icon('filter')->can('view crm');
-            $nav->create(__('Campaigns'))->section($section)->route('radpack-crm.campaigns.index')->icon('mail-send-email-attachment-document')->can('view crm');
-            $nav->create(__('Email templates'))->section($section)->route('radpack-crm.email-templates.index')->icon('mail-chat-bubble-text')->can('view crm');
+            $nav->create(__('Campaigns'))->section($section)->route('radpack-crm.campaigns.index')->icon('mail-send-email-attachment-document')->can('view crm')->children([
+                Nav::item(__('Email templates'))->route('radpack-crm.email-templates.index')->can('view crm'),
+            ]);
             $nav->create(__('Automations'))->section($section)->route('radpack-crm.automations.index')->icon('flash-bolt-lightning')->can('view crm');
             $nav->create(__('Reports'))->section($section)->route('radpack-crm.reports')->icon('chart-monitoring-indicator')->can('view crm');
-            $nav->create(__('Integrations'))->section($section)->route('radpack-crm.integrations')->icon('link')->can('configure addons');
-            $nav->create(__('API & webhooks'))->section($section)->route('radpack-crm.developer')->icon('git')->can('configure addons');
-            $nav->create(__('Settings'))->section($section)->url(Addon::get('rad-themes/radpack-crm')->settingsUrl())->icon('cog')->can('configure addons');
+            $nav->create(__('Settings'))->section($section)->url(Addon::get('rad-themes/radpack-crm')->settingsUrl())->icon('cog')->can('configure addons')->children([
+                Nav::item(__('Integrations'))->route('radpack-crm.integrations')->can('configure addons'),
+                Nav::item(__('API & webhooks'))->route('radpack-crm.developer')->can('configure addons'),
+            ]);
         });
     }
 

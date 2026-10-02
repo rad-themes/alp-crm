@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Task;
+use RadThemes\RadpackCrm\Support\ListingColumns;
 use RadThemes\RadpackCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\User;
@@ -25,6 +26,7 @@ class TasksController extends CpController
         $this->authorize('view crm');
 
         return Inertia::render('radpack-crm::Tasks/Index', [
+            'columns' => ListingColumns::for('tasks'),
             'jsonUrl' => cp_route('radpack-crm.tasks.json'),
             'createUrl' => cp_route('radpack-crm.tasks.create'),
             'calendarUrl' => cp_route('radpack-crm.calendar'),
@@ -69,6 +71,7 @@ class TasksController extends CpController
         return response()->json([
             'data' => collect($page->items())->map(fn (Task $task) => Tasks::toArray($task))->all(),
             'meta' => [
+                'columns' => ListingColumns::fromRequest($request, 'tasks'),
                 'current_page' => $page->currentPage(),
                 'last_page' => $page->lastPage(),
                 'per_page' => $page->perPage(),
