@@ -45,6 +45,20 @@ class Segment extends Model
         ];
     }
 
+    /**
+     * Options the rule builder needs.
+     *
+     * @return array{fields: mixed, statuses: mixed, tags: mixed}
+     */
+    public static function editorOptions(): array
+    {
+        return [
+            'fields' => collect(static::fields())->map(fn ($field, $key) => ['value' => $key] + $field)->values(),
+            'statuses' => collect(Contact::blueprint()->field('status')?->get('options') ?? [])->map(fn ($label, $value) => ['value' => $value, 'label' => $label])->values(),
+            'tags' => Tag::orderBy('name')->get()->map(fn (Tag $tag) => ['value' => $tag->slug, 'label' => $tag->name]),
+        ];
+    }
+
     public function contacts(): Builder
     {
         return static::applyTo(Contact::query(), (array) $this->conditions, $this->match);

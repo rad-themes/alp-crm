@@ -9,7 +9,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Segment;
-use RadThemes\RadpackCrm\Models\Tag;
 use RadThemes\RadpackCrm\Scopes\CrmSegment;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
@@ -118,12 +117,9 @@ class SegmentsController extends CpController
 
     private function editor(Segment $segment): Response
     {
-        return Inertia::render('radpack-crm::Segments/Edit', [
+        return Inertia::render('radpack-crm::Segments/Edit', Segment::editorOptions() + [
             'title' => $segment->exists ? $segment->name : __('Create Segment'),
             'values' => ['name' => $segment->name, 'match' => $segment->match, 'conditions' => array_values((array) $segment->conditions)],
-            'fields' => collect(Segment::fields())->map(fn ($field, $key) => ['value' => $key] + $field)->values(),
-            'statuses' => collect(Contact::blueprint()->field('status')?->get('options') ?? [])->map(fn ($label, $value) => ['value' => $value, 'label' => $label])->values(),
-            'tags' => Tag::orderBy('name')->get()->map(fn (Tag $tag) => ['value' => $tag->slug, 'label' => $tag->name]),
             'previewUrl' => cp_route('radpack-crm.segments.preview'),
             'submitUrl' => $segment->exists ? cp_route('radpack-crm.segments.update', $segment) : cp_route('radpack-crm.segments.store'),
             'submitMethod' => $segment->exists ? 'patch' : 'post',

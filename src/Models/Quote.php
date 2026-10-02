@@ -118,7 +118,7 @@ class Quote extends Model
             'currency' => $this->currency,
             'notes' => $this->notes,
         ]), function (Invoice $invoice) {
-            $invoice->syncItems($this->items->map->toEditorArray()->all(), $this->discount);
+            $invoice->syncItems($this->items->map->toEditorArray()->all(), (float) $this->discount);
         });
     }
 }

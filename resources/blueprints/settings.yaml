@@ -132,6 +132,17 @@ tabs:
             field:
               type: textarea
               display: 'Quote terms'
+  reports:
+    display: Reports
+    sections:
+      -
+        fields:
+          -
+            handle: funnel_statuses
+            field:
+              type: list
+              display: 'Funnel stages'
+              instructions: 'Contact status handles in funnel order, e.g. lead, prospect, customer. Leave empty to use every status except refused and blacklisted.'
   capture:
     display: 'Lead capture'
     sections:

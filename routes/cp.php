@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use RadThemes\RadpackCrm\Http\Controllers\AutomationsController;
 use RadThemes\RadpackCrm\Http\Controllers\CalendarController;
 use RadThemes\RadpackCrm\Http\Controllers\CampaignsController;
 use RadThemes\RadpackCrm\Http\Controllers\CompaniesController;
@@ -15,6 +16,7 @@ use RadThemes\RadpackCrm\Http\Controllers\ImportExportController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
+use RadThemes\RadpackCrm\Http\Controllers\ReportsController;
 use RadThemes\RadpackCrm\Http\Controllers\SegmentsController;
 use RadThemes\RadpackCrm\Http\Controllers\TaskActionController;
 use RadThemes\RadpackCrm\Http\Controllers\TasksController;
@@ -71,6 +73,10 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::post('campaigns/{campaign}/send', [CampaignsController::class, 'send'])->name('campaigns.send');
     Route::post('campaigns/{campaign}/cancel', [CampaignsController::class, 'cancel'])->name('campaigns.cancel');
     Route::resource('campaigns', CampaignsController::class);
+
+    Route::post('automations/{automation}/toggle', [AutomationsController::class, 'toggle'])->name('automations.toggle');
+    Route::resource('automations', AutomationsController::class)->except('show');
+    Route::get('reports', ReportsController::class)->name('reports');
 
     Route::get('import', [ImportExportController::class, 'create'])->name('import.create');
     Route::post('import', [ImportExportController::class, 'upload'])->name('import.upload');
