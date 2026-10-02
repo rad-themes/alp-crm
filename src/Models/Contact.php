@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 use RadThemes\RadpackCrm\Database\Factories\ContactFactory;
 use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
 use RadThemes\RadpackCrm\Models\Concerns\HasTags;
@@ -46,6 +47,7 @@ class Contact extends Model
         return [
             'data' => 'array',
             'last_contacted_at' => 'datetime',
+            'unsubscribed_at' => 'datetime',
         ];
     }
 
@@ -157,6 +159,28 @@ class Contact extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class)->orderByRaw('completed_at is not null')->orderByRaw('starts_at is null')->orderBy('starts_at');
+    }
+
+    public function emails(): HasMany
+    {
+        return $this->hasMany(Email::class)->latest()->latest('id');
+    }
+
+    /**
+     * A stable, unguessable token for unsubscribe links.
+     */
+    public function emailToken(): string
+    {
+        if (! $this->email_token) {
+            $this->forceFill(['email_token' => Str::random(40)])->saveQuietly();
+        }
+
+        return $this->email_token;
+    }
+
+    public function isSubscribed(): bool
+    {
+        return $this->unsubscribed_at === null;
     }
 
     public function notes(): MorphMany

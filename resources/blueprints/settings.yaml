@@ -132,3 +132,18 @@ tabs:
             field:
               type: textarea
               display: 'Quote terms'
+  email:
+    display: Email
+    sections:
+      -
+        display: Campaigns
+        instructions: 'Campaigns send in batches every minute via the Laravel scheduler (`php artisan schedule:run`). Keep batches within your mail provider’s rate limit.'
+        fields:
+          -
+            handle: campaign_batch_size
+            field:
+              type: integer
+              display: 'Emails per minute'
+              default: 100
+              validate:
+                - 'min:1'

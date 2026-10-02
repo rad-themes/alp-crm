@@ -1,0 +1,30 @@
+title: 'Email template'
+tabs:
+  main:
+    display: Template
+    sections:
+      -
+        instructions: 'Personalise with merge tags: {{ first_name }}, {{ last_name }}, {{ name }}, {{ email }}, {{ company }}, {{ business_name }} — and any contact field, e.g. {{ city }}.'
+        fields:
+          -
+            handle: name
+            field:
+              type: text
+              display: Name
+              instructions: 'Only you see this, e.g. "Follow-up after a call".'
+              validate:
+                - required
+          -
+            handle: subject
+            field:
+              type: text
+              display: Subject
+              validate:
+                - required
+          -
+            handle: body
+            field:
+              type: markdown
+              display: Message
+              validate:
+                - required

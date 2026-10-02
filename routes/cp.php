@@ -2,14 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use RadThemes\RadpackCrm\Http\Controllers\CalendarController;
+use RadThemes\RadpackCrm\Http\Controllers\CampaignsController;
 use RadThemes\RadpackCrm\Http\Controllers\CompaniesController;
 use RadThemes\RadpackCrm\Http\Controllers\CompanyActionController;
 use RadThemes\RadpackCrm\Http\Controllers\ContactActionController;
 use RadThemes\RadpackCrm\Http\Controllers\ContactsController;
 use RadThemes\RadpackCrm\Http\Controllers\DashboardController;
+use RadThemes\RadpackCrm\Http\Controllers\EmailsController;
+use RadThemes\RadpackCrm\Http\Controllers\EmailTemplatesController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
+use RadThemes\RadpackCrm\Http\Controllers\SegmentsController;
 use RadThemes\RadpackCrm\Http\Controllers\TaskActionController;
 use RadThemes\RadpackCrm\Http\Controllers\TasksController;
 use RadThemes\RadpackCrm\Http\Controllers\TransactionsController;
@@ -53,5 +57,18 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::resource('transactions', TransactionsController::class)->except('show');
 
     Route::post('notes/{type}/{id}', [NotesController::class, 'store'])->whereIn('type', ['contact', 'company'])->whereNumber('id')->name('notes.store');
+    Route::post('contacts/{contact}/emails', [EmailsController::class, 'store'])->name('contacts.emails.store');
+    Route::post('emails/{email}/cancel', [EmailsController::class, 'cancel'])->name('emails.cancel');
+    Route::resource('email-templates', EmailTemplatesController::class)->except('show');
+
+    Route::post('segments/preview', [SegmentsController::class, 'preview'])->name('segments.preview');
+    Route::post('segments/{segment}/tag', [SegmentsController::class, 'tag'])->name('segments.tag');
+    Route::resource('segments', SegmentsController::class)->except('show');
+
+    Route::post('campaigns/{campaign}/test', [CampaignsController::class, 'test'])->name('campaigns.test');
+    Route::post('campaigns/{campaign}/send', [CampaignsController::class, 'send'])->name('campaigns.send');
+    Route::post('campaigns/{campaign}/cancel', [CampaignsController::class, 'cancel'])->name('campaigns.cancel');
+    Route::resource('campaigns', CampaignsController::class);
+
     Route::delete('notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
 });

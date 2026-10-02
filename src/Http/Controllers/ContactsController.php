@@ -7,8 +7,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use RadThemes\RadpackCrm\Email\MergeTags;
 use RadThemes\RadpackCrm\Http\Resources\ContactResource;
 use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Models\Email;
+use RadThemes\RadpackCrm\Models\EmailTemplate;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
 use RadThemes\RadpackCrm\Support\Tasks;
@@ -132,6 +135,7 @@ class ContactsController extends CpController
                 'tags' => $contact->tags->pluck('name'),
                 'created_at' => $contact->created_at?->toIso8601String(),
                 'last_contacted_at' => $contact->last_contacted_at?->toIso8601String(),
+                'unsubscribed_at' => $contact->unsubscribed_at?->toIso8601String(),
             ],
             'details' => Presenter::details(Contact::blueprint(), $contact->blueprintValues(), ['first_name', 'last_name', 'email', 'phone', 'status', 'company', 'owner', 'tags', 'aliases']),
             'notes' => Presenter::notes($contact->notes),
@@ -139,8 +143,21 @@ class ContactsController extends CpController
             'tasks' => $contact->tasks()->with(['contact', 'company'])->limit(50)->get()->map(fn ($task) => Tasks::toArray($task)),
             'activities' => Presenter::activities($contact->activities),
             'noteTypes' => Presenter::noteTypes(),
+            'emails' => $contact->emails()->limit(50)->get()->map(fn (Email $email) => [
+                'id' => $email->id,
+                'subject' => $email->subject,
+                'body' => $email->body,
+                'status' => $email->status,
+                'error' => $email->error,
+                'sender' => $email->sender()?->name(),
+                'date' => ($email->sent_at ?? $email->scheduled_at ?? $email->created_at)?->toIso8601String(),
+                'cancel_url' => cp_route('radpack-crm.emails.cancel', $email),
+            ]),
+            'templates' => EmailTemplate::orderBy('name')->get(['id', 'name', 'subject', 'body']),
+            'mergeTags' => MergeTags::available(),
             'urls' => [
                 'edit' => cp_route('radpack-crm.contacts.edit', $contact),
+                'email' => cp_route('radpack-crm.contacts.emails.store', $contact),
                 'destroy' => cp_route('radpack-crm.contacts.destroy', $contact),
                 'notes' => cp_route('radpack-crm.notes.store', ['contact', $contact->id]),
                 'index' => cp_route('radpack-crm.contacts.index'),

@@ -7,9 +7,11 @@ use RadThemes\RadpackCrm\Actions\AddTags;
 use RadThemes\RadpackCrm\Actions\ChangeStatus;
 use RadThemes\RadpackCrm\Actions\CompleteTasks;
 use RadThemes\RadpackCrm\Actions\DeleteRecords;
+use RadThemes\RadpackCrm\Console\SendEmails;
 use RadThemes\RadpackCrm\Console\SendTaskReminders;
 use RadThemes\RadpackCrm\Fieldtypes\CrmCompanies;
 use RadThemes\RadpackCrm\Fieldtypes\CrmContacts;
+use RadThemes\RadpackCrm\Scopes\CrmSegment;
 use RadThemes\RadpackCrm\Scopes\CrmStatus;
 use RadThemes\RadpackCrm\Scopes\CrmTag;
 use Statamic\Facades\Addon;
@@ -30,6 +32,7 @@ class ServiceProvider extends AddonServiceProvider
     ];
 
     protected $scopes = [
+        CrmSegment::class,
         CrmStatus::class,
         CrmTag::class,
     ];
@@ -42,6 +45,7 @@ class ServiceProvider extends AddonServiceProvider
     ];
 
     protected $commands = [
+        SendEmails::class,
         SendTaskReminders::class,
     ];
 
@@ -69,6 +73,9 @@ class ServiceProvider extends AddonServiceProvider
             $nav->create(__('Quotes'))->section('CRM')->route('radpack-crm.quotes.index')->icon('file-content-list')->can('view crm');
             $nav->create(__('Invoices'))->section('CRM')->route('radpack-crm.invoices.index')->icon('money-cashier-price-tag')->can('view crm');
             $nav->create(__('Transactions'))->section('CRM')->route('radpack-crm.transactions.index')->icon('money-cash-bill')->can('view crm');
+            $nav->create(__('Segments'))->section('CRM')->route('radpack-crm.segments.index')->icon('filter')->can('view crm');
+            $nav->create(__('Campaigns'))->section('CRM')->route('radpack-crm.campaigns.index')->icon('mail-send-email-attachment-document')->can('view crm');
+            $nav->create(__('Email templates'))->section('CRM')->route('radpack-crm.email-templates.index')->icon('mail-chat-bubble-text')->can('view crm');
             $nav->create(__('Settings'))->section('CRM')->url(Addon::get('rad-themes/radpack-crm')->settingsUrl())->icon('cog')->can('configure addons');
         });
     }
@@ -76,5 +83,6 @@ class ServiceProvider extends AddonServiceProvider
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('radpack-crm:task-reminders')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('radpack-crm:send-emails')->everyMinute()->withoutOverlapping();
     }
 }

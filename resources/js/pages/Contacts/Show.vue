@@ -11,6 +11,7 @@ import NotesPanel from '../../components/NotesPanel.vue';
 import ActivityTimeline from '../../components/ActivityTimeline.vue';
 import SalesPanel from '../../components/SalesPanel.vue';
 import TaskList from '../../components/TaskList.vue';
+import EmailsPanel from '../../components/EmailsPanel.vue';
 import { formatDate, fromNow } from '../../components/dates.js';
 
 const props = defineProps({
@@ -21,6 +22,9 @@ const props = defineProps({
     tasks: Array,
     activities: Array,
     noteTypes: Object,
+    emails: Array,
+    templates: Array,
+    mergeTags: Array,
     urls: Object,
     canEdit: Boolean,
 });
@@ -36,6 +40,7 @@ const overview = computed(() => [
     props.contact.owner && { label: __('Owner'), value: props.contact.owner },
     props.contact.aliases.length && { label: __('Other emails'), value: props.contact.aliases.join(', ') },
     { label: __('Added'), value: formatDate(props.contact.created_at) },
+    props.contact.unsubscribed_at && { label: __('Marketing emails'), value: __('Unsubscribed :when', { when: fromNow(props.contact.unsubscribed_at) }) },
     { label: __('Last contacted'), value: props.contact.last_contacted_at ? fromNow(props.contact.last_contacted_at) : __('Never') },
 ].filter(Boolean));
 
@@ -92,12 +97,16 @@ function destroy() {
             <Tabs v-model="tab">
                 <TabList class="mb-4">
                     <TabTrigger name="notes" :text="__('Notes & calls')" />
+                    <TabTrigger name="emails" :text="__('Emails')" />
                     <TabTrigger name="tasks" :text="__('Tasks') + (openTasks ? ` (${openTasks})` : '')" />
                     <TabTrigger name="sales" :text="__('Sales')" />
                     <TabTrigger name="activity" :text="__('Activity')" />
                 </TabList>
                 <TabContent name="notes">
                     <NotesPanel :notes="notes" :note-types="noteTypes" :store-url="urls.notes" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent name="emails">
+                    <EmailsPanel :emails="emails" :templates="templates" :merge-tags="mergeTags" :store-url="urls.email" :has-email="!!contact.email" :can-edit="canEdit" />
                 </TabContent>
                 <TabContent name="tasks">
                     <Panel :heading="__('Tasks')">
