@@ -58,6 +58,11 @@ class Contact extends Model
     {
         static::deleting(function (Contact $contact) {
             $contact->notes()->delete();
+
+            // Keep sales records and tasks, unlinked (foreign keys aren't enforced on every database).
+            foreach ([Task::class, Quote::class, Invoice::class, Transaction::class] as $model) {
+                $model::where('contact_id', $contact->id)->update(['contact_id' => null]);
+            }
         });
 
         static::saved(function (Contact $contact) {
@@ -147,6 +152,11 @@ class Contact extends Model
     public function lifetimeValue(): float
     {
         return Transaction::revenue($this->transactions()->getQuery()->reorder()->where('currency', Settings::currency()));
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->orderByRaw('completed_at is not null')->orderByRaw('starts_at is null')->orderBy('starts_at');
     }
 
     public function notes(): MorphMany

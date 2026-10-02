@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use RadThemes\RadpackCrm\Http\Controllers\CalendarController;
 use RadThemes\RadpackCrm\Http\Controllers\CompaniesController;
 use RadThemes\RadpackCrm\Http\Controllers\CompanyActionController;
 use RadThemes\RadpackCrm\Http\Controllers\ContactActionController;
@@ -9,6 +10,8 @@ use RadThemes\RadpackCrm\Http\Controllers\DashboardController;
 use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
 use RadThemes\RadpackCrm\Http\Controllers\NotesController;
 use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
+use RadThemes\RadpackCrm\Http\Controllers\TaskActionController;
+use RadThemes\RadpackCrm\Http\Controllers\TasksController;
 use RadThemes\RadpackCrm\Http\Controllers\TransactionsController;
 
 Route::prefix('crm')->name('radpack-crm.')->group(function () {
@@ -38,6 +41,13 @@ Route::prefix('crm')->name('radpack-crm.')->group(function () {
     Route::post('invoices/{id}/void', [InvoicesController::class, 'void'])->whereNumber('id')->name('invoices.void');
     Route::post('quotes/{id}/respond', [QuotesController::class, 'respond'])->whereNumber('id')->name('quotes.respond');
     Route::post('quotes/{id}/convert', [QuotesController::class, 'convert'])->whereNumber('id')->name('quotes.convert');
+
+    Route::get('calendar', CalendarController::class)->name('calendar');
+    Route::get('tasks/json', [TasksController::class, 'json'])->name('tasks.json');
+    Route::post('tasks/actions', [TaskActionController::class, 'run'])->name('tasks.actions.run');
+    Route::post('tasks/actions/list', [TaskActionController::class, 'bulkActions'])->name('tasks.actions.bulk');
+    Route::post('tasks/{task}/toggle', [TasksController::class, 'toggle'])->name('tasks.toggle');
+    Route::resource('tasks', TasksController::class)->except('show');
 
     Route::get('transactions/json', [TransactionsController::class, 'json'])->name('transactions.json');
     Route::resource('transactions', TransactionsController::class)->except('show');

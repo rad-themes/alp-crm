@@ -3,12 +3,14 @@ import { computed } from 'vue';
 import { Head, Link } from '@statamic/cms/inertia';
 import { Avatar, Badge, Button, Card, Description, EmptyStateItem, EmptyStateMenu, Header, Heading, Panel, Text } from '@statamic/cms/ui';
 import ActivityTimeline from '../components/ActivityTimeline.vue';
+import TaskList from '../components/TaskList.vue';
 
 const props = defineProps({
     stats: Array,
     statuses: Array,
     recentContacts: Array,
     activity: Array,
+    myTasks: Array,
     urls: Object,
     canEdit: Boolean,
 });
@@ -44,6 +46,15 @@ const statusTotal = computed(() => Math.max(1, props.statuses.reduce((sum, statu
 
         <div class="grid gap-6 lg:grid-cols-3">
             <div class="space-y-6 lg:col-span-2">
+                <Panel :heading="__('My tasks this week')">
+                    <template #header-actions>
+                        <Button :href="urls.tasks" :text="__('All tasks')" size="sm" variant="ghost" />
+                    </template>
+                    <Card>
+                        <TaskList :tasks="myTasks" :can-edit="canEdit" :empty="__('Nothing due. Nice!')" />
+                    </Card>
+                </Panel>
+
                 <Panel :heading="__('Recent contacts')">
                     <Card>
                         <Description v-if="!recentContacts.length" :text="__('No contacts yet.')" />

@@ -10,6 +10,7 @@ import DetailList from '../../components/DetailList.vue';
 import NotesPanel from '../../components/NotesPanel.vue';
 import ActivityTimeline from '../../components/ActivityTimeline.vue';
 import SalesPanel from '../../components/SalesPanel.vue';
+import TaskList from '../../components/TaskList.vue';
 import { formatDate } from '../../components/dates.js';
 
 const props = defineProps({
@@ -18,6 +19,7 @@ const props = defineProps({
     details: Array,
     notes: Array,
     sales: Object,
+    tasks: Array,
     activities: Array,
     noteTypes: Object,
     urls: Object,
@@ -26,6 +28,7 @@ const props = defineProps({
 
 const tab = ref('contacts');
 const confirmingDelete = ref(false);
+const openTasks = computed(() => props.tasks.filter((task) => !task.done).length);
 
 const overview = computed(() => [
     props.company.email && { label: __('Email'), value: props.company.email, href: `mailto:${props.company.email}` },
@@ -89,6 +92,7 @@ function destroy() {
                 <TabList class="mb-4">
                     <TabTrigger name="contacts" :text="__('Contacts') + ` (${contacts.length})`" />
                     <TabTrigger name="notes" :text="__('Notes & calls')" />
+                    <TabTrigger name="tasks" :text="__('Tasks') + (openTasks ? ` (${openTasks})` : '')" />
                     <TabTrigger name="sales" :text="__('Sales')" />
                     <TabTrigger name="activity" :text="__('Activity')" />
                 </TabList>
@@ -108,6 +112,16 @@ function destroy() {
                 </TabContent>
                 <TabContent name="notes">
                     <NotesPanel :notes="notes" :note-types="noteTypes" :store-url="urls.notes" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent name="tasks">
+                    <Panel :heading="__('Tasks')">
+                        <template v-if="canEdit" #header-actions>
+                            <Button :href="urls.createTask" :text="__('New task')" size="sm" icon="plus" />
+                        </template>
+                        <Card>
+                            <TaskList :tasks="tasks" :can-edit="canEdit" :show-contact="false" :empty="__('No tasks yet.')" />
+                        </Card>
+                    </Panel>
                 </TabContent>
                 <TabContent name="sales">
                     <SalesPanel :sales="sales" :can-edit="canEdit" />

@@ -10,6 +10,7 @@ import DetailList from '../../components/DetailList.vue';
 import NotesPanel from '../../components/NotesPanel.vue';
 import ActivityTimeline from '../../components/ActivityTimeline.vue';
 import SalesPanel from '../../components/SalesPanel.vue';
+import TaskList from '../../components/TaskList.vue';
 import { formatDate, fromNow } from '../../components/dates.js';
 
 const props = defineProps({
@@ -17,6 +18,7 @@ const props = defineProps({
     details: Array,
     notes: Array,
     sales: Object,
+    tasks: Array,
     activities: Array,
     noteTypes: Object,
     urls: Object,
@@ -25,6 +27,7 @@ const props = defineProps({
 
 const tab = ref('notes');
 const confirmingDelete = ref(false);
+const openTasks = computed(() => props.tasks.filter((task) => !task.done).length);
 
 const overview = computed(() => [
     props.contact.email && { label: __('Email'), value: props.contact.email, href: `mailto:${props.contact.email}` },
@@ -89,11 +92,22 @@ function destroy() {
             <Tabs v-model="tab">
                 <TabList class="mb-4">
                     <TabTrigger name="notes" :text="__('Notes & calls')" />
+                    <TabTrigger name="tasks" :text="__('Tasks') + (openTasks ? ` (${openTasks})` : '')" />
                     <TabTrigger name="sales" :text="__('Sales')" />
                     <TabTrigger name="activity" :text="__('Activity')" />
                 </TabList>
                 <TabContent name="notes">
                     <NotesPanel :notes="notes" :note-types="noteTypes" :store-url="urls.notes" :can-edit="canEdit" />
+                </TabContent>
+                <TabContent name="tasks">
+                    <Panel :heading="__('Tasks')">
+                        <template v-if="canEdit" #header-actions>
+                            <Button :href="urls.createTask" :text="__('New task')" size="sm" icon="plus" />
+                        </template>
+                        <Card>
+                            <TaskList :tasks="tasks" :can-edit="canEdit" :show-contact="false" :empty="__('No tasks yet.')" />
+                        </Card>
+                    </Panel>
                 </TabContent>
                 <TabContent name="sales">
                     <SalesPanel :sales="sales" :can-edit="canEdit" />

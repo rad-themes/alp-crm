@@ -45,8 +45,12 @@ class Company extends Model
     protected static function booted(): void
     {
         static::deleting(function (Company $company) {
-            $company->contacts()->update(['company_id' => null]);
             $company->notes()->delete();
+
+            // Keep contacts, sales records and tasks, unlinked (foreign keys aren't enforced on every database).
+            foreach ([Contact::class, Task::class, Quote::class, Invoice::class, Transaction::class] as $model) {
+                $model::where('company_id', $company->id)->update(['company_id' => null]);
+            }
         });
     }
 
@@ -110,6 +114,11 @@ class Company extends Model
     public function lifetimeValue(): float
     {
         return Transaction::revenue($this->transactions()->getQuery()->reorder()->where('currency', Settings::currency()));
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->orderByRaw('completed_at is not null')->orderByRaw('starts_at is null')->orderBy('starts_at');
     }
 
     public function notes(): MorphMany

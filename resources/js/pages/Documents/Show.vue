@@ -92,7 +92,7 @@ const summary = computed(() => [
                         <DropdownItem :text="__('Mark as accepted')" icon="checkmark" @click="post(urls.respond, { accepted: true })" />
                         <DropdownItem :text="__('Mark as declined')" icon="x" @click="post(urls.respond, { accepted: false })" />
                     </template>
-                    <DropdownItem v-if="isInvoice && document.status !== 'void' && document.status !== 'paid'" :text="__('Void')" icon="cancel" variant="destructive" @click="confirming = 'void'" />
+                    <DropdownItem v-if="isInvoice && document.status !== 'void' && document.status !== 'paid'" :text="__('Void')" icon="x" variant="destructive" @click="confirming = 'void'" />
                 </template>
                 <template v-if="canDelete">
                     <DropdownSeparator />
@@ -104,7 +104,7 @@ const summary = computed(() => [
             <Button v-if="!isInvoice && !invoice && document.status === 'accepted'" :text="__('Convert to invoice')" @click="post(urls.convert)" />
             <Button v-if="isInvoice && ['sent', 'partial', 'overdue'].includes(document.status)" :text="__('Record payment')" @click="paying = true" />
             <Button :href="urls.edit" :text="__('Edit')" />
-            <Button :text="document.sent_at ? __('Send again') : __('Send')" icon="mail-send" variant="primary" @click="sending = true" />
+            <Button :text="document.sent_at ? __('Send again') : __('Send')" icon="mail-send-email-attachment-document" variant="primary" @click="sending = true" />
         </template>
     </Header>
 
@@ -194,7 +194,7 @@ const summary = computed(() => [
             </Field>
             <div class="flex justify-end gap-2">
                 <Button :text="__('Cancel')" variant="ghost" @click="sending = false" />
-                <Button type="submit" :text="__('Send')" variant="primary" icon="mail-send" :loading="sendForm.processing" />
+                <Button type="submit" :text="__('Send')" variant="primary" icon="mail-send-email-attachment-document" :loading="sendForm.processing" />
             </div>
         </form>
     </Modal>

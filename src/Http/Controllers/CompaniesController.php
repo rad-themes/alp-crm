@@ -12,6 +12,7 @@ use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
+use RadThemes\RadpackCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -113,6 +114,7 @@ class CompaniesController extends CpController
             'details' => Presenter::details(Company::blueprint(), $company->blueprintValues(), ['name', 'email', 'phone', 'website', 'status', 'owner', 'tags']),
             'notes' => Presenter::notes($company->notes),
             'sales' => Sales::for($company),
+            'tasks' => $company->tasks()->with(['contact', 'company'])->limit(50)->get()->map(fn ($task) => Tasks::toArray($task)),
             'activities' => Presenter::activities($company->activities),
             'noteTypes' => Presenter::noteTypes(),
             'urls' => [
@@ -120,6 +122,7 @@ class CompaniesController extends CpController
                 'destroy' => cp_route('radpack-crm.companies.destroy', $company),
                 'notes' => cp_route('radpack-crm.notes.store', ['company', $company->id]),
                 'index' => cp_route('radpack-crm.companies.index'),
+                'createTask' => cp_route('radpack-crm.tasks.create', ['company' => $company->id]),
                 'createContact' => cp_route('radpack-crm.contacts.create'),
             ],
             'canEdit' => User::current()->can('edit crm'),

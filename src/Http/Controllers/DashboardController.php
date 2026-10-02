@@ -8,10 +8,12 @@ use RadThemes\RadpackCrm\Models\Activity;
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Models\Invoice;
+use RadThemes\RadpackCrm\Models\Task;
 use RadThemes\RadpackCrm\Models\Transaction;
 use RadThemes\RadpackCrm\Support\Money;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\RadpackCrm\Support\Tasks;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 
@@ -56,7 +58,13 @@ class DashboardController extends CpController
                     'causer' => $activity->causer()?->name(),
                     'created_at' => $activity->created_at?->toIso8601String(),
                 ])->values(),
+            'myTasks' => Task::query()->open()->with(['contact', 'company'])
+                ->where('assigned_to', User::current()->id())
+                ->where(fn ($query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', now()->addDays(7)->endOfDay()))
+                ->orderByRaw('starts_at is null')->orderBy('starts_at')->limit(8)->get()
+                ->map(fn ($task) => Tasks::toArray($task)),
             'urls' => [
+                'tasks' => cp_route('radpack-crm.tasks.index'),
                 'createContact' => cp_route('radpack-crm.contacts.create'),
                 'createCompany' => cp_route('radpack-crm.companies.create'),
             ],

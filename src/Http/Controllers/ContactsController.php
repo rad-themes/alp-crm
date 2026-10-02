@@ -11,6 +11,7 @@ use RadThemes\RadpackCrm\Http\Resources\ContactResource;
 use RadThemes\RadpackCrm\Models\Contact;
 use RadThemes\RadpackCrm\Support\Presenter;
 use RadThemes\RadpackCrm\Support\Sales;
+use RadThemes\RadpackCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -135,6 +136,7 @@ class ContactsController extends CpController
             'details' => Presenter::details(Contact::blueprint(), $contact->blueprintValues(), ['first_name', 'last_name', 'email', 'phone', 'status', 'company', 'owner', 'tags', 'aliases']),
             'notes' => Presenter::notes($contact->notes),
             'sales' => Sales::for($contact),
+            'tasks' => $contact->tasks()->with(['contact', 'company'])->limit(50)->get()->map(fn ($task) => Tasks::toArray($task)),
             'activities' => Presenter::activities($contact->activities),
             'noteTypes' => Presenter::noteTypes(),
             'urls' => [
@@ -142,6 +144,7 @@ class ContactsController extends CpController
                 'destroy' => cp_route('radpack-crm.contacts.destroy', $contact),
                 'notes' => cp_route('radpack-crm.notes.store', ['contact', $contact->id]),
                 'index' => cp_route('radpack-crm.contacts.index'),
+                'createTask' => cp_route('radpack-crm.tasks.create', ['contact' => $contact->id]),
             ],
             'canEdit' => $this->canEdit(),
         ]);

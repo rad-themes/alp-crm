@@ -4,6 +4,7 @@ namespace RadThemes\RadpackCrm\Actions;
 
 use RadThemes\RadpackCrm\Models\Company;
 use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\RadpackCrm\Models\Task;
 use Statamic\Actions\Action;
 
 class DeleteRecords extends Action
@@ -21,7 +22,7 @@ class DeleteRecords extends Action
 
     public function visibleTo($item)
     {
-        return $item instanceof Contact || $item instanceof Company;
+        return $item instanceof Contact || $item instanceof Company || $item instanceof Task;
     }
 
     public function authorize($user, $item)

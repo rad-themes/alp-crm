@@ -1,0 +1,105 @@
+title: Task
+tabs:
+  main:
+    display: Details
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              display: Title
+              validate:
+                - required
+          -
+            handle: type
+            field:
+              type: button_group
+              display: Type
+              default: task
+              options:
+                task: Task
+                call: Call
+                meeting: Meeting
+                email: Email
+                deadline: Deadline
+          -
+            handle: starts_at
+            field:
+              type: date
+              display: 'Due / starts'
+              time_enabled: true
+              width: 50
+          -
+            handle: ends_at
+            field:
+              type: date
+              display: Ends
+              time_enabled: true
+              width: 50
+              instructions: 'Optional, for meetings and calls.'
+          -
+            handle: all_day
+            field:
+              type: toggle
+              display: 'All day'
+              width: 50
+          -
+            handle: reminder_minutes
+            field:
+              type: select
+              display: Reminder
+              width: 50
+              clearable: true
+              options:
+                15: '15 minutes before'
+                60: '1 hour before'
+                1440: '1 day before'
+                10080: '1 week before'
+          -
+            handle: description
+            field:
+              type: textarea
+              display: Notes
+  sidebar:
+    display: Sidebar
+    sections:
+      -
+        fields:
+          -
+            handle: completed
+            field:
+              type: toggle
+              display: Done
+          -
+            handle: priority
+            field:
+              type: button_group
+              display: Priority
+              default: normal
+              options:
+                low: Low
+                normal: Normal
+                high: High
+          -
+            handle: assigned_to
+            field:
+              type: users
+              display: 'Assigned to'
+              max_items: 1
+              mode: select
+          -
+            handle: contact
+            field:
+              type: crm_contacts
+              display: Contact
+              max_items: 1
+              mode: select
+          -
+            handle: company
+            field:
+              type: crm_companies
+              display: Company
+              max_items: 1
+              mode: select
