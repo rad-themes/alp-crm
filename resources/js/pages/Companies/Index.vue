@@ -48,7 +48,8 @@ defineProps({
             <Link :href="row.show_url" class="title-index-field">{{ row.name }}</Link>
         </template>
         <template #cell-website="{ value }">
-            <a v-if="value" :href="value" target="_blank" rel="noopener" class="hover:underline">{{ value }}</a>
+            <a v-if="value && /^https?:\/\//i.test(value)" :href="value" target="_blank" rel="noopener" class="hover:underline">{{ value }}</a>
+            <span v-else>{{ value }}</span>
         </template>
         <template #cell-status="{ row }">
             <StatusBadge :status="row.status" :label="row.status_label" />

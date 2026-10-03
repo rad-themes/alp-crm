@@ -172,4 +172,15 @@ class CompaniesNotesActionsTest extends TestCase
         $this->assertTrue($columns['phone']);
         $this->assertFalse($columns['email']);
     }
+
+    #[Test]
+    public function only_http_links_are_made_clickable_on_profiles(): void
+    {
+        $contact = Contact::factory()->create(['data' => ['website' => 'javascript:alert(document.cookie)', 'linkedin' => 'https://linkedin.com/in/maya']]);
+
+        $details = collect($this->actingAs($this->admin())->get(cp_route('radpack-crm.contacts.show', $contact))->viewData('page')['props']['details'])->keyBy('label');
+
+        $this->assertNull($details['Website']['url']);
+        $this->assertSame('https://linkedin.com/in/maya', $details['LinkedIn']['url']);
+    }
 }

@@ -61,7 +61,7 @@ Radpack CRM brings every feature of [Jetpack CRM](https://jetpackcrm.com) to Sta
 
 ## Requirements
 
-- Statamic 6, PHP 8.3+
+- Statamic 6, PHP 8.3+. **Statamic Core** is enough for one person: the site owner gets the whole CRM. To give team members access with CRM permissions you need **Statamic Pro**, because Core allows only one user and has no roles. The client portal pages also need Pro, through [Client Portal](https://github.com/rad-themes/client-portal).
 - A database (SQLite, MySQL, MariaDB or PostgreSQL), as for any Laravel app
 - A mail driver, for sending documents, emails and reminders
 - The Laravel scheduler (`* * * * * php artisan schedule:run`), for reminders, scheduled emails, campaigns, automations and syncing

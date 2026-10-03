@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 — 2026-10-03
+
+- Security: profile links from URL fields (such as Website or LinkedIn) are only clickable for `http`/`https` addresses. Values from forms, imports or the API could otherwise put a `javascript:` link in the Control Panel.
+- README: which Statamic edition you need. Core works for one person; team access with CRM permissions, and the client portal, need Statamic Pro.
+
 ## 1.0.1 — 2026-10-02
 
 - A **CRM** link at the top of the Control Panel sidebar, under Dashboard. Statamic lists addon sections last, so the CRM section alone was easy to miss.

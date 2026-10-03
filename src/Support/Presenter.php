@@ -66,7 +66,7 @@ class Presenter
                 'handle' => $handle,
                 'label' => __($field->display()),
                 'value' => self::formatValue($field, $values[$handle] ?? null),
-                'url' => in_array($field->get('input_type'), ['url'], true) ? ($values[$handle] ?? null) : null,
+                'url' => in_array($field->get('input_type'), ['url'], true) ? self::safeUrl($values[$handle] ?? null) : null,
             ])
             ->filter(fn (array $detail) => $detail['value'] !== '')
             ->values()
@@ -144,5 +144,14 @@ class Presenter
             'email' => __('Email'),
             'sms' => __('SMS'),
         ];
+    }
+
+    /**
+     * Only http(s) links: field values can come from forms, imports or the API,
+     * and a "javascript:" link would run in the Control Panel when clicked.
+     */
+    public static function safeUrl(mixed $url): ?string
+    {
+        return is_string($url) && preg_match('#^https?://#i', trim($url)) ? trim($url) : null;
     }
 }
