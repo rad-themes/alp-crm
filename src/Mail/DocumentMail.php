@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Mail;
+namespace RadThemes\AlpCrm\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use RadThemes\RadpackCrm\Email\MergeTags;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Email\MergeTags;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Emails a quote or invoice to the client, with the PDF attached and a link to view it online.
@@ -40,7 +40,7 @@ class DocumentMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'radpack-crm::mail.document',
+            markdown: 'alp-crm::mail.document',
             with: [
                 'document' => $this->document,
                 'isInvoice' => $this->document instanceof Invoice,

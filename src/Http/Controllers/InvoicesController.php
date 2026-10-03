@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Transaction;
 
 class InvoicesController extends DocumentsController
 {
@@ -67,8 +67,8 @@ class InvoicesController extends DocumentsController
     protected function urls(Quote|Invoice $document): array
     {
         return parent::urls($document) + [
-            'payment' => cp_route('radpack-crm.invoices.payments.store', $document),
-            'void' => cp_route('radpack-crm.invoices.void', $document),
+            'payment' => cp_route('alp-crm.invoices.payments.store', $document),
+            'void' => cp_route('alp-crm.invoices.void', $document),
         ];
     }
 
@@ -82,9 +82,9 @@ class InvoicesController extends DocumentsController
                 'reference' => $payment->reference,
                 'source' => $payment->source,
                 'status' => $payment->status,
-                'url' => cp_route('radpack-crm.transactions.edit', $payment),
+                'url' => cp_route('alp-crm.transactions.edit', $payment),
             ]),
-            'quote' => $document->quote ? ['number' => $document->quote->number, 'url' => cp_route('radpack-crm.quotes.show', $document->quote)] : null,
+            'quote' => $document->quote ? ['number' => $document->quote->number, 'url' => cp_route('alp-crm.quotes.show', $document->quote)] : null,
         ];
     }
 }

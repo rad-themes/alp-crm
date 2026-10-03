@@ -1,20 +1,20 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use RadThemes\RadpackCrm\Database\Factories\InvoiceFactory;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Concerns\HasLineItems;
-use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Numbering;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Database\Factories\InvoiceFactory;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Concerns\HasLineItems;
+use RadThemes\AlpCrm\Models\Concerns\LogsActivity;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Numbering;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * @property int $id

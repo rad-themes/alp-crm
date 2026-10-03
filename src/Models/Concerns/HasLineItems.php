@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models\Concerns;
+namespace RadThemes\AlpCrm\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\LineItem;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\LineItem;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Shared behaviour for quotes and invoices: line items, totals, client and public token.

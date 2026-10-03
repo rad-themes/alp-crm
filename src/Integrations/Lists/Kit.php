@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations\Lists;
+namespace RadThemes\AlpCrm\Integrations\Lists;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Kit (formerly ConvertKit), API v4.
@@ -57,6 +57,6 @@ class Kit implements MailingList
 
     private static function tagId(string $name): int
     {
-        return Cache::remember('radpack-crm.kit-tag.'.md5(mb_strtolower($name)), 86400, fn () => (int) self::api()->post('tags', ['name' => $name])->throw()->json('tag.id'));
+        return Cache::remember('alp-crm.kit-tag.'.md5(mb_strtolower($name)), 86400, fn () => (int) self::api()->post('tags', ['name' => $name])->throw()->json('tag.id'));
     }
 }

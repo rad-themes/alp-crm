@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Middleware;
+namespace RadThemes\AlpCrm\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\ApiKey;
+use RadThemes\AlpCrm\Models\ApiKey;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -30,7 +30,7 @@ class AuthenticateApiKey
             $key->forceFill(['last_used_at' => now()])->saveQuietly();
         }
 
-        $request->attributes->set('radpack_api_key', $key);
+        $request->attributes->set('alp_api_key', $key);
 
         return $next($request);
     }

@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
-use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Company;
 use Statamic\Http\Controllers\CP\ActionController;
 
 class CompanyActionController extends ActionController
 {
-    protected static $key = 'radpack-crm.companies';
+    protected static $key = 'alp-crm.companies';
 
     protected function getSelectedItems($items, $context)
     {

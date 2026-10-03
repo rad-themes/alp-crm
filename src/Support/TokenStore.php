@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\File;
@@ -57,6 +57,6 @@ class TokenStore
 
     private static function path(): string
     {
-        return storage_path('app/radpack-crm/tokens.enc');
+        return storage_path('app/alp-crm/tokens.enc');
     }
 }

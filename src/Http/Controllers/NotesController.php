@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Note;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Note;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 

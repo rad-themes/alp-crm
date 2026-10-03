@@ -1,15 +1,15 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Portal;
+namespace RadThemes\AlpCrm\Portal;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\File;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Transaction;
 use RadThemes\ClientPortal\Extensions;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\File;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Transaction;
 use Statamic\Contracts\Auth\User;
 
 /**
@@ -27,14 +27,14 @@ class PortalPages
         Extensions::page(
             'billing',
             __('Billing'),
-            fn (User $user) => view('radpack-crm::portal.billing', self::billing($user))->render(),
+            fn (User $user) => view('alp-crm::portal.billing', self::billing($user))->render(),
             fn (User $user) => self::documents(Invoice::query(), $user)->exists() || self::documents(Quote::query(), $user)->exists(),
         );
 
         Extensions::page(
             'files',
             __('Files'),
-            fn (User $user) => view('radpack-crm::portal.files', ['files' => self::files($user)->get()])->render(),
+            fn (User $user) => view('alp-crm::portal.files', ['files' => self::files($user)->get()])->render(),
             fn (User $user) => self::files($user)->exists(),
         );
     }

@@ -1,4 +1,4 @@
-@include('radpack-crm::portal._styles')
+@include('alp-crm::portal._styles')
 @php
     $badge = fn ($status) => match ($status) {
         'paid', 'accepted' => 'rp-badge rp-badge-green',
@@ -6,7 +6,7 @@
         'sent', 'partial' => 'rp-badge rp-badge-blue',
         default => 'rp-badge',
     };
-    $labels = \RadThemes\RadpackCrm\Support\Documents::statusLabels();
+    $labels = \RadThemes\AlpCrm\Support\Documents::statusLabels();
 @endphp
 
 <section class="rp-section">
@@ -40,11 +40,11 @@
                             <td>
                                 <div class="rp-actions">
                                     @if ($invoice->isPayable() && $invoice->balance() > 0)
-                                        <a class="rp-button" href="{{ \RadThemes\RadpackCrm\Support\Documents::publicUrl($invoice) }}">{{ __('View & pay') }}</a>
+                                        <a class="rp-button" href="{{ \RadThemes\AlpCrm\Support\Documents::publicUrl($invoice) }}">{{ __('View & pay') }}</a>
                                     @else
-                                        <a class="rp-link" href="{{ \RadThemes\RadpackCrm\Support\Documents::publicUrl($invoice) }}">{{ __('View') }}</a>
+                                        <a class="rp-link" href="{{ \RadThemes\AlpCrm\Support\Documents::publicUrl($invoice) }}">{{ __('View') }}</a>
                                     @endif
-                                    <a class="rp-link" href="{{ route('statamic.radpack-crm.public.invoice.pdf', $invoice->token) }}">PDF</a>
+                                    <a class="rp-link" href="{{ route('statamic.alp-crm.public.invoice.pdf', $invoice->token) }}">PDF</a>
                                 </div>
                             </td>
                         </tr>
@@ -84,11 +84,11 @@
                             <td>
                                 <div class="rp-actions">
                                     @if ($quote->canBeRespondedTo())
-                                        <a class="rp-button" href="{{ \RadThemes\RadpackCrm\Support\Documents::publicUrl($quote) }}">{{ __('Review') }}</a>
+                                        <a class="rp-button" href="{{ \RadThemes\AlpCrm\Support\Documents::publicUrl($quote) }}">{{ __('Review') }}</a>
                                     @else
-                                        <a class="rp-link" href="{{ \RadThemes\RadpackCrm\Support\Documents::publicUrl($quote) }}">{{ __('View') }}</a>
+                                        <a class="rp-link" href="{{ \RadThemes\AlpCrm\Support\Documents::publicUrl($quote) }}">{{ __('View') }}</a>
                                     @endif
-                                    <a class="rp-link" href="{{ route('statamic.radpack-crm.public.quote.pdf', $quote->token) }}">PDF</a>
+                                    <a class="rp-link" href="{{ route('statamic.alp-crm.public.quote.pdf', $quote->token) }}">PDF</a>
                                 </div>
                             </td>
                         </tr>

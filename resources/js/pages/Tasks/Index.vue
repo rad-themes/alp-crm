@@ -47,7 +47,7 @@ const when = (task) => (task.starts_at ? (task.all_day ? formatDate(task.starts_
         :action-url="actionUrl"
         sort-column="starts_at"
         sort-direction="asc"
-        preferences-prefix="radpack-crm.tasks"
+        preferences-prefix="alp-crm.tasks"
     >
         <template #cell-done="{ row }">
             <Checkbox solo :model-value="row.done" :disabled="!canEdit" :aria-label="__('Done')" @update:model-value="(done) => toggle(row, done)" />

@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations\Lists;
+namespace RadThemes\AlpCrm\Integrations\Lists;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Settings;
 
 class Mailchimp implements MailingList
 {
@@ -24,7 +24,7 @@ class Mailchimp implements MailingList
         $key = (string) Settings::secret('mailchimp_api_key');
         $dc = substr($key, strrpos($key, '-') + 1);
 
-        return Http::withBasicAuth('radpack', $key)->baseUrl("https://{$dc}.api.mailchimp.com/3.0")->acceptJson()->timeout(15);
+        return Http::withBasicAuth('alp-crm', $key)->baseUrl("https://{$dc}.api.mailchimp.com/3.0")->acceptJson()->timeout(15);
     }
 
     public static function sync(Contact $contact): void

@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Transaction;
 
 /**
  * The "Sales" tab on contact and company profiles.
@@ -26,7 +26,7 @@ class Sales
             'status' => $doc->displayStatus(),
             'status_label' => Documents::statusLabels()[$doc->displayStatus()] ?? $doc->displayStatus(),
             'date' => $doc->issue_date?->format('Y-m-d'),
-            'url' => cp_route("radpack-crm.{$plural}.show", $doc),
+            'url' => cp_route("alp-crm.{$plural}.show", $doc),
         ];
 
         $contactId = $record instanceof Contact ? $record->id : null;
@@ -42,12 +42,12 @@ class Sales
                 'amount' => $transaction->money(),
                 'status' => $transaction->status,
                 'date' => $transaction->date?->format('Y-m-d'),
-                'url' => cp_route('radpack-crm.transactions.edit', $transaction),
+                'url' => cp_route('alp-crm.transactions.edit', $transaction),
             ]),
             'create' => [
-                'quote' => cp_route('radpack-crm.quotes.create', array_filter(['contact' => $contactId])),
-                'invoice' => cp_route('radpack-crm.invoices.create', array_filter(['contact' => $contactId])),
-                'transaction' => cp_route('radpack-crm.transactions.create', array_filter(['contact' => $contactId])),
+                'quote' => cp_route('alp-crm.quotes.create', array_filter(['contact' => $contactId])),
+                'invoice' => cp_route('alp-crm.invoices.create', array_filter(['contact' => $contactId])),
+                'transaction' => cp_route('alp-crm.transactions.create', array_filter(['contact' => $contactId])),
             ],
         ];
     }

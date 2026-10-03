@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0 — 2026-10-03
+
+- **Renamed from Radpack CRM to Alp CRM** (`rad-themes/alp-crm`, namespace `RadThemes\AlpCrm`), because Radpack is Statamic's brand. See "Upgrading from Radpack CRM" in the README.
+- URLs, settings, config and environment variables use `alp-crm` / `ALP_CRM_`; webhook headers are `X-Alp-Event` and `X-Alp-Signature`.
+- Polymorphic rows (notes, activity, tags, line items) now store stable aliases such as `crm_contact` instead of PHP class names; a migration converts existing rows, including those written by Radpack CRM.
+
 ## 1.0.2 — 2026-10-03
 
 - Security: profile links from URL fields (such as Website or LinkedIn) are only clickable for `http`/`https` addresses. Values from forms, imports or the API could otherwise put a `javascript:` link in the Control Panel.

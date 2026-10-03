@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models\Concerns;
+namespace RadThemes\AlpCrm\Models\Concerns;
 
-use RadThemes\RadpackCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Events\CrmEvent;
 
 /**
  * Fires "<type>.created", "<type>.updated" and "<type>.deleted" CRM events.

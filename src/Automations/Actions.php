@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Automations;
+namespace RadThemes\AlpCrm\Automations;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Email\EmailSender;
-use RadThemes\RadpackCrm\Email\MergeTags;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\EmailTemplate;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Support\Payload;
-use RadThemes\RadpackCrm\Support\SafeUrl;
+use RadThemes\AlpCrm\Email\EmailSender;
+use RadThemes\AlpCrm\Email\MergeTags;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\EmailTemplate;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Support\Payload;
+use RadThemes\AlpCrm\Support\SafeUrl;
 
 /**
  * What an automation can do. Each action returns a short description for the run log,
@@ -171,7 +171,7 @@ class Actions
         $lines = array_filter([
             MergeTags::render((string) ($action['message'] ?? ''), MergeTags::for($contact)),
             $contact ? __('Contact: :name <:email>', ['name' => $contact->name(), 'email' => $contact->email]) : null,
-            $contact ? cp_route('radpack-crm.contacts.show', $contact) : null,
+            $contact ? cp_route('alp-crm.contacts.show', $contact) : null,
         ]);
 
         Mail::raw(implode("\n\n", $lines), fn ($message) => $message->to($to)->subject($subject));

@@ -1,10 +1,10 @@
-# Radpack CRM for Statamic
+# Alp CRM for Statamic
 
-![The Radpack CRM dashboard](docs/screenshots/dashboard.png)
+![The Alp CRM dashboard](docs/screenshots/dashboard.png)
 
 A complete, free CRM inside your Statamic Control Panel: contacts and companies, quotes and invoices with online payments, tasks and a calendar, email campaigns, segments, automations, reports, a REST API and webhooks. It's built with Statamic's own UI components, so it looks and feels like the rest of the Control Panel.
 
-Radpack CRM brings every feature of [Jetpack CRM](https://jetpackcrm.com) to Statamic, including all of its paid extensions, free and open source under the MIT license.
+Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#upgrading-from-radpack-crm)). It brings every feature of [Jetpack CRM](https://jetpackcrm.com) to Statamic, including all of its paid extensions, free and open source under the MIT license.
 
 ## Screenshots
 
@@ -69,7 +69,7 @@ Radpack CRM brings every feature of [Jetpack CRM](https://jetpackcrm.com) to Sta
 ## Installation
 
 ```bash
-composer require rad-themes/radpack-crm
+composer require rad-themes/alp-crm
 php artisan migrate
 ```
 
@@ -90,7 +90,7 @@ Settings, integrations, API keys and webhooks need **Configure addons**.
 
 ## Settings
 
-**CRM → Settings** (or **Tools → Addons → Radpack CRM → Settings**):
+**CRM → Settings** (or **Tools → Addons → Alp CRM → Settings**):
 
 - **Business:** name, logo, address and tax number shown on quotes, invoices and emails
 - **Sales:** default currency, numbering, payment terms, quote validity, tax rates, and default terms
@@ -103,32 +103,42 @@ Settings, integrations, API keys and webhooks need **Configure addons**.
 
 ### Keeping secrets out of git
 
-Settings are saved in `resources/addons/radpack-crm.yaml`, which is usually in version control. API secrets can come from your `.env` instead, and those values take precedence:
+Settings are saved in `resources/addons/alp-crm.yaml`, which is usually in version control. API secrets can come from your `.env` instead, and those values take precedence:
 
 ```dotenv
-RADPACK_CRM_STRIPE_SECRET_KEY=
-RADPACK_CRM_STRIPE_WEBHOOK_SECRET=
-RADPACK_CRM_PAYPAL_CLIENT_ID=
-RADPACK_CRM_PAYPAL_SECRET=
-RADPACK_CRM_MAILCHIMP_API_KEY=
-RADPACK_CRM_KIT_API_KEY=
-RADPACK_CRM_AWEBER_CLIENT_ID=
-RADPACK_CRM_AWEBER_CLIENT_SECRET=
-RADPACK_CRM_TWILIO_SID=
-RADPACK_CRM_TWILIO_TOKEN=
-RADPACK_CRM_GOOGLE_CLIENT_ID=
-RADPACK_CRM_GOOGLE_CLIENT_SECRET=
+ALP_CRM_STRIPE_SECRET_KEY=
+ALP_CRM_STRIPE_WEBHOOK_SECRET=
+ALP_CRM_PAYPAL_CLIENT_ID=
+ALP_CRM_PAYPAL_SECRET=
+ALP_CRM_MAILCHIMP_API_KEY=
+ALP_CRM_KIT_API_KEY=
+ALP_CRM_AWEBER_CLIENT_ID=
+ALP_CRM_AWEBER_CLIENT_SECRET=
+ALP_CRM_TWILIO_SID=
+ALP_CRM_TWILIO_TOKEN=
+ALP_CRM_GOOGLE_CLIENT_ID=
+ALP_CRM_GOOGLE_CLIENT_SECRET=
 ```
 
-Publish the config with `php artisan vendor:publish --tag=radpack-crm-config` to change it. It also sets the disk for client files (`RADPACK_CRM_FILES_DISK`, default `local`, which is private).
+Publish the config with `php artisan vendor:publish --tag=alp-crm-config` to change it. It also sets the disk for client files (`ALP_CRM_FILES_DISK`, default `local`, which is private).
 
-OAuth tokens (AWeber, Google) and sync positions are stored encrypted in `storage/app/radpack-crm`.
+OAuth tokens (AWeber, Google) and sync positions are stored encrypted in `storage/app/alp-crm`.
+
+## Upgrading from Radpack CRM
+
+Alp CRM is the same addon under a new name: Radpack is Statamic's own brand, so we renamed ours. Your data stays where it is.
+
+1. `composer remove rad-themes/radpack-crm && composer require rad-themes/alp-crm`
+2. `php artisan migrate` (stored references are converted to the new name)
+3. Rename `resources/addons/radpack-crm.yaml` to `resources/addons/alp-crm.yaml`, and `storage/app/radpack-crm` to `storage/app/alp-crm`
+4. Rename any `RADPACK_CRM_…` variables in `.env` to `ALP_CRM_…`, and a published `config/radpack-crm.php` to `config/alp-crm.php`
+5. Update integrations that call the CRM: the API is now at `/api/alp-crm/v1`, public links at `/!/alp-crm/…`, webhook headers are `X-Alp-Event` and `X-Alp-Signature`, and Stripe's webhook URL is `/!/alp-crm/webhooks/stripe`. Existing API keys keep working.
 
 ## Using the CRM
 
 ### Custom fields
 
-Contacts, companies, tasks and transactions use blueprints. Edit them in **Fields → Blueprints**, under *Radpack-crm*, to add fields such as "Industry" or "Birthday". Custom fields show on profiles, in segments and automations (as *Custom field*), as merge tags (`{{ industry }}`), and in imports, exports and the API.
+Contacts, companies, tasks and transactions use blueprints. Edit them in **Fields → Blueprints**, under *Alp-crm*, to add fields such as "Industry" or "Birthday". Custom fields show on profiles, in segments and automations (as *Custom field*), as merge tags (`{{ industry }}`), and in imports, exports and the API.
 
 ### Lead capture
 
@@ -197,8 +207,8 @@ Install [Client Portal](https://github.com/rad-themes/client-portal) (`composer 
 Create an API key in **CRM → Settings → API & webhooks**. Keys can be read-only. Send the key as a bearer token:
 
 ```bash
-curl https://example.com/api/radpack-crm/v1/contacts?tag=vip \
-  -H "Authorization: Bearer rpk_…"
+curl https://example.com/api/alp-crm/v1/contacts?tag=vip \
+  -H "Authorization: Bearer alp_…"
 ```
 
 | Endpoint | |
@@ -231,11 +241,11 @@ Add webhooks in **CRM → Settings → API & webhooks**, or subscribe through th
 }
 ```
 
-Verify the `X-Radpack-Signature` header, an HMAC-SHA256 of the raw body using the webhook's signing secret:
+Verify the `X-Alp-Signature` header, an HMAC-SHA256 of the raw body using the webhook's signing secret:
 
 ```php
 $expected = 'sha256='.hash_hmac('sha256', $request->getContent(), $secret);
-abort_unless(hash_equals($expected, $request->header('X-Radpack-Signature')), 401);
+abort_unless(hash_equals($expected, $request->header('X-Alp-Signature')), 401);
 ```
 
 Events: `contact.created`, `contact.updated`, `contact.status_changed`, `contact.tagged`, `contact.unsubscribed`, `contact.deleted`, `company.created`, `company.updated`, `company.deleted`, `form.submitted`, `quote.created`, `quote.sent`, `quote.accepted`, `quote.declined`, `invoice.created`, `invoice.sent`, `invoice.paid`, `transaction.created`, `task.created`, `task.completed`.
@@ -245,7 +255,7 @@ Events: `contact.created`, `contact.updated`, `contact.status_changed`, `contact
 Every event above is also a Laravel event:
 
 ```php
-use RadThemes\RadpackCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Events\CrmEvent;
 
 Event::listen(function (CrmEvent $event) {
     if ($event->name === 'invoice.paid') {
@@ -257,7 +267,7 @@ Event::listen(function (CrmEvent $event) {
 Add your own automation step:
 
 ```php
-use RadThemes\RadpackCrm\Automations\Actions;
+use RadThemes\AlpCrm\Automations\Actions;
 
 Actions::extend('slack', 'Post to Slack', function (array $step, ?Contact $contact, array $context) {
     // …
@@ -265,7 +275,7 @@ Actions::extend('slack', 'Post to Slack', function (array $step, ?Contact $conta
 });
 ```
 
-Data lives in your database in `crm_*` tables, with Eloquent models in `RadThemes\RadpackCrm\Models`.
+Data lives in your database in `crm_*` tables, with Eloquent models in `RadThemes\AlpCrm\Models`.
 
 ## Scheduled commands
 
@@ -273,10 +283,10 @@ Registered automatically; they need the Laravel scheduler.
 
 | Command | When |
 |---|---|
-| `radpack-crm:send-emails` | Every minute: scheduled emails and campaign batches |
-| `radpack-crm:automations` | Every minute: delayed automation steps |
-| `radpack-crm:task-reminders` | Every five minutes |
-| `radpack-crm:sync` | Hourly: Stripe, PayPal and Google imports that are turned on. Run `radpack-crm:sync stripe` (or `paypal`, `google`, `lists`) any time. |
+| `alp-crm:send-emails` | Every minute: scheduled emails and campaign batches |
+| `alp-crm:automations` | Every minute: delayed automation steps |
+| `alp-crm:task-reminders` | Every five minutes |
+| `alp-crm:sync` | Hourly: Stripe, PayPal and Google imports that are turned on. Run `alp-crm:sync stripe` (or `paypal`, `google`, `lists`) any time. |
 
 ## Translations
 
@@ -288,7 +298,7 @@ Every string goes through Laravel's translator, using the English text as the ke
 - Client files are stored on a private disk and always downloaded, never displayed inline.
 - Saved client passwords and OAuth tokens are encrypted with your app key; API keys are stored as hashes.
 - Stripe webhooks and campaign links are signed and verified.
-- Webhooks and automation webhook steps won't call private or local addresses (set `RADPACK_CRM_ALLOW_PRIVATE_WEBHOOKS=true` to allow them, e.g. in development).
+- Webhooks and automation webhook steps won't call private or local addresses (set `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS=true` to allow them, e.g. in development).
 - Email templates can't run Antlers tags or PHP.
 
 Found a security issue? Please report it privately through the repository's **Security → Report a vulnerability** page rather than opening an issue.

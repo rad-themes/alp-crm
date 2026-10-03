@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -8,12 +8,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Jobs\DeliverWebhook;
-use RadThemes\RadpackCrm\Models\ApiKey;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Webhook;
-use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Jobs\DeliverWebhook;
+use RadThemes\AlpCrm\Models\ApiKey;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Webhook;
+use RadThemes\AlpCrm\Support\Payload;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 
@@ -26,8 +26,8 @@ class DeveloperController extends CpController
     {
         $this->authorize('configure addons');
 
-        return Inertia::render('radpack-crm::Developer', [
-            'apiUrl' => url('api/radpack-crm/v1'),
+        return Inertia::render('alp-crm::Developer', [
+            'apiUrl' => url('api/alp-crm/v1'),
             'keys' => ApiKey::latest('id')->get()->map(fn (ApiKey $key) => [
                 'id' => $key->id,
                 'name' => $key->name,
@@ -35,7 +35,7 @@ class DeveloperController extends CpController
                 'can_write' => $key->can_write,
                 'last_used_at' => $key->last_used_at?->toIso8601String(),
                 'created_at' => $key->created_at?->toIso8601String(),
-                'destroy_url' => cp_route('radpack-crm.developer.keys.destroy', $key),
+                'destroy_url' => cp_route('alp-crm.developer.keys.destroy', $key),
             ]),
             'webhooks' => Webhook::latest('id')->get()->map(fn (Webhook $webhook) => [
                 'id' => $webhook->id,
@@ -48,16 +48,16 @@ class DeveloperController extends CpController
                 'last_status' => $webhook->last_status,
                 'last_error' => $webhook->last_error,
                 'last_sent_at' => $webhook->last_sent_at?->toIso8601String(),
-                'update_url' => cp_route('radpack-crm.developer.webhooks.update', $webhook),
-                'destroy_url' => cp_route('radpack-crm.developer.webhooks.destroy', $webhook),
-                'test_url' => cp_route('radpack-crm.developer.webhooks.test', $webhook),
+                'update_url' => cp_route('alp-crm.developer.webhooks.update', $webhook),
+                'destroy_url' => cp_route('alp-crm.developer.webhooks.destroy', $webhook),
+                'test_url' => cp_route('alp-crm.developer.webhooks.test', $webhook),
             ]),
             'events' => collect(CrmEvent::names())->map(fn ($label, $value) => ['value' => $value, 'label' => $label])->values(),
             'urls' => [
-                'storeKey' => cp_route('radpack-crm.developer.keys.store'),
-                'storeWebhook' => cp_route('radpack-crm.developer.webhooks.store'),
+                'storeKey' => cp_route('alp-crm.developer.keys.store'),
+                'storeWebhook' => cp_route('alp-crm.developer.webhooks.store'),
             ],
-            'newKey' => session('radpack_new_api_key'),
+            'newKey' => session('alp_new_api_key'),
         ]);
     }
 
@@ -69,7 +69,7 @@ class DeveloperController extends CpController
 
         [, $plain] = ApiKey::generate($data['name'], $data['can_write'] ?? true, User::current()->id());
 
-        return back()->with('radpack_new_api_key', $plain);
+        return back()->with('alp_new_api_key', $plain);
     }
 
     public function destroyKey(ApiKey $key): RedirectResponse

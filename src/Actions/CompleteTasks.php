@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Actions;
+namespace RadThemes\AlpCrm\Actions;
 
-use RadThemes\RadpackCrm\Models\Task;
+use RadThemes\AlpCrm\Models\Task;
 use Statamic\Actions\Action;
 
 class CompleteTasks extends Action

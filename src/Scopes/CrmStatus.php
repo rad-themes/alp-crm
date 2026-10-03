@@ -1,9 +1,9 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Scopes;
+namespace RadThemes\AlpCrm\Scopes;
 
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
 use Statamic\Query\Scopes\Filter;
 
 class CrmStatus extends Filter
@@ -41,7 +41,7 @@ class CrmStatus extends Filter
 
     public function visibleTo($key)
     {
-        return in_array($key, ['radpack-crm.contacts', 'radpack-crm.companies'], true);
+        return in_array($key, ['alp-crm.contacts', 'alp-crm.companies'], true);
     }
 
     /**

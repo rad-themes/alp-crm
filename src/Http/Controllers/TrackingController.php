@@ -1,14 +1,14 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use RadThemes\RadpackCrm\Email\Tracking;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\CampaignRecipient;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Email\Tracking;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\CampaignRecipient;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Public endpoints used by campaign emails: open pixel, click redirect and unsubscribe.
@@ -50,7 +50,7 @@ class TrackingController
     {
         $recipient = CampaignRecipient::with('contact')->where('token', $token)->firstOrFail();
 
-        return response()->view('radpack-crm::unsubscribe', [
+        return response()->view('alp-crm::unsubscribe', [
             'recipient' => $recipient,
             'done' => $recipient->contact?->unsubscribed_at !== null,
             'business' => Settings::business(),
@@ -71,7 +71,7 @@ class TrackingController
             $contact->logActivity('unsubscribed', __('Unsubscribed from emails via “:campaign”', ['campaign' => $recipient->campaign?->name]));
         }
 
-        return response()->view('radpack-crm::unsubscribe', [
+        return response()->view('alp-crm::unsubscribe', [
             'recipient' => $recipient,
             'done' => true,
             'business' => Settings::business(),

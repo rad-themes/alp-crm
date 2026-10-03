@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * POSTs CRM events to a URL, signed with HMAC-SHA256 (header X-Radpack-Signature: sha256=<hex>).
+ * POSTs CRM events to a URL, signed with HMAC-SHA256 (header X-Alp-Signature: sha256=<hex>).
  *
  * @property int $id
  * @property string $name

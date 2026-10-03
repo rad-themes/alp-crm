@@ -1,20 +1,20 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Email\CampaignMail;
-use RadThemes\RadpackCrm\Email\CampaignSender;
-use RadThemes\RadpackCrm\Email\ContactMail;
-use RadThemes\RadpackCrm\Email\Tracking;
-use RadThemes\RadpackCrm\Models\Campaign;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Email;
-use RadThemes\RadpackCrm\Models\Segment;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Email\CampaignMail;
+use RadThemes\AlpCrm\Email\CampaignSender;
+use RadThemes\AlpCrm\Email\ContactMail;
+use RadThemes\AlpCrm\Email\Tracking;
+use RadThemes\AlpCrm\Models\Campaign;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Email;
+use RadThemes\AlpCrm\Models\Segment;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class EmailMarketingTest extends TestCase
 {
@@ -24,7 +24,7 @@ class EmailMarketingTest extends TestCase
         Mail::fake();
         $contact = Contact::factory()->create(['first_name' => 'Maya', 'email' => 'maya@example.com', 'company_id' => Company::factory()->create(['name' => 'Northwind'])->id]);
 
-        $this->actingAs($this->admin())->post(cp_route('radpack-crm.contacts.emails.store', $contact), [
+        $this->actingAs($this->admin())->post(cp_route('alp-crm.contacts.emails.store', $contact), [
             'subject' => 'Hello {{ first_name }}',
             'body' => "Hi {{ first_name }} at {{ company }}.\n\n{{ collection:pages }}{{ title }}{{ /collection:pages }}",
         ])->assertRedirect()->assertSessionHas('success');
@@ -47,19 +47,19 @@ class EmailMarketingTest extends TestCase
         $contact = Contact::factory()->create(['email' => 'leo@example.com']);
         $admin = $this->admin();
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.contacts.emails.store', $contact), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.contacts.emails.store', $contact), [
             'subject' => 'Later', 'body' => 'Body', 'send_at' => now()->addHour()->format('Y-m-d\TH:i'),
         ])->assertSessionHas('success', 'Email scheduled');
-        $this->actingAs($admin)->post(cp_route('radpack-crm.contacts.emails.store', $contact), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.contacts.emails.store', $contact), [
             'subject' => 'Cancelled', 'body' => 'Body', 'send_at' => now()->addHour()->format('Y-m-d\TH:i'),
         ]);
-        $this->actingAs($admin)->post(cp_route('radpack-crm.emails.cancel', Email::where('subject', 'Cancelled')->sole()));
+        $this->actingAs($admin)->post(cp_route('alp-crm.emails.cancel', Email::where('subject', 'Cancelled')->sole()));
 
-        $this->artisan('radpack-crm:send-emails');
+        $this->artisan('alp-crm:send-emails');
         Mail::assertNothingSent();
 
         $this->travel(61)->minutes();
-        $this->artisan('radpack-crm:send-emails');
+        $this->artisan('alp-crm:send-emails');
 
         Mail::assertSent(ContactMail::class, 1);
         $this->assertSame('sent', Email::where('subject', 'Later')->sole()->status);
@@ -72,7 +72,7 @@ class EmailMarketingTest extends TestCase
         $contact = Contact::factory()->create();
 
         $this->actingAs($this->makeUser('viewer@example.com', 'crm_viewer'))
-            ->postJson(cp_route('radpack-crm.contacts.emails.store', $contact), ['subject' => 'Hi', 'body' => 'Hi'])
+            ->postJson(cp_route('alp-crm.contacts.emails.store', $contact), ['subject' => 'Hi', 'body' => 'Hi'])
             ->assertForbidden();
     }
 
@@ -117,20 +117,20 @@ class EmailMarketingTest extends TestCase
         $admin = $this->admin();
         $conditions = [['field' => 'status', 'operator' => 'is', 'value' => 'customer']];
 
-        $this->actingAs($admin)->postJson(cp_route('radpack-crm.segments.preview'), ['match' => 'all', 'conditions' => $conditions])
+        $this->actingAs($admin)->postJson(cp_route('alp-crm.segments.preview'), ['match' => 'all', 'conditions' => $conditions])
             ->assertOk()->assertJson(['count' => 1, 'sample' => [$customer->name()]]);
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.segments.store'), ['name' => 'Customers', 'match' => 'all', 'conditions' => $conditions])
-            ->assertRedirect(cp_route('radpack-crm.segments.index'));
+        $this->actingAs($admin)->post(cp_route('alp-crm.segments.store'), ['name' => 'Customers', 'match' => 'all', 'conditions' => $conditions])
+            ->assertRedirect(cp_route('alp-crm.segments.index'));
         $segment = Segment::sole();
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.segments.tag', $segment), ['tags' => ['Newsletter', 'Q4']])
+        $this->actingAs($admin)->post(cp_route('alp-crm.segments.tag', $segment), ['tags' => ['Newsletter', 'Q4']])
             ->assertSessionHas('success', 'Tagged 1 contact');
         $this->assertEqualsCanonicalizing(['Newsletter', 'Q4'], $customer->fresh()->tags->pluck('name')->all());
 
         // The segment filter on the contacts list.
         $filters = base64_encode(json_encode(['crm_segment' => ['segment' => (string) $segment->id]]));
-        $this->actingAs($admin)->getJson(cp_route('radpack-crm.contacts.json', ['filters' => $filters]))
+        $this->actingAs($admin)->getJson(cp_route('alp-crm.contacts.json', ['filters' => $filters]))
             ->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $customer->id);
     }
 
@@ -146,12 +146,12 @@ class EmailMarketingTest extends TestCase
         Contact::factory()->create(['status' => 'lead', 'email' => 'lead@example.com']);
 
         $admin = $this->admin();
-        $this->actingAs($admin)->post(cp_route('radpack-crm.campaigns.store'), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.campaigns.store'), [
             'name' => 'October news', 'subject' => 'News for {{ first_name }}', 'body' => 'Hi {{ first_name }}, [read more](https://example.com/news)', 'segment_id' => $segment->id,
         ]);
         $campaign = Campaign::sole();
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.campaigns.send', $campaign))->assertRedirect(cp_route('radpack-crm.campaigns.show', $campaign));
+        $this->actingAs($admin)->post(cp_route('alp-crm.campaigns.send', $campaign))->assertRedirect(cp_route('alp-crm.campaigns.show', $campaign));
 
         $campaign->refresh();
         $this->assertSame('sent', $campaign->status);
@@ -163,18 +163,18 @@ class EmailMarketingTest extends TestCase
         $mail = (new CampaignMail($recipient))->render();
         $this->assertStringContainsString('Hi Maya', $mail);
         $this->assertStringContainsString(e(Tracking::clickUrl($recipient, 'https://example.com/news')), $mail);
-        $this->assertStringContainsString(route('statamic.radpack-crm.unsubscribe', $recipient->token), $mail);
+        $this->assertStringContainsString(route('statamic.alp-crm.unsubscribe', $recipient->token), $mail);
         $this->assertSame('News for Maya', (new CampaignMail($recipient))->envelope()->subject);
 
         // Sending twice does nothing.
-        $this->actingAs($admin)->post(cp_route('radpack-crm.campaigns.send', $campaign))->assertStatus(422);
+        $this->actingAs($admin)->post(cp_route('alp-crm.campaigns.send', $campaign))->assertStatus(422);
     }
 
     #[Test]
     public function scheduled_campaigns_send_in_batches(): void
     {
         Mail::fake();
-        config(['statamic.radpack-crm' => []]);
+        config(['statamic.alp-crm' => []]);
         Contact::factory()->count(3)->sequence(fn ($s) => ['email' => "c{$s->index}@example.com"])->create();
         $campaign = Campaign::create(['name' => 'Batch', 'subject' => 'S', 'body' => 'B', 'status' => 'scheduled', 'scheduled_at' => now()->addMinutes(5)]);
 
@@ -197,7 +197,7 @@ class EmailMarketingTest extends TestCase
         $campaign = Campaign::create(['name' => 'N', 'subject' => 'S', 'body' => 'B', 'status' => 'sent']);
         $recipient = $campaign->recipients()->create(['contact_id' => $contact->id, 'email' => 'maya@example.com', 'token' => str_repeat('a', 40), 'status' => 'sent', 'sent_at' => now()]);
 
-        $this->get(route('statamic.radpack-crm.track.open', $recipient->token))->assertOk()->assertHeader('Content-Type', 'image/gif');
+        $this->get(route('statamic.alp-crm.track.open', $recipient->token))->assertOk()->assertHeader('Content-Type', 'image/gif');
         $this->assertNotNull($recipient->fresh()->opened_at);
 
         $this->get(Tracking::clickUrl($recipient, 'https://example.com/a?b=1'))->assertRedirect('https://example.com/a?b=1');
@@ -205,12 +205,12 @@ class EmailMarketingTest extends TestCase
         $this->assertSame(2, $recipient->fresh()->clicks);
 
         // Tampered links are not an open redirect.
-        $this->get(route('statamic.radpack-crm.track.click', ['token' => $recipient->token, 'u' => base64_encode('https://evil.test'), 's' => 'nope']))->assertNotFound();
+        $this->get(route('statamic.alp-crm.track.click', ['token' => $recipient->token, 'u' => base64_encode('https://evil.test'), 's' => 'nope']))->assertNotFound();
 
         // Link scanners (GET) don't unsubscribe; the button (POST) does.
-        $this->get(route('statamic.radpack-crm.unsubscribe', $recipient->token))->assertOk()->assertSee('Unsubscribe?');
+        $this->get(route('statamic.alp-crm.unsubscribe', $recipient->token))->assertOk()->assertSee('Unsubscribe?');
         $this->assertNull($contact->fresh()->unsubscribed_at);
-        $this->post(route('statamic.radpack-crm.unsubscribe.confirm', $recipient->token))->assertOk()->assertSee('You’re unsubscribed', false);
+        $this->post(route('statamic.alp-crm.unsubscribe.confirm', $recipient->token))->assertOk()->assertSee('You’re unsubscribed', false);
         $this->assertNotNull($contact->fresh()->unsubscribed_at);
 
         $stats = $campaign->stats();
@@ -226,24 +226,24 @@ class EmailMarketingTest extends TestCase
         $campaign = Campaign::create(['name' => 'N', 'subject' => 'S', 'body' => 'B', 'status' => 'draft']);
 
         foreach ([
-            cp_route('radpack-crm.campaigns.index'), cp_route('radpack-crm.campaigns.create'), cp_route('radpack-crm.campaigns.edit', $campaign),
-            cp_route('radpack-crm.segments.index'), cp_route('radpack-crm.segments.create'),
-            cp_route('radpack-crm.email-templates.index'), cp_route('radpack-crm.email-templates.create'),
+            cp_route('alp-crm.campaigns.index'), cp_route('alp-crm.campaigns.create'), cp_route('alp-crm.campaigns.edit', $campaign),
+            cp_route('alp-crm.segments.index'), cp_route('alp-crm.segments.create'),
+            cp_route('alp-crm.email-templates.index'), cp_route('alp-crm.email-templates.create'),
         ] as $url) {
             $this->actingAs($admin)->get($url)->assertOk();
         }
 
         $campaign->update(['status' => 'sent']);
-        $this->actingAs($admin)->get(cp_route('radpack-crm.campaigns.edit', $campaign))->assertRedirect(cp_route('radpack-crm.campaigns.show', $campaign));
-        $this->actingAs($admin)->get(cp_route('radpack-crm.campaigns.show', $campaign))->assertOk();
+        $this->actingAs($admin)->get(cp_route('alp-crm.campaigns.edit', $campaign))->assertRedirect(cp_route('alp-crm.campaigns.show', $campaign));
+        $this->actingAs($admin)->get(cp_route('alp-crm.campaigns.show', $campaign))->assertOk();
     }
 
     #[Test]
     public function email_templates_can_be_created(): void
     {
-        $this->actingAs($this->admin())->postJson(cp_route('radpack-crm.email-templates.store'), [
+        $this->actingAs($this->admin())->postJson(cp_route('alp-crm.email-templates.store'), [
             'name' => 'Follow-up', 'subject' => 'Great to meet you', 'body' => 'Hi {{ first_name }}',
-        ])->assertOk()->assertJson(['redirect' => cp_route('radpack-crm.email-templates.index')]);
+        ])->assertOk()->assertJson(['redirect' => cp_route('alp-crm.email-templates.index')]);
 
         $this->assertDatabaseHas('crm_email_templates', ['name' => 'Follow-up', 'body' => 'Hi {{ first_name }}']);
     }

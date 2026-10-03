@@ -1,15 +1,15 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers\Api;
+namespace RadThemes\AlpCrm\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Note;
-use RadThemes\RadpackCrm\Models\Webhook;
-use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Note;
+use RadThemes\AlpCrm\Models\Webhook;
+use RadThemes\AlpCrm\Support\Payload;
 
 class MiscController
 {
@@ -18,7 +18,7 @@ class MiscController
      */
     public function me(Request $request): JsonResponse
     {
-        $key = $request->attributes->get('radpack_api_key');
+        $key = $request->attributes->get('alp_api_key');
 
         return response()->json(['data' => ['name' => $key->name, 'can_write' => $key->can_write, 'site' => config('app.name')]]);
     }
@@ -53,7 +53,7 @@ class MiscController
         ]);
 
         $webhook = Webhook::create([
-            'name' => $data['name'] ?? $request->attributes->get('radpack_api_key')->name.' · '.$data['event'],
+            'name' => $data['name'] ?? $request->attributes->get('alp_api_key')->name.' · '.$data['event'],
             'url' => $data['url'],
             'events' => [$data['event']],
             'source' => 'api',

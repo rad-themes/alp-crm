@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Capture;
+namespace RadThemes\AlpCrm\Capture;
 
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
 
 /**
  * Turns submitted data (a form, a registration, an import row…) into a contact,

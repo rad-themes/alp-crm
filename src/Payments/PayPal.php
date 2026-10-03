@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Payments;
+namespace RadThemes\AlpCrm\Payments;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Capture\LeadCapture;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Settings;
-use RadThemes\RadpackCrm\Support\TokenStore;
+use RadThemes\AlpCrm\Capture\LeadCapture;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Settings;
+use RadThemes\AlpCrm\Support\TokenStore;
 use RuntimeException;
 
 /**
@@ -31,7 +31,7 @@ class PayPal
 
     private static function api(): PendingRequest
     {
-        $token = Cache::remember('radpack-crm.paypal-token.'.md5(self::base().Settings::secret('paypal_client_id')), 3000, fn () => Http::asForm()
+        $token = Cache::remember('alp-crm.paypal-token.'.md5(self::base().Settings::secret('paypal_client_id')), 3000, fn () => Http::asForm()
             ->withBasicAuth((string) Settings::secret('paypal_client_id'), (string) Settings::secret('paypal_secret'))
             ->post(self::base().'/v1/oauth2/token', ['grant_type' => 'client_credentials'])
             ->throw()->json('access_token'));
@@ -56,7 +56,7 @@ class PayPal
                 'amount' => ['currency_code' => strtoupper($invoice->currency), 'value' => self::amount($invoice->balance(), $invoice->currency)],
             ]],
             'payment_source' => ['paypal' => ['experience_context' => [
-                'return_url' => route('statamic.radpack-crm.public.invoice.paid', ['token' => $invoice->token, 'gateway' => 'paypal']),
+                'return_url' => route('statamic.alp-crm.public.invoice.paid', ['token' => $invoice->token, 'gateway' => 'paypal']),
                 'cancel_url' => Documents::publicUrl($invoice),
                 'user_action' => 'PAY_NOW',
             ]]],

@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Console;
+namespace RadThemes\AlpCrm\Console;
 
 use Illuminate\Console\Command;
-use RadThemes\RadpackCrm\Email\CampaignSender;
+use RadThemes\AlpCrm\Email\CampaignSender;
 
 class SendEmails extends Command
 {
-    protected $signature = 'radpack-crm:send-emails';
+    protected $signature = 'alp-crm:send-emails';
 
     protected $description = 'Send scheduled CRM emails and the next batch of each running campaign';
 

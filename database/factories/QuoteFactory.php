@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Database\Factories;
+namespace RadThemes\AlpCrm\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Quote;
 
 /**
  * @extends Factory<Quote>

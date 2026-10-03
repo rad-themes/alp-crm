@@ -1,18 +1,18 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use RadThemes\RadpackCrm\Database\Factories\CompanyFactory;
-use RadThemes\RadpackCrm\Models\Concerns\FiresCrmEvents;
-use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
-use RadThemes\RadpackCrm\Models\Concerns\HasTags;
-use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Database\Factories\CompanyFactory;
+use RadThemes\AlpCrm\Models\Concerns\FiresCrmEvents;
+use RadThemes\AlpCrm\Models\Concerns\HasBlueprint;
+use RadThemes\AlpCrm\Models\Concerns\HasTags;
+use RadThemes\AlpCrm\Models\Concerns\LogsActivity;
+use RadThemes\AlpCrm\Support\Settings;
 use Statamic\Facades\User;
 
 /**

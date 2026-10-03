@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Note;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Note;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class CompaniesNotesActionsTest extends TestCase
 {
@@ -16,7 +16,7 @@ class CompaniesNotesActionsTest extends TestCase
     {
         $admin = $this->admin();
 
-        $this->actingAs($admin)->postJson(cp_route('radpack-crm.companies.store'), [
+        $this->actingAs($admin)->postJson(cp_route('alp-crm.companies.store'), [
             'name' => 'Globex',
             'status' => 'customer',
             'website' => 'https://globex.test',
@@ -26,14 +26,14 @@ class CompaniesNotesActionsTest extends TestCase
         $company = Company::firstOrFail();
         Contact::factory()->count(2)->create(['company_id' => $company->id]);
 
-        $this->actingAs($admin)->getJson(cp_route('radpack-crm.companies.json'))
+        $this->actingAs($admin)->getJson(cp_route('alp-crm.companies.json'))
             ->assertOk()
             ->assertJsonPath('data.0.name', 'Globex')
             ->assertJsonPath('data.0.contacts_count', 2);
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.companies.show', $company))
+        $this->actingAs($admin)->get(cp_route('alp-crm.companies.show', $company))
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('radpack-crm::Companies/Show')
+                ->component('alp-crm::Companies/Show')
                 ->where('company.tags', ['Enterprise'])
                 ->has('contacts', 2));
     }
@@ -42,7 +42,7 @@ class CompaniesNotesActionsTest extends TestCase
     public function company_names_are_required(): void
     {
         $this->actingAs($this->admin())
-            ->postJson(cp_route('radpack-crm.companies.store'), ['status' => 'lead'])
+            ->postJson(cp_route('alp-crm.companies.store'), ['status' => 'lead'])
             ->assertJsonValidationErrors('name');
     }
 
@@ -52,7 +52,7 @@ class CompaniesNotesActionsTest extends TestCase
         $company = Company::factory()->create();
         $contact = Contact::factory()->create(['company_id' => $company->id]);
 
-        $this->actingAs($this->admin())->delete(cp_route('radpack-crm.companies.destroy', $company))->assertRedirect(cp_route('radpack-crm.companies.index'));
+        $this->actingAs($this->admin())->delete(cp_route('alp-crm.companies.destroy', $company))->assertRedirect(cp_route('alp-crm.companies.index'));
 
         $this->assertSame(0, Company::count());
         $this->assertNull($contact->fresh()->company_id);
@@ -65,7 +65,7 @@ class CompaniesNotesActionsTest extends TestCase
         $editor = $this->makeUser('editor@example.com', 'crm_editor');
 
         $this->actingAs($editor)
-            ->post(cp_route('radpack-crm.notes.store', ['contact', $contact->id]), ['type' => 'call', 'body' => 'Followed up on the quote.'])
+            ->post(cp_route('alp-crm.notes.store', ['contact', $contact->id]), ['type' => 'call', 'body' => 'Followed up on the quote.'])
             ->assertRedirect();
 
         $note = Note::firstOrFail();
@@ -73,7 +73,7 @@ class CompaniesNotesActionsTest extends TestCase
         $this->assertNotNull($contact->fresh()->last_contacted_at);
         $this->assertSame('note_added', $contact->activities()->first()->event);
 
-        $this->actingAs($editor)->delete(cp_route('radpack-crm.notes.destroy', $note))->assertRedirect();
+        $this->actingAs($editor)->delete(cp_route('alp-crm.notes.destroy', $note))->assertRedirect();
         $this->assertSame(0, Note::count());
     }
 
@@ -83,11 +83,11 @@ class CompaniesNotesActionsTest extends TestCase
         $company = Company::factory()->create();
 
         $this->actingAs($this->admin())
-            ->post(cp_route('radpack-crm.notes.store', ['company', $company->id]), ['type' => 'telepathy', 'body' => ''])
+            ->post(cp_route('alp-crm.notes.store', ['company', $company->id]), ['type' => 'telepathy', 'body' => ''])
             ->assertSessionHasErrors(['type', 'body']);
 
         $this->actingAs($this->makeUser('viewer@example.com', 'crm_viewer'))
-            ->postJson(cp_route('radpack-crm.notes.store', ['company', $company->id]), ['type' => 'note', 'body' => 'Hi'])
+            ->postJson(cp_route('alp-crm.notes.store', ['company', $company->id]), ['type' => 'note', 'body' => 'Hi'])
             ->assertForbidden();
     }
 
@@ -98,7 +98,7 @@ class CompaniesNotesActionsTest extends TestCase
         $ids = $contacts->pluck('id')->all();
         $admin = $this->admin();
         $run = fn (string $action, array $values = [], ?array $selections = null) => $this->actingAs($admin)->postJson(
-            cp_route('radpack-crm.contacts.actions.run'),
+            cp_route('alp-crm.contacts.actions.run'),
             ['action' => $action, 'selections' => $selections ?? $ids, 'values' => $values],
         );
 
@@ -118,7 +118,7 @@ class CompaniesNotesActionsTest extends TestCase
         $contact = Contact::factory()->create();
 
         $this->actingAs($this->makeUser('editor@example.com', 'crm_editor'))
-            ->postJson(cp_route('radpack-crm.contacts.actions.run'), ['action' => 'crm_delete', 'selections' => [$contact->id], 'values' => []])
+            ->postJson(cp_route('alp-crm.contacts.actions.run'), ['action' => 'crm_delete', 'selections' => [$contact->id], 'values' => []])
             ->assertForbidden();
 
         $this->assertSame(1, Contact::count());
@@ -144,17 +144,17 @@ class CompaniesNotesActionsTest extends TestCase
         Contact::factory()->count(2)->lead()->create();
         Contact::factory()->customer()->create();
 
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.dashboard'))
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.dashboard'))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('radpack-crm::Dashboard')
+                ->component('alp-crm::Dashboard')
                 ->where('stats.0.value', 3)
                 ->where('stats.1.value', 1)
                 ->where('statuses.0', ['value' => 'lead', 'label' => 'Lead', 'total' => 2])
                 ->has('recentContacts', 3)
                 ->has('activity', 4));
 
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.home'))->assertRedirect(cp_route('radpack-crm.dashboard'));
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.home'))->assertRedirect(cp_route('alp-crm.dashboard'));
     }
 
     #[Test]
@@ -163,12 +163,12 @@ class CompaniesNotesActionsTest extends TestCase
         $admin = $this->admin();
 
         foreach (['contacts', 'companies', 'quotes', 'invoices', 'transactions', 'tasks'] as $listing) {
-            $this->actingAs($admin)->getJson(cp_route("radpack-crm.{$listing}.json", ['columns' => 'title,name,number,date']))
+            $this->actingAs($admin)->getJson(cp_route("alp-crm.{$listing}.json", ['columns' => 'title,name,number,date']))
                 ->assertOk()
                 ->assertJsonStructure(['meta' => ['columns' => [['field', 'label', 'sortable', 'visible']]]]);
         }
 
-        $columns = collect($this->actingAs($admin)->getJson(cp_route('radpack-crm.contacts.json', ['columns' => 'name,phone']))->json('meta.columns'))->pluck('visible', 'field');
+        $columns = collect($this->actingAs($admin)->getJson(cp_route('alp-crm.contacts.json', ['columns' => 'name,phone']))->json('meta.columns'))->pluck('visible', 'field');
         $this->assertTrue($columns['phone']);
         $this->assertFalse($columns['email']);
     }
@@ -178,7 +178,7 @@ class CompaniesNotesActionsTest extends TestCase
     {
         $contact = Contact::factory()->create(['data' => ['website' => 'javascript:alert(document.cookie)', 'linkedin' => 'https://linkedin.com/in/maya']]);
 
-        $details = collect($this->actingAs($this->admin())->get(cp_route('radpack-crm.contacts.show', $contact))->viewData('page')['props']['details'])->keyBy('label');
+        $details = collect($this->actingAs($this->admin())->get(cp_route('alp-crm.contacts.show', $contact))->viewData('page')['props']['details'])->keyBy('label');
 
         $this->assertNull($details['Website']['url']);
         $this->assertSame('https://linkedin.com/in/maya', $details['LinkedIn']['url']);

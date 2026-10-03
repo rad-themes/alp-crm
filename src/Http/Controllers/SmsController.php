@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Integrations\Twilio;
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Integrations\Twilio;
+use RadThemes\AlpCrm\Models\Contact;
 use Statamic\Http\Controllers\CP\CpController;
 use Throwable;
 

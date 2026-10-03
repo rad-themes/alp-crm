@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Settings;
 use Statamic\Http\Controllers\CP\CpController;
 
 /**
@@ -38,7 +38,7 @@ class ReportsController extends CpController
 
         $paid = Invoice::where('status', 'paid')->whereNotNull('paid_at')->when($from, fn ($query) => $query->where('paid_at', '>=', $from))->get(['issue_date', 'paid_at']);
 
-        return Inertia::render('radpack-crm::Reports', [
+        return Inertia::render('alp-crm::Reports', [
             'period' => $period,
             'periods' => [
                 ['value' => '30d', 'label' => __('Last 30 days')],
@@ -138,7 +138,7 @@ class ReportsController extends CpController
             ->sortDesc()->take(5)
             ->map(fn ($total, $contactId) => ($contact = Contact::find($contactId)) ? [
                 'name' => $contact->name(),
-                'url' => cp_route('radpack-crm.contacts.show', $contact),
+                'url' => cp_route('alp-crm.contacts.show', $contact),
                 'total' => Money::format((float) $total, $currency),
             ] : null)
             ->filter()->values()->all();

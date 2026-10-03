@@ -1,19 +1,19 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Email\ContactMail;
-use RadThemes\RadpackCrm\Models\Automation;
-use RadThemes\RadpackCrm\Models\AutomationRun;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\EmailTemplate;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Email\ContactMail;
+use RadThemes\AlpCrm\Models\Automation;
+use RadThemes\AlpCrm\Models\AutomationRun;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\EmailTemplate;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class AutomationsTest extends TestCase
 {
@@ -88,14 +88,14 @@ class AutomationsTest extends TestCase
         Mail::assertNothingSent();
 
         $this->travel(1)->days();
-        $this->artisan('radpack-crm:automations');
+        $this->artisan('alp-crm:automations');
         Mail::assertNothingSent();
 
         $this->travel(1)->days();
-        $this->artisan('radpack-crm:automations');
+        $this->artisan('alp-crm:automations');
         Mail::assertSent(ContactMail::class, fn ($mail) => $mail->mailSubject === 'Welcome Leo');
 
-        $this->artisan('radpack-crm:automations');
+        $this->artisan('alp-crm:automations');
         Mail::assertSent(ContactMail::class, 1);
     }
 
@@ -117,7 +117,7 @@ class AutomationsTest extends TestCase
 
         $automation->update(['active' => false]);
         $this->travel(2)->hours();
-        $this->artisan('radpack-crm:automations');
+        $this->artisan('alp-crm:automations');
         $this->assertSame('skipped', AutomationRun::where('step', 1)->sole()->status);
         Mail::assertNothingSent();
     }
@@ -159,25 +159,25 @@ class AutomationsTest extends TestCase
     {
         $admin = $this->admin();
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.automations.create', ['recipe' => 'quote_accepted']))->assertOk()
-            ->assertInertia(fn ($page) => $page->component('radpack-crm::Automations/Edit')->where('values.trigger', 'quote.accepted'));
+        $this->actingAs($admin)->get(cp_route('alp-crm.automations.create', ['recipe' => 'quote_accepted']))->assertOk()
+            ->assertInertia(fn ($page) => $page->component('alp-crm::Automations/Edit')->where('values.trigger', 'quote.accepted'));
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.automations.store'), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.automations.store'), [
             'name' => 'Welcome', 'active' => true, 'trigger' => 'form.submitted', 'trigger_options' => ['form' => 'contact', 'tag' => ''], 'match' => 'all', 'conditions' => [],
             'actions' => [['type' => 'send_email', 'template_id' => null, 'delay' => 1, 'delay_unit' => 'days']],
         ])->assertSessionHasErrors('actions.0.template_id');
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.automations.store'), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.automations.store'), [
             'name' => 'Welcome', 'active' => true, 'trigger' => 'form.submitted', 'trigger_options' => ['form' => 'contact', 'tag' => ''], 'match' => 'all', 'conditions' => [],
             'actions' => [['type' => 'create_task', 'title' => 'Call', 'due_in_days' => 1, 'delay' => 0, 'delay_unit' => 'minutes', 'evil' => 'x']],
-        ])->assertRedirect(cp_route('radpack-crm.automations.index'));
+        ])->assertRedirect(cp_route('alp-crm.automations.index'));
 
         $automation = Automation::sole();
         $this->assertSame(['form' => 'contact'], $automation->trigger_options);
         $this->assertArrayNotHasKey('evil', $automation->actions[0]);
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.automations.index'))->assertOk();
-        $this->actingAs($admin)->get(cp_route('radpack-crm.automations.edit', $automation))->assertOk();
+        $this->actingAs($admin)->get(cp_route('alp-crm.automations.index'))->assertOk();
+        $this->actingAs($admin)->get(cp_route('alp-crm.automations.edit', $automation))->assertOk();
     }
 
     #[Test]
@@ -187,8 +187,8 @@ class AutomationsTest extends TestCase
         $customer = Contact::factory()->create(['status' => 'customer']);
         Transaction::factory()->create(['contact_id' => $customer->id, 'amount' => 300, 'date' => today(), 'currency' => 'USD']);
 
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.reports', ['period' => '30d']))->assertOk()
-            ->assertInertia(fn ($page) => $page->component('radpack-crm::Reports')
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.reports', ['period' => '30d']))->assertOk()
+            ->assertInertia(fn ($page) => $page->component('alp-crm::Reports')
                 ->where('funnel.0.status', 'lead')
                 ->where('funnel.0.reached', 4)
                 ->where('kpis.0.value', '$300.00')

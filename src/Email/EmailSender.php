@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Email;
+namespace RadThemes\AlpCrm\Email;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Email;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Email;
 use Statamic\Facades\User;
 use Throwable;
 

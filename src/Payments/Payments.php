@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Payments;
+namespace RadThemes\AlpCrm\Payments;
 
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Online invoice payments.

@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Jobs;
+namespace RadThemes\AlpCrm\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -8,8 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Models\Webhook;
-use RadThemes\RadpackCrm\Support\SafeUrl;
+use RadThemes\AlpCrm\Models\Webhook;
+use RadThemes\AlpCrm\Support\SafeUrl;
 use Throwable;
 
 class DeliverWebhook implements ShouldQueue
@@ -51,10 +51,10 @@ class DeliverWebhook implements ShouldQueue
             $response = Http::timeout(10)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
-                    'User-Agent' => 'RadpackCRM-Webhooks/1.0',
-                    'X-Radpack-Event' => $this->body['event'],
-                    'X-Radpack-Delivery' => $this->body['id'],
-                    'X-Radpack-Signature' => $webhook->sign($json),
+                    'User-Agent' => 'AlpCRM-Webhooks/1.0',
+                    'X-Alp-Event' => $this->body['event'],
+                    'X-Alp-Delivery' => $this->body['id'],
+                    'X-Alp-Signature' => $webhook->sign($json),
                 ])
                 ->withBody($json, 'application/json')
                 ->post($webhook->url);

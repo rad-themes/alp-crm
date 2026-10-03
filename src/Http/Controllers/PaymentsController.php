@@ -1,15 +1,15 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Payments\Payments;
-use RadThemes\RadpackCrm\Payments\PayPal;
-use RadThemes\RadpackCrm\Payments\Stripe;
-use RadThemes\RadpackCrm\Support\Documents;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Payments\Payments;
+use RadThemes\AlpCrm\Payments\PayPal;
+use RadThemes\AlpCrm\Payments\Stripe;
+use RadThemes\AlpCrm\Support\Documents;
 use Throwable;
 
 /**
@@ -22,7 +22,7 @@ class PaymentsController
         $invoice = $this->invoice($token);
 
         if (! $invoice->isPayable() || $invoice->balance() <= 0 || ! isset(Payments::gateways()[$gateway])) {
-            return redirect()->to(Documents::publicUrl($invoice))->with('radpack_crm_status', __('This invoice can’t be paid online.'));
+            return redirect()->to(Documents::publicUrl($invoice))->with('alp_crm_status', __('This invoice can’t be paid online.'));
         }
 
         try {
@@ -30,7 +30,7 @@ class PaymentsController
         } catch (Throwable $e) {
             report($e);
 
-            return redirect()->to(Documents::publicUrl($invoice))->with('radpack_crm_status', __('Online payment isn’t available right now. Please try again later.'));
+            return redirect()->to(Documents::publicUrl($invoice))->with('alp_crm_status', __('Online payment isn’t available right now. Please try again later.'));
         }
     }
 
@@ -49,7 +49,7 @@ class PaymentsController
             report($e);
         }
 
-        return redirect()->to(Documents::publicUrl($invoice))->with('radpack_crm_status', $paid
+        return redirect()->to(Documents::publicUrl($invoice))->with('alp_crm_status', $paid
             ? __('Thank you, your payment has been received.')
             : __('We couldn’t confirm your payment yet. If you completed it, it will appear here shortly.'));
     }

@@ -1,16 +1,16 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Models\ApiKey;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Webhook;
-use RadThemes\RadpackCrm\Support\SafeUrl;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Models\ApiKey;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Webhook;
+use RadThemes\AlpCrm\Support\SafeUrl;
+use RadThemes\AlpCrm\Tests\TestCase;
 use Statamic\Events\UserRegistered;
 use Statamic\Facades\Addon;
 use Statamic\Facades\Form;
@@ -20,7 +20,7 @@ class IntegrationsTest extends TestCase
 {
     private function settings(array $values): void
     {
-        $addon = Addon::get('rad-themes/radpack-crm');
+        $addon = Addon::get('rad-themes/alp-crm');
         $addon->settings()->set($values)->save();
     }
 
@@ -28,7 +28,7 @@ class IntegrationsTest extends TestCase
     {
         $key ??= ApiKey::generate('Tests')[1];
 
-        return $this->withHeader('Authorization', "Bearer {$key}")->json($method, "/api/radpack-crm/v1/{$uri}", $data);
+        return $this->withHeader('Authorization', "Bearer {$key}")->json($method, "/api/alp-crm/v1/{$uri}", $data);
     }
 
     #[Test]
@@ -92,27 +92,27 @@ class IntegrationsTest extends TestCase
             ."leo@example.com;Leo;Martins;;Globex;Lead, Trade show;y\n"
             ."not-an-email;Bad;Row;;;;\n";
 
-        $response = $this->actingAs($admin)->post(cp_route('radpack-crm.import.upload'), [
+        $response = $this->actingAs($admin)->post(cp_route('alp-crm.import.upload'), [
             'type' => 'contacts', 'file' => UploadedFile::fake()->createWithContent('people.csv', $csv),
         ]);
         $response->assertRedirect();
         $token = basename(parse_url($response->headers->get('Location'), PHP_URL_PATH));
 
         $this->actingAs($admin)->get($response->headers->get('Location'))->assertOk()
-            ->assertInertia(fn ($page) => $page->component('radpack-crm::Import')
+            ->assertInertia(fn ($page) => $page->component('alp-crm::Import')
                 ->where('mapping', ['email', 'first_name', 'last_name', 'phone', 'company', 'tags', null])
                 ->where('preview.total', 3));
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.import.run', $token), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.import.run', $token), [
             'type' => 'contacts', 'mapping' => ['email', 'first_name', 'last_name', 'phone', 'company', 'tags', null], 'update' => true, 'tags' => ['Imported'],
-        ])->assertRedirect(cp_route('radpack-crm.contacts.index'))->assertSessionHas('info');
+        ])->assertRedirect(cp_route('alp-crm.contacts.index'))->assertSessionHas('info');
 
         $this->assertSame(2, Contact::count());
         $maya = Contact::findByEmail('maya@example.com');
         $this->assertSame(['Chen', '+44 1', 'Northwind'], [$maya->last_name, $maya->phone, $maya->company->name]);
         $this->assertEqualsCanonicalizing(['VIP', 'Imported'], $maya->tags->pluck('name')->all());
         $this->assertEqualsCanonicalizing(['Lead', 'Trade show', 'Imported'], Contact::findByEmail('leo@example.com')->tags->pluck('name')->all());
-        $this->assertFileDoesNotExist(storage_path("app/radpack-crm/imports/{$token}.csv"));
+        $this->assertFileDoesNotExist(storage_path("app/alp-crm/imports/{$token}.csv"));
     }
 
     #[Test]
@@ -121,7 +121,7 @@ class IntegrationsTest extends TestCase
         $contact = Contact::factory()->create(['first_name' => '=HYPERLINK("http://evil")', 'email' => 'a@example.com', 'company_id' => Company::factory()->create(['name' => 'Acme'])->id]);
         $contact->syncTags(['VIP']);
 
-        $csv = $this->actingAs($this->admin())->get(cp_route('radpack-crm.export', ['type' => 'contacts']))->assertOk()->streamedContent();
+        $csv = $this->actingAs($this->admin())->get(cp_route('alp-crm.export', ['type' => 'contacts']))->assertOk()->streamedContent();
 
         $this->assertStringContainsString("'=HYPERLINK", $csv);
         $this->assertStringContainsString('Acme', $csv);
@@ -131,8 +131,8 @@ class IntegrationsTest extends TestCase
     #[Test]
     public function the_api_requires_a_valid_key_and_respects_read_only_keys(): void
     {
-        $this->getJson('/api/radpack-crm/v1/contacts')->assertUnauthorized();
-        $this->withHeader('Authorization', 'Bearer nope')->getJson('/api/radpack-crm/v1/contacts')->assertUnauthorized();
+        $this->getJson('/api/alp-crm/v1/contacts')->assertUnauthorized();
+        $this->withHeader('Authorization', 'Bearer nope')->getJson('/api/alp-crm/v1/contacts')->assertUnauthorized();
 
         [, $readOnly] = ApiKey::generate('Reports', false);
         $this->api('GET', 'contacts', [], $readOnly)->assertOk();
@@ -194,7 +194,7 @@ class IntegrationsTest extends TestCase
             return $request->url() === 'https://hooks.example.com/crm'
                 && $request['event'] === 'contact.created'
                 && $request['data']['email'] === 'maya@example.com'
-                && $request->header('X-Radpack-Signature')[0] === $webhook->sign($request->body());
+                && $request->header('X-Alp-Signature')[0] === $webhook->sign($request->body());
         });
         Http::assertSent(fn ($request) => $request['event'] === 'contact.tagged' && $request['context']['tags'] === ['VIP']);
         Http::assertNotSent(fn ($request) => str_contains($request->url(), 'invoices'));
@@ -207,18 +207,18 @@ class IntegrationsTest extends TestCase
     #[Test]
     public function only_admins_manage_keys_and_webhooks(): void
     {
-        $this->actingAs($this->makeUser('editor@example.com', 'crm_editor'))->get(cp_route('radpack-crm.developer'))->assertRedirect();
+        $this->actingAs($this->makeUser('editor@example.com', 'crm_editor'))->get(cp_route('alp-crm.developer'))->assertRedirect();
 
         $admin = $this->makeUser('super@example.com');
         $admin->makeSuper()->save();
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.developer.keys.store'), ['name' => 'Zapier'])->assertSessionHas('radpack_new_api_key');
-        $plain = session('radpack_new_api_key');
+        $this->actingAs($admin)->post(cp_route('alp-crm.developer.keys.store'), ['name' => 'Zapier'])->assertSessionHas('alp_new_api_key');
+        $plain = session('alp_new_api_key');
         $this->assertNotNull(ApiKey::findByPlainKey($plain));
         $this->assertDatabaseMissing('crm_api_keys', ['key_hash' => $plain]);
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.developer.webhooks.store'), ['name' => 'Bad', 'url' => 'ftp://x', 'events' => ['contact.created']])->assertSessionHasErrors('url');
-        $this->actingAs($admin)->get(cp_route('radpack-crm.developer'))->assertOk();
+        $this->actingAs($admin)->post(cp_route('alp-crm.developer.webhooks.store'), ['name' => 'Bad', 'url' => 'ftp://x', 'events' => ['contact.created']])->assertSessionHasErrors('url');
+        $this->actingAs($admin)->get(cp_route('alp-crm.developer'))->assertOk();
     }
 
     #[Test]
@@ -235,7 +235,7 @@ class IntegrationsTest extends TestCase
         $this->assertStringStartsWith('Blocked', $local->fresh()->last_error);
         $this->assertStringStartsWith('Blocked', $metadata->fresh()->last_error);
 
-        config(['radpack-crm.allow_private_webhooks' => true]);
+        config(['alp-crm.allow_private_webhooks' => true]);
         $this->assertTrue(SafeUrl::allowed('http://127.0.0.1/'));
         $this->assertFalse(SafeUrl::allowed('file:///etc/passwd'));
     }

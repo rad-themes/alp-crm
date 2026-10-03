@@ -1,14 +1,14 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Support\Tasks;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Support\Tasks;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 
@@ -42,10 +42,10 @@ class CalendarController extends CpController
                 'title' => __(':number due', ['number' => $invoice->number]),
                 'date' => $invoice->due_date->toDateString(),
                 'overdue' => $invoice->isOverdue(),
-                'edit_url' => cp_route('radpack-crm.invoices.show', $invoice),
+                'edit_url' => cp_route('alp-crm.invoices.show', $invoice),
             ]);
 
-        return Inertia::render('radpack-crm::Calendar', [
+        return Inertia::render('alp-crm::Calendar', [
             'month' => $month->format('Y-m'),
             'monthLabel' => $month->isoFormat('MMMM YYYY'),
             'from' => $from->toDateString(),
@@ -54,12 +54,12 @@ class CalendarController extends CpController
             'weekStartsOn' => $from->dayOfWeek,
             'events' => $tasks->concat($invoices)->groupBy('date'),
             'urls' => [
-                'previous' => cp_route('radpack-crm.calendar', array_filter(['month' => $month->copy()->subMonth()->format('Y-m'), 'mine' => $mine ?: null])),
-                'next' => cp_route('radpack-crm.calendar', array_filter(['month' => $month->copy()->addMonth()->format('Y-m'), 'mine' => $mine ?: null])),
-                'today' => cp_route('radpack-crm.calendar', array_filter(['mine' => $mine ?: null])),
-                'toggleMine' => cp_route('radpack-crm.calendar', array_filter(['month' => $month->format('Y-m'), 'mine' => $mine ? null : 1])),
-                'create' => cp_route('radpack-crm.tasks.create'),
-                'tasks' => cp_route('radpack-crm.tasks.index'),
+                'previous' => cp_route('alp-crm.calendar', array_filter(['month' => $month->copy()->subMonth()->format('Y-m'), 'mine' => $mine ?: null])),
+                'next' => cp_route('alp-crm.calendar', array_filter(['month' => $month->copy()->addMonth()->format('Y-m'), 'mine' => $mine ?: null])),
+                'today' => cp_route('alp-crm.calendar', array_filter(['mine' => $mine ?: null])),
+                'toggleMine' => cp_route('alp-crm.calendar', array_filter(['month' => $month->format('Y-m'), 'mine' => $mine ? null : 1])),
+                'create' => cp_route('alp-crm.tasks.create'),
+                'tasks' => cp_route('alp-crm.tasks.index'),
             ],
             'mine' => $mine,
             'canEdit' => User::current()->can('edit crm'),

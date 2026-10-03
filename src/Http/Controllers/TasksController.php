@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Support\ListingColumns;
-use RadThemes\RadpackCrm\Support\Tasks;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Support\ListingColumns;
+use RadThemes\AlpCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
@@ -25,12 +25,12 @@ class TasksController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Tasks/Index', [
+        return Inertia::render('alp-crm::Tasks/Index', [
             'columns' => ListingColumns::for('tasks'),
-            'jsonUrl' => cp_route('radpack-crm.tasks.json'),
-            'createUrl' => cp_route('radpack-crm.tasks.create'),
-            'calendarUrl' => cp_route('radpack-crm.calendar'),
-            'actionUrl' => cp_route('radpack-crm.tasks.actions.run'),
+            'jsonUrl' => cp_route('alp-crm.tasks.json'),
+            'createUrl' => cp_route('alp-crm.tasks.create'),
+            'calendarUrl' => cp_route('alp-crm.calendar'),
+            'actionUrl' => cp_route('alp-crm.tasks.actions.run'),
             'view' => in_array($request->input('view'), self::VIEWS, true) ? $request->input('view') : 'mine',
             'views' => [
                 ['value' => 'mine', 'label' => __('My open tasks')],
@@ -101,7 +101,7 @@ class TasksController extends CpController
                 'company' => $request->filled('company') ? [$request->integer('company')] : ($contact?->company_id ? [$contact->company_id] : null),
                 'starts_at' => $start?->format('Y-m-d H:i'),
             ]))
-            ->submittingTo(cp_route('radpack-crm.tasks.store'), 'POST');
+            ->submittingTo(cp_route('alp-crm.tasks.store'), 'POST');
     }
 
     /**
@@ -114,7 +114,7 @@ class TasksController extends CpController
         $task = (new Task)->fillFromBlueprint(PublishForm::make(Task::blueprint())->submit($request->all()));
         $task->save();
 
-        return ['redirect' => $task->contact ? cp_route('radpack-crm.contacts.show', $task->contact) : cp_route('radpack-crm.tasks.index')];
+        return ['redirect' => $task->contact ? cp_route('alp-crm.contacts.show', $task->contact) : cp_route('alp-crm.tasks.index')];
     }
 
     public function edit(Task $task): PublishForm
@@ -125,7 +125,7 @@ class TasksController extends CpController
             ->icon('checkbox')
             ->title($task->title)
             ->values($task->blueprintValues())
-            ->submittingTo(cp_route('radpack-crm.tasks.update', $task));
+            ->submittingTo(cp_route('alp-crm.tasks.update', $task));
     }
 
     /**
@@ -137,7 +137,7 @@ class TasksController extends CpController
 
         $task->fillFromBlueprint(PublishForm::make(Task::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => cp_route('radpack-crm.tasks.index')];
+        return ['redirect' => cp_route('alp-crm.tasks.index')];
     }
 
     public function toggle(Request $request, Task $task): RedirectResponse
@@ -155,6 +155,6 @@ class TasksController extends CpController
 
         $task->delete();
 
-        return redirect()->to(cp_route('radpack-crm.tasks.index'));
+        return redirect()->to(cp_route('alp-crm.tasks.index'));
     }
 }

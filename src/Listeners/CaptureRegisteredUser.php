@@ -1,9 +1,9 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Listeners;
+namespace RadThemes\AlpCrm\Listeners;
 
-use RadThemes\RadpackCrm\Capture\LeadCapture;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Capture\LeadCapture;
+use RadThemes\AlpCrm\Support\Settings;
 use Statamic\Events\UserRegistered;
 
 /**

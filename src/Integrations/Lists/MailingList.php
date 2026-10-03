@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations\Lists;
+namespace RadThemes\AlpCrm\Integrations\Lists;
 
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Contact;
 
 /**
  * An email marketing service the CRM keeps subscribers in sync with.

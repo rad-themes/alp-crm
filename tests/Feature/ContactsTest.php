@@ -1,22 +1,22 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class ContactsTest extends TestCase
 {
     #[Test]
     public function guests_and_users_without_crm_access_are_kept_out(): void
     {
-        $this->get(cp_route('radpack-crm.contacts.index'))->assertRedirect();
+        $this->get(cp_route('alp-crm.contacts.index'))->assertRedirect();
 
         $this->actingAs($this->makeUser('nope@example.com', 'no_crm'))
-            ->getJson(cp_route('radpack-crm.contacts.index'))
+            ->getJson(cp_route('alp-crm.contacts.index'))
             ->assertForbidden();
     }
 
@@ -26,11 +26,11 @@ class ContactsTest extends TestCase
         $contact = Contact::factory()->create();
         $viewer = $this->makeUser('viewer@example.com', 'crm_viewer');
 
-        $this->actingAs($viewer)->get(cp_route('radpack-crm.contacts.index'))->assertOk();
-        $this->actingAs($viewer)->get(cp_route('radpack-crm.contacts.show', $contact))->assertOk();
-        $this->actingAs($viewer)->getJson(cp_route('radpack-crm.contacts.create'))->assertForbidden();
-        $this->actingAs($viewer)->postJson(cp_route('radpack-crm.contacts.store'), ['status' => 'lead'])->assertForbidden();
-        $this->actingAs($viewer)->deleteJson(cp_route('radpack-crm.contacts.destroy', $contact))->assertForbidden();
+        $this->actingAs($viewer)->get(cp_route('alp-crm.contacts.index'))->assertOk();
+        $this->actingAs($viewer)->get(cp_route('alp-crm.contacts.show', $contact))->assertOk();
+        $this->actingAs($viewer)->getJson(cp_route('alp-crm.contacts.create'))->assertForbidden();
+        $this->actingAs($viewer)->postJson(cp_route('alp-crm.contacts.store'), ['status' => 'lead'])->assertForbidden();
+        $this->actingAs($viewer)->deleteJson(cp_route('alp-crm.contacts.destroy', $contact))->assertForbidden();
     }
 
     #[Test]
@@ -42,7 +42,7 @@ class ContactsTest extends TestCase
         $alias->aliases()->create(['email' => 'bombe@bletchley.test']);
 
         $admin = $this->admin();
-        $json = fn (array $query) => $this->actingAs($admin)->getJson(cp_route('radpack-crm.contacts.json', $query))->assertOk()->json('data.*.name');
+        $json = fn (array $query) => $this->actingAs($admin)->getJson(cp_route('alp-crm.contacts.json', $query))->assertOk()->json('data.*.name');
 
         $this->assertSame(['Ada Lovelace', 'Alan Turing', 'Grace Hopper'], $json(['sort' => 'name', 'order' => 'asc']));
         $this->assertSame(['Grace Hopper'], $json(['search' => 'hopper']));
@@ -58,7 +58,7 @@ class ContactsTest extends TestCase
         $company = Company::factory()->create(['name' => 'Analytical Engines']);
         $admin = $this->admin();
 
-        $response = $this->actingAs($admin)->postJson(cp_route('radpack-crm.contacts.store'), [
+        $response = $this->actingAs($admin)->postJson(cp_route('alp-crm.contacts.store'), [
             'first_name' => 'Ada',
             'last_name' => 'Lovelace',
             'email' => 'Ada@Example.com',
@@ -73,7 +73,7 @@ class ContactsTest extends TestCase
         ])->assertOk();
 
         $contact = Contact::firstOrFail();
-        $response->assertJson(['redirect' => cp_route('radpack-crm.contacts.show', $contact)]);
+        $response->assertJson(['redirect' => cp_route('alp-crm.contacts.show', $contact)]);
 
         $this->assertSame('Ada', $contact->first_name);
         $this->assertSame('customer', $contact->status);
@@ -90,7 +90,7 @@ class ContactsTest extends TestCase
     public function validation_comes_from_the_blueprint(): void
     {
         $this->actingAs($this->admin())
-            ->postJson(cp_route('radpack-crm.contacts.store'), ['email' => 'not-an-email', 'status' => ''])
+            ->postJson(cp_route('alp-crm.contacts.store'), ['email' => 'not-an-email', 'status' => ''])
             ->assertJsonValidationErrors(['email', 'status']);
 
         $this->assertSame(0, Contact::count());
@@ -102,14 +102,14 @@ class ContactsTest extends TestCase
         $contact = Contact::factory()->lead()->create(['data' => ['city' => 'Paris', 'favourite_colour' => 'green']]);
         $contact->syncTags(['Old']);
 
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.contacts.edit', $contact))
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.contacts.edit', $contact))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
                 ->component('PublishForm')
                 ->where('values.city', 'Paris')
                 ->where('values.tags', ['Old']));
 
-        $this->actingAs($this->admin())->patchJson(cp_route('radpack-crm.contacts.update', $contact), array_merge($contact->blueprintValues(), [
+        $this->actingAs($this->admin())->patchJson(cp_route('alp-crm.contacts.update', $contact), array_merge($contact->blueprintValues(), [
             'status' => 'customer',
             'tags' => ['New'],
         ]))->assertOk();
@@ -128,10 +128,10 @@ class ContactsTest extends TestCase
         $contact = Contact::factory()->create(['first_name' => 'Ada', 'last_name' => 'Lovelace', 'company_id' => $company->id, 'data' => ['city' => 'London', 'country' => 'GBR']]);
         $contact->notes()->create(['type' => 'call', 'body' => 'Discussed the engine.']);
 
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.contacts.show', $contact))
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.contacts.show', $contact))
             ->assertOk()
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('radpack-crm::Contacts/Show')
+                ->component('alp-crm::Contacts/Show')
                 ->where('contact.name', 'Ada Lovelace')
                 ->where('contact.company.name', 'Analytical Engines')
                 ->where('notes.0.body', 'Discussed the engine.')
@@ -147,12 +147,29 @@ class ContactsTest extends TestCase
         $contact->syncTags(['VIP']);
 
         $this->actingAs($this->admin())
-            ->delete(cp_route('radpack-crm.contacts.destroy', $contact))
-            ->assertRedirect(cp_route('radpack-crm.contacts.index'));
+            ->delete(cp_route('alp-crm.contacts.destroy', $contact))
+            ->assertRedirect(cp_route('alp-crm.contacts.index'));
 
         $this->assertSame(0, Contact::count());
         $this->assertDatabaseCount('crm_activities', 0);
         $this->assertDatabaseCount('crm_notes', 0);
         $this->assertDatabaseCount('crm_taggables', 0);
+    }
+
+    #[Test]
+    public function polymorphic_rows_use_stable_aliases_and_old_class_names_are_migrated(): void
+    {
+        $contact = Contact::factory()->create();
+        $contact->syncTags(['VIP']);
+
+        $this->assertSame('crm_contact', \DB::table('crm_activities')->value('subject_type'));
+        $this->assertSame('crm_contact', \DB::table('crm_taggables')->value('taggable_type'));
+
+        // Rows written under the former name (Radpack CRM) are converted.
+        \DB::table('crm_activities')->update(['subject_type' => 'RadThemes\\RadpackCrm\\Models\\Contact']);
+        (require __DIR__.'/../../database/migrations/2026_10_03_000008_use_crm_morph_aliases.php')->up();
+
+        $this->assertSame('crm_contact', \DB::table('crm_activities')->value('subject_type'));
+        $this->assertTrue($contact->fresh()->activities()->exists());
     }
 }

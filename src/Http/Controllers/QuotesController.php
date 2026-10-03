@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
 use Statamic\Facades\User;
 
 class QuotesController extends DocumentsController
@@ -50,21 +50,21 @@ class QuotesController extends DocumentsController
 
         $invoice = Quote::with('items')->findOrFail($id)->convertToInvoice();
 
-        return redirect()->to(cp_route('radpack-crm.invoices.show', $invoice));
+        return redirect()->to(cp_route('alp-crm.invoices.show', $invoice));
     }
 
     protected function urls(Quote|Invoice $document): array
     {
         return parent::urls($document) + [
-            'respond' => cp_route('radpack-crm.quotes.respond', $document),
-            'convert' => cp_route('radpack-crm.quotes.convert', $document),
+            'respond' => cp_route('alp-crm.quotes.respond', $document),
+            'convert' => cp_route('alp-crm.quotes.convert', $document),
         ];
     }
 
     protected function extraShowProps(Quote|Invoice $document): array
     {
         return [
-            'invoice' => $document->invoice ? ['number' => $document->invoice->number, 'url' => cp_route('radpack-crm.invoices.show', $document->invoice)] : null,
+            'invoice' => $document->invoice ? ['number' => $document->invoice->number, 'url' => cp_route('alp-crm.invoices.show', $document->invoice)] : null,
             'responded' => $document->responded_at ? ['at' => $document->responded_at->toIso8601String(), 'by' => $document->responded_by] : null,
         ];
     }

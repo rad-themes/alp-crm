@@ -1,19 +1,19 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Automations\Actions;
-use RadThemes\RadpackCrm\Automations\Recipes;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Automation;
-use RadThemes\RadpackCrm\Models\AutomationRun;
-use RadThemes\RadpackCrm\Models\EmailTemplate;
-use RadThemes\RadpackCrm\Models\Segment;
+use RadThemes\AlpCrm\Automations\Actions;
+use RadThemes\AlpCrm\Automations\Recipes;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Automation;
+use RadThemes\AlpCrm\Models\AutomationRun;
+use RadThemes\AlpCrm\Models\EmailTemplate;
+use RadThemes\AlpCrm\Models\Segment;
 use Statamic\Facades\Form;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
@@ -27,7 +27,7 @@ class AutomationsController extends CpController
         $events = CrmEvent::names();
         $types = Actions::types();
 
-        return Inertia::render('radpack-crm::Automations/Index', [
+        return Inertia::render('alp-crm::Automations/Index', [
             'automations' => Automation::orderBy('name')->get()->map(fn (Automation $automation) => [
                 'id' => $automation->id,
                 'name' => $automation->name,
@@ -36,17 +36,17 @@ class AutomationsController extends CpController
                 'actions' => collect($automation->actions)->map(fn ($action) => $types[$action['type'] ?? ''] ?? '?')->all(),
                 'runs_count' => $automation->runs_count,
                 'last_run_at' => $automation->last_run_at?->toIso8601String(),
-                'edit_url' => cp_route('radpack-crm.automations.edit', $automation),
-                'toggle_url' => cp_route('radpack-crm.automations.toggle', $automation),
-                'destroy_url' => cp_route('radpack-crm.automations.destroy', $automation),
+                'edit_url' => cp_route('alp-crm.automations.edit', $automation),
+                'toggle_url' => cp_route('alp-crm.automations.toggle', $automation),
+                'destroy_url' => cp_route('alp-crm.automations.destroy', $automation),
             ]),
             'recipes' => collect(Recipes::all())->map(fn ($recipe, $key) => [
                 'label' => $recipe['label'],
                 'description' => $recipe['description'],
                 'icon' => $recipe['icon'],
-                'url' => cp_route('radpack-crm.automations.create', ['recipe' => $key]),
+                'url' => cp_route('alp-crm.automations.create', ['recipe' => $key]),
             ])->values(),
-            'createUrl' => cp_route('radpack-crm.automations.create'),
+            'createUrl' => cp_route('alp-crm.automations.create'),
             'canEdit' => User::current()->can('edit crm'),
         ]);
     }
@@ -66,7 +66,7 @@ class AutomationsController extends CpController
 
         Automation::create($this->validated($request));
 
-        return redirect()->to(cp_route('radpack-crm.automations.index'))->with('success', __('Automation saved'));
+        return redirect()->to(cp_route('alp-crm.automations.index'))->with('success', __('Automation saved'));
     }
 
     public function edit(Automation $automation): Response
@@ -82,7 +82,7 @@ class AutomationsController extends CpController
 
         $automation->update($this->validated($request));
 
-        return redirect()->to(cp_route('radpack-crm.automations.index'))->with('success', __('Automation saved'));
+        return redirect()->to(cp_route('alp-crm.automations.index'))->with('success', __('Automation saved'));
     }
 
     public function toggle(Automation $automation): RedirectResponse
@@ -100,12 +100,12 @@ class AutomationsController extends CpController
 
         $automation->delete();
 
-        return redirect()->to(cp_route('radpack-crm.automations.index'));
+        return redirect()->to(cp_route('alp-crm.automations.index'));
     }
 
     private function editor(Automation $automation): Response
     {
-        return Inertia::render('radpack-crm::Automations/Edit', Segment::editorOptions() + [
+        return Inertia::render('alp-crm::Automations/Edit', Segment::editorOptions() + [
             'title' => $automation->exists ? $automation->name : __('Create Automation'),
             'values' => [
                 'name' => $automation->name,
@@ -124,16 +124,16 @@ class AutomationsController extends CpController
             'runs' => $automation->exists ? $automation->runs()->with('contact')->latest('run_at')->latest('id')->limit(25)->get()->map(fn (AutomationRun $run) => [
                 'id' => $run->id,
                 'contact' => $run->contact?->name(),
-                'contact_url' => $run->contact ? cp_route('radpack-crm.contacts.show', $run->contact) : null,
+                'contact_url' => $run->contact ? cp_route('alp-crm.contacts.show', $run->contact) : null,
                 'step' => $run->step + 1,
                 'status' => $run->status,
                 'result' => $run->result,
                 'run_at' => $run->run_at?->toIso8601String(),
             ]) : [],
-            'submitUrl' => $automation->exists ? cp_route('radpack-crm.automations.update', $automation) : cp_route('radpack-crm.automations.store'),
+            'submitUrl' => $automation->exists ? cp_route('alp-crm.automations.update', $automation) : cp_route('alp-crm.automations.store'),
             'submitMethod' => $automation->exists ? 'patch' : 'post',
-            'destroyUrl' => $automation->exists ? cp_route('radpack-crm.automations.destroy', $automation) : null,
-            'cancelUrl' => cp_route('radpack-crm.automations.index'),
+            'destroyUrl' => $automation->exists ? cp_route('alp-crm.automations.destroy', $automation) : null,
+            'cancelUrl' => cp_route('alp-crm.automations.index'),
         ]);
     }
 

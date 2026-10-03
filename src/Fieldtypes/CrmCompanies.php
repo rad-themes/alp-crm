@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Fieldtypes;
+namespace RadThemes\AlpCrm\Fieldtypes;
 
-use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Company;
 use Statamic\CP\Column;
 use Statamic\Facades\User;
 use Statamic\Fieldtypes\Relationship;
@@ -28,7 +28,7 @@ class CrmCompanies extends Relationship
         $company = Company::find($id);
 
         return $company
-            ? ['id' => $company->id, 'title' => $company->name, 'edit_url' => cp_route('radpack-crm.companies.show', $company)]
+            ? ['id' => $company->id, 'title' => $company->name, 'edit_url' => cp_route('alp-crm.companies.show', $company)]
             : $this->invalidItemArray($id);
     }
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Jobs;
+namespace RadThemes\AlpCrm\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use RadThemes\RadpackCrm\Integrations\Lists\ListSync;
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Integrations\Lists\ListSync;
+use RadThemes\AlpCrm\Models\Contact;
 use Throwable;
 
 class SyncContactToLists implements ShouldBeUnique, ShouldQueue

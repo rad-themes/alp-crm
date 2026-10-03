@@ -1,5 +1,5 @@
 {
-    "name": "rad-themes/radpack-crm",
+    "name": "rad-themes/alp-crm",
     "description": "A free, full-featured CRM for Statamic: contacts, companies, quotes, invoices, tasks, email and more.",
     "type": "statamic-addon",
     "license": "MIT",
@@ -15,20 +15,20 @@
         "stripe",
         "paypal"
     ],
-    "homepage": "https://github.com/rad-themes/radpack-crm",
+    "homepage": "https://github.com/rad-themes/alp-crm",
     "support": {
-        "issues": "https://github.com/rad-themes/radpack-crm/issues",
-        "source": "https://github.com/rad-themes/radpack-crm"
+        "issues": "https://github.com/rad-themes/alp-crm/issues",
+        "source": "https://github.com/rad-themes/alp-crm"
     },
     "autoload": {
         "psr-4": {
-            "RadThemes\\RadpackCrm\\": "src",
-            "RadThemes\\RadpackCrm\\Database\\Factories\\": "database/factories"
+            "RadThemes\\AlpCrm\\": "src",
+            "RadThemes\\AlpCrm\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RadThemes\\RadpackCrm\\Tests\\": "tests"
+            "RadThemes\\AlpCrm\\Tests\\": "tests"
         }
     },
     "require": {
@@ -46,12 +46,12 @@
     },
     "extra": {
         "statamic": {
-            "name": "Radpack CRM",
+            "name": "Alp CRM",
             "description": "A free, full-featured CRM for Statamic."
         },
         "laravel": {
             "providers": [
-                "RadThemes\\RadpackCrm\\ServiceProvider"
+                "RadThemes\\AlpCrm\\ServiceProvider"
             ]
         }
     },

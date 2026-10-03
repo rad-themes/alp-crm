@@ -1,20 +1,20 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Http\Resources\CompanyResource;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Attachments;
-use RadThemes\RadpackCrm\Support\ListingColumns;
-use RadThemes\RadpackCrm\Support\Presenter;
-use RadThemes\RadpackCrm\Support\Sales;
-use RadThemes\RadpackCrm\Support\Tasks;
+use RadThemes\AlpCrm\Http\Resources\CompanyResource;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Attachments;
+use RadThemes\AlpCrm\Support\ListingColumns;
+use RadThemes\AlpCrm\Support\Presenter;
+use RadThemes\AlpCrm\Support\Sales;
+use RadThemes\AlpCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -33,14 +33,14 @@ class CompaniesController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Companies/Index', [
-            'filters' => Scope::filters('radpack-crm.companies', ['model' => 'company']),
+        return Inertia::render('alp-crm::Companies/Index', [
+            'filters' => Scope::filters('alp-crm.companies', ['model' => 'company']),
             'columns' => ListingColumns::for('companies'),
-            'jsonUrl' => cp_route('radpack-crm.companies.json'),
-            'actionUrl' => cp_route('radpack-crm.companies.actions.run'),
-            'createUrl' => cp_route('radpack-crm.companies.create'),
-            'importUrl' => cp_route('radpack-crm.import.create', ['type' => 'companies']),
-            'exportUrl' => cp_route('radpack-crm.export', ['type' => 'companies']),
+            'jsonUrl' => cp_route('alp-crm.companies.json'),
+            'actionUrl' => cp_route('alp-crm.companies.actions.run'),
+            'createUrl' => cp_route('alp-crm.companies.create'),
+            'importUrl' => cp_route('alp-crm.import.create', ['type' => 'companies']),
+            'exportUrl' => cp_route('alp-crm.export', ['type' => 'companies']),
             'canEdit' => User::current()->can('edit crm'),
         ]);
     }
@@ -73,7 +73,7 @@ class CompaniesController extends CpController
             ->icon('building-generic')
             ->title(__('Create Company'))
             ->values(['status' => 'lead'])
-            ->submittingTo(cp_route('radpack-crm.companies.store'), 'POST');
+            ->submittingTo(cp_route('alp-crm.companies.store'), 'POST');
     }
 
     /**
@@ -86,7 +86,7 @@ class CompaniesController extends CpController
         $company = (new Company)->fillFromBlueprint(PublishForm::make(Company::blueprint())->submit($request->all()));
         $company->save();
 
-        return ['redirect' => cp_route('radpack-crm.companies.show', $company)];
+        return ['redirect' => cp_route('alp-crm.companies.show', $company)];
     }
 
     public function show(Company $company): Response
@@ -95,7 +95,7 @@ class CompaniesController extends CpController
 
         $company->load(['tags', 'contacts', 'notes', 'activities']);
 
-        return Inertia::render('radpack-crm::Companies/Show', Attachments::for($company) + [
+        return Inertia::render('alp-crm::Companies/Show', Attachments::for($company) + [
             'company' => [
                 'id' => $company->id,
                 'name' => $company->name,
@@ -114,7 +114,7 @@ class CompaniesController extends CpController
                 'name' => $contact->name(),
                 'email' => $contact->email,
                 'status_label' => Presenter::optionLabel(Contact::blueprint(), 'status', $contact->status),
-                'url' => cp_route('radpack-crm.contacts.show', $contact),
+                'url' => cp_route('alp-crm.contacts.show', $contact),
             ]),
             'details' => Presenter::details(Company::blueprint(), $company->blueprintValues(), ['name', 'email', 'phone', 'website', 'status', 'owner', 'tags']),
             'notes' => Presenter::notes($company->notes),
@@ -123,12 +123,12 @@ class CompaniesController extends CpController
             'activities' => Presenter::activities($company->activities),
             'noteTypes' => Presenter::noteTypes(),
             'urls' => [
-                'edit' => cp_route('radpack-crm.companies.edit', $company),
-                'destroy' => cp_route('radpack-crm.companies.destroy', $company),
-                'notes' => cp_route('radpack-crm.notes.store', ['company', $company->id]),
-                'index' => cp_route('radpack-crm.companies.index'),
-                'createTask' => cp_route('radpack-crm.tasks.create', ['company' => $company->id]),
-                'createContact' => cp_route('radpack-crm.contacts.create'),
+                'edit' => cp_route('alp-crm.companies.edit', $company),
+                'destroy' => cp_route('alp-crm.companies.destroy', $company),
+                'notes' => cp_route('alp-crm.notes.store', ['company', $company->id]),
+                'index' => cp_route('alp-crm.companies.index'),
+                'createTask' => cp_route('alp-crm.tasks.create', ['company' => $company->id]),
+                'createContact' => cp_route('alp-crm.contacts.create'),
             ],
             'canEdit' => User::current()->can('edit crm'),
         ]);
@@ -142,7 +142,7 @@ class CompaniesController extends CpController
             ->icon('building-generic')
             ->title($company->name)
             ->values($company->blueprintValues())
-            ->submittingTo(cp_route('radpack-crm.companies.update', $company));
+            ->submittingTo(cp_route('alp-crm.companies.update', $company));
     }
 
     /**
@@ -154,7 +154,7 @@ class CompaniesController extends CpController
 
         $company->fillFromBlueprint(PublishForm::make(Company::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => cp_route('radpack-crm.companies.show', $company)];
+        return ['redirect' => cp_route('alp-crm.companies.show', $company)];
     }
 
     public function destroy(Company $company): RedirectResponse
@@ -163,6 +163,6 @@ class CompaniesController extends CpController
 
         $company->delete();
 
-        return redirect()->route('statamic.cp.radpack-crm.companies.index');
+        return redirect()->route('statamic.cp.alp-crm.companies.index');
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\EmailTemplate;
+use RadThemes\AlpCrm\Models\EmailTemplate;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
@@ -17,16 +17,16 @@ class EmailTemplatesController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Email/Templates', [
+        return Inertia::render('alp-crm::Email/Templates', [
             'templates' => EmailTemplate::orderBy('name')->get()->map(fn (EmailTemplate $template) => [
                 'id' => $template->id,
                 'name' => $template->name,
                 'subject' => $template->subject,
                 'updated_at' => $template->updated_at?->toIso8601String(),
-                'edit_url' => cp_route('radpack-crm.email-templates.edit', $template),
-                'destroy_url' => cp_route('radpack-crm.email-templates.destroy', $template),
+                'edit_url' => cp_route('alp-crm.email-templates.edit', $template),
+                'destroy_url' => cp_route('alp-crm.email-templates.destroy', $template),
             ]),
-            'createUrl' => cp_route('radpack-crm.email-templates.create'),
+            'createUrl' => cp_route('alp-crm.email-templates.create'),
             'canEdit' => User::current()->can('edit crm'),
         ]);
     }
@@ -39,7 +39,7 @@ class EmailTemplatesController extends CpController
             ->icon('mail-chat-bubble-text')
             ->title(__('Create Email Template'))
             ->values(['body' => "Hi {{ first_name }},\n\n\n\nThanks,\n{{ business_name }}"])
-            ->submittingTo(cp_route('radpack-crm.email-templates.store'), 'POST');
+            ->submittingTo(cp_route('alp-crm.email-templates.store'), 'POST');
     }
 
     /**
@@ -51,7 +51,7 @@ class EmailTemplatesController extends CpController
 
         (new EmailTemplate)->fillFromBlueprint(PublishForm::make(EmailTemplate::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => cp_route('radpack-crm.email-templates.index')];
+        return ['redirect' => cp_route('alp-crm.email-templates.index')];
     }
 
     public function edit(EmailTemplate $emailTemplate): PublishForm
@@ -62,7 +62,7 @@ class EmailTemplatesController extends CpController
             ->icon('mail-chat-bubble-text')
             ->title($emailTemplate->name)
             ->values($emailTemplate->blueprintValues())
-            ->submittingTo(cp_route('radpack-crm.email-templates.update', $emailTemplate));
+            ->submittingTo(cp_route('alp-crm.email-templates.update', $emailTemplate));
     }
 
     /**
@@ -74,7 +74,7 @@ class EmailTemplatesController extends CpController
 
         $emailTemplate->fillFromBlueprint(PublishForm::make(EmailTemplate::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => cp_route('radpack-crm.email-templates.index')];
+        return ['redirect' => cp_route('alp-crm.email-templates.index')];
     }
 
     public function destroy(EmailTemplate $emailTemplate): RedirectResponse

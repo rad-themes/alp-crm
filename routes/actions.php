@@ -4,13 +4,13 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
-use RadThemes\RadpackCrm\Http\Controllers\PaymentsController;
-use RadThemes\RadpackCrm\Http\Controllers\PortalFilesController;
-use RadThemes\RadpackCrm\Http\Controllers\PublicDocumentsController;
-use RadThemes\RadpackCrm\Http\Controllers\TrackingController;
+use RadThemes\AlpCrm\Http\Controllers\PaymentsController;
+use RadThemes\AlpCrm\Http\Controllers\PortalFilesController;
+use RadThemes\AlpCrm\Http\Controllers\PublicDocumentsController;
+use RadThemes\AlpCrm\Http\Controllers\TrackingController;
 
-// Mounted at /!/radpack-crm by Statamic. Documents are looked up by an unguessable token.
-Route::name('radpack-crm.public.')->middleware('throttle:60,1')->group(function () {
+// Mounted at /!/alp-crm by Statamic. Documents are looked up by an unguessable token.
+Route::name('alp-crm.public.')->middleware('throttle:60,1')->group(function () {
     Route::get('invoices/{token}', [PublicDocumentsController::class, 'invoice'])->name('invoice');
     Route::get('invoices/{token}/pdf', [PublicDocumentsController::class, 'invoicePdf'])->name('invoice.pdf');
     Route::get('quotes/{token}', [PublicDocumentsController::class, 'quote'])->name('quote');
@@ -20,7 +20,7 @@ Route::name('radpack-crm.public.')->middleware('throttle:60,1')->group(function 
     Route::post('quotes/{token}/respond', [PublicDocumentsController::class, 'respond'])->middleware('throttle:10,1')->name('quote.respond');
 });
 
-Route::name('radpack-crm.')->group(function () {
+Route::name('alp-crm.')->group(function () {
     Route::post('webhooks/stripe', [PaymentsController::class, 'stripeWebhook'])
         ->withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class, PreventRequestForgery::class])
         ->name('webhooks.stripe');

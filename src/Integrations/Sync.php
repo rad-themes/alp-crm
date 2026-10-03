@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations;
+namespace RadThemes\AlpCrm\Integrations;
 
-use RadThemes\RadpackCrm\Integrations\Lists\ListSync;
-use RadThemes\RadpackCrm\Jobs\SyncContactToLists;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Payments\PayPal;
-use RadThemes\RadpackCrm\Payments\Stripe;
+use RadThemes\AlpCrm\Integrations\Lists\ListSync;
+use RadThemes\AlpCrm\Jobs\SyncContactToLists;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Payments\PayPal;
+use RadThemes\AlpCrm\Payments\Stripe;
 
 /**
  * "Sync now" for each integration (also run by the scheduler).

@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Support\Documents;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Support\Documents;
 
 /**
  * Client-facing quote and invoice pages, reached from the link in the email.
@@ -40,12 +40,12 @@ class PublicDocumentsController
         $accepted = $request->boolean('accepted');
 
         if (! $quote->canBeRespondedTo()) {
-            return back()->with('radpack_crm_status', __('This quote can no longer be changed.'));
+            return back()->with('alp_crm_status', __('This quote can no longer be changed.'));
         }
 
         $quote->respond($accepted, $quote->clientName());
 
-        return back()->with('radpack_crm_status', $accepted
+        return back()->with('alp_crm_status', $accepted
             ? __('Thank you, the quote has been accepted. We will be in touch shortly.')
             : __('Thank you for letting us know.'));
     }

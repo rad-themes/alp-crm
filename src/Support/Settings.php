@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 use Statamic\Facades\Addon;
 use Statamic\Facades\Asset;
@@ -20,7 +20,7 @@ class Settings
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        $value = Addon::get('rad-themes/radpack-crm')->setting($key);
+        $value = Addon::get('rad-themes/alp-crm')->setting($key);
 
         if ($value === null || $value === '' || $value === []) {
             return $default ?? self::DEFAULTS[$key] ?? null;
@@ -34,17 +34,17 @@ class Settings
      */
     public static function raw(string $key): ?string
     {
-        $value = Addon::get('rad-themes/radpack-crm')->settings()->raw()[$key] ?? null;
+        $value = Addon::get('rad-themes/alp-crm')->settings()->raw()[$key] ?? null;
 
         return is_string($value) && $value !== '' ? $value : null;
     }
 
     /**
-     * An API secret: from config/.env (config('radpack-crm.secrets.<key>')) if set, else from the settings.
+     * An API secret: from config/.env (config('alp-crm.secrets.<key>')) if set, else from the settings.
      */
     public static function secret(string $key): ?string
     {
-        return config("radpack-crm.secrets.{$key}") ?: self::raw($key);
+        return config("alp-crm.secrets.{$key}") ?: self::raw($key);
     }
 
     public static function currency(): string

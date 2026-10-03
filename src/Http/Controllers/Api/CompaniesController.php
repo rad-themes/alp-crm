@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers\Api;
+namespace RadThemes\AlpCrm\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Company;
 
 class CompaniesController extends RecordsController
 {

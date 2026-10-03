@@ -1,16 +1,16 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use RadThemes\RadpackCrm\Models\Activity;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Note;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\AlpCrm\Models\Activity;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Note;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Transaction;
 use Statamic\Facades\Dictionary;
 use Statamic\Fields\Blueprint;
 use Statamic\Fields\Field;
@@ -35,11 +35,11 @@ class Presenter
     public static function url(Model $record): ?string
     {
         $route = match (true) {
-            $record instanceof Contact => 'radpack-crm.contacts.show',
-            $record instanceof Company => 'radpack-crm.companies.show',
-            $record instanceof Invoice => 'radpack-crm.invoices.show',
-            $record instanceof Quote => 'radpack-crm.quotes.show',
-            $record instanceof Transaction => 'radpack-crm.transactions.edit',
+            $record instanceof Contact => 'alp-crm.contacts.show',
+            $record instanceof Company => 'alp-crm.companies.show',
+            $record instanceof Invoice => 'alp-crm.invoices.show',
+            $record instanceof Quote => 'alp-crm.quotes.show',
+            $record instanceof Transaction => 'alp-crm.transactions.edit',
             default => null,
         };
 
@@ -113,7 +113,7 @@ class Presenter
             'body' => $note->body,
             'author' => $note->author()?->name(),
             'created_at' => $note->created_at?->toIso8601String(),
-            'destroy_url' => cp_route('radpack-crm.notes.destroy', $note),
+            'destroy_url' => cp_route('alp-crm.notes.destroy', $note),
         ])->all();
     }
 

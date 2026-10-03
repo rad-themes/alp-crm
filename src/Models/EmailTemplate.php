@@ -1,9 +1,9 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
+use RadThemes\AlpCrm\Models\Concerns\HasBlueprint;
 
 /**
  * A reusable email ("canned reply") with merge tags like {{ first_name }}.

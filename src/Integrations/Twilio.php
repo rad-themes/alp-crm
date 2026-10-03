@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations;
+namespace RadThemes\AlpCrm\Integrations;
 
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Settings;
 use RuntimeException;
 
 /**

@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\LineItem;
-use RadThemes\RadpackCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\LineItem;
+use RadThemes\AlpCrm\Models\Quote;
 
 /**
  * Presentation and rendering shared by quotes and invoices.
@@ -55,8 +55,8 @@ class Documents
             'second_date' => ($document instanceof Invoice ? $document->due_date : $document->valid_until)?->format('Y-m-d'),
             'client' => $document->clientName(),
             'client_email' => $document->clientEmail(),
-            'contact' => $document->contact ? ['id' => $document->contact->id, 'name' => $document->contact->name(), 'url' => cp_route('radpack-crm.contacts.show', $document->contact)] : null,
-            'company' => $document->company ? ['id' => $document->company->id, 'name' => $document->company->name, 'url' => cp_route('radpack-crm.companies.show', $document->company)] : null,
+            'contact' => $document->contact ? ['id' => $document->contact->id, 'name' => $document->contact->name(), 'url' => cp_route('alp-crm.contacts.show', $document->contact)] : null,
+            'company' => $document->company ? ['id' => $document->company->id, 'name' => $document->company->name, 'url' => cp_route('alp-crm.companies.show', $document->company)] : null,
             'items' => $document->items->map(fn (LineItem $item) => $item->toEditorArray() + [
                 'total' => $item->total,
                 'total_formatted' => $document->money($item->total),
@@ -80,14 +80,14 @@ class Documents
 
     public static function publicUrl(Quote|Invoice $document): string
     {
-        return route('statamic.radpack-crm.public.'.self::type($document), $document->token);
+        return route('statamic.alp-crm.public.'.self::type($document), $document->token);
     }
 
     public static function html(Quote|Invoice $document, bool $forPdf = false): string
     {
         $document->loadMissing(['items', 'contact', 'company']);
 
-        return view('radpack-crm::documents.show', [
+        return view('alp-crm::documents.show', [
             'document' => $document,
             'type' => self::type($document),
             'business' => Settings::business(),

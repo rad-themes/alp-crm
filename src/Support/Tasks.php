@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
-use RadThemes\RadpackCrm\Models\Task;
+use RadThemes\AlpCrm\Models\Task;
 
 class Tasks
 {
@@ -38,10 +38,10 @@ class Tasks
             'overdue' => $task->isOverdue(),
             'assignee' => $task->assignee()?->name(),
             'contact' => $task->contact?->name(),
-            'contact_url' => $task->contact ? cp_route('radpack-crm.contacts.show', $task->contact) : null,
+            'contact_url' => $task->contact ? cp_route('alp-crm.contacts.show', $task->contact) : null,
             'company' => $task->company?->name,
-            'edit_url' => cp_route('radpack-crm.tasks.edit', $task),
-            'toggle_url' => cp_route('radpack-crm.tasks.toggle', $task),
+            'edit_url' => cp_route('alp-crm.tasks.edit', $task),
+            'toggle_url' => cp_route('alp-crm.tasks.toggle', $task),
         ];
     }
 }

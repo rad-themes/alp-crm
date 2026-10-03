@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Fieldtypes;
+namespace RadThemes\AlpCrm\Fieldtypes;
 
-use RadThemes\RadpackCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Contact;
 use Statamic\CP\Column;
 use Statamic\Facades\User;
 use Statamic\Fieldtypes\Relationship;
@@ -28,7 +28,7 @@ class CrmContacts extends Relationship
         $contact = Contact::find($id);
 
         return $contact
-            ? ['id' => $contact->id, 'title' => $contact->name(), 'edit_url' => cp_route('radpack-crm.contacts.show', $contact)]
+            ? ['id' => $contact->id, 'title' => $contact->name(), 'edit_url' => cp_route('alp-crm.contacts.show', $contact)]
             : $this->invalidItemArray($id);
     }
 

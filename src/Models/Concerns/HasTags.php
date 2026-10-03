@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models\Concerns;
+namespace RadThemes\AlpCrm\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Tag;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Tag;
 
 trait HasTags
 {

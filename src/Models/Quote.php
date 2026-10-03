@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use RadThemes\RadpackCrm\Database\Factories\QuoteFactory;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Concerns\HasLineItems;
-use RadThemes\RadpackCrm\Models\Concerns\LogsActivity;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Numbering;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Database\Factories\QuoteFactory;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Concerns\HasLineItems;
+use RadThemes\AlpCrm\Models\Concerns\LogsActivity;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Numbering;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * @property int $id

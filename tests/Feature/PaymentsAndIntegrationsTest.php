@@ -1,27 +1,27 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Integrations\GoogleContacts;
-use RadThemes\RadpackCrm\Mail\DocumentMail;
-use RadThemes\RadpackCrm\Models\Automation;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Note;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Payments\Stripe;
-use RadThemes\RadpackCrm\Support\TokenStore;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Integrations\GoogleContacts;
+use RadThemes\AlpCrm\Mail\DocumentMail;
+use RadThemes\AlpCrm\Models\Automation;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Note;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Payments\Stripe;
+use RadThemes\AlpCrm\Support\TokenStore;
+use RadThemes\AlpCrm\Tests\TestCase;
 use Statamic\Facades\Addon;
 
 class PaymentsAndIntegrationsTest extends TestCase
 {
     private function settings(array $values): void
     {
-        Addon::get('rad-themes/radpack-crm')->settings()->set($values)->save();
+        Addon::get('rad-themes/alp-crm')->settings()->set($values)->save();
     }
 
     private function sentInvoice(float $amount = 250): Invoice
@@ -43,27 +43,27 @@ class PaymentsAndIntegrationsTest extends TestCase
             'api.stripe.com/v1/checkout/sessions' => Http::response(['id' => 'cs_1', 'url' => 'https://checkout.stripe.com/c/pay/cs_1']),
             'api.stripe.com/v1/checkout/sessions/cs_1' => Http::response([
                 'id' => 'cs_1', 'payment_status' => 'paid', 'amount_total' => 25000, 'currency' => 'usd',
-                'payment_intent' => 'pi_1', 'metadata' => ['radpack_invoice' => $invoice->token],
+                'payment_intent' => 'pi_1', 'metadata' => ['alp_invoice' => $invoice->token],
             ]),
         ]);
 
-        $this->get(route('statamic.radpack-crm.public.invoice', $invoice->token))->assertSee('Pay by card');
+        $this->get(route('statamic.alp-crm.public.invoice', $invoice->token))->assertSee('Pay by card');
 
-        $this->post(route('statamic.radpack-crm.public.invoice.pay', [$invoice->token, 'stripe']))
+        $this->post(route('statamic.alp-crm.public.invoice.pay', [$invoice->token, 'stripe']))
             ->assertRedirect('https://checkout.stripe.com/c/pay/cs_1');
 
         Http::assertSent(fn (Request $request) => str_ends_with($request->url(), 'checkout/sessions')
             && $request['line_items'][0]['price_data']['unit_amount'] === 25000
-            && $request['metadata']['radpack_invoice'] === $invoice->token);
+            && $request['metadata']['alp_invoice'] === $invoice->token);
 
-        $this->get(route('statamic.radpack-crm.public.invoice.paid', [$invoice->token, 'stripe']).'?session_id=cs_1')
-            ->assertRedirect()->assertSessionHas('radpack_crm_status', 'Thank you, your payment has been received.');
+        $this->get(route('statamic.alp-crm.public.invoice.paid', [$invoice->token, 'stripe']).'?session_id=cs_1')
+            ->assertRedirect()->assertSessionHas('alp_crm_status', 'Thank you, your payment has been received.');
 
         $this->assertSame('paid', $invoice->fresh()->status);
         $this->assertSame('pi_1', Transaction::sole()->external_id);
 
         // The webhook for the same payment doesn't record it twice.
-        Stripe::recordSession(['payment_status' => 'paid', 'amount_total' => 25000, 'currency' => 'usd', 'payment_intent' => 'pi_1', 'metadata' => ['radpack_invoice' => $invoice->token]]);
+        Stripe::recordSession(['payment_status' => 'paid', 'amount_total' => 25000, 'currency' => 'usd', 'payment_intent' => 'pi_1', 'metadata' => ['alp_invoice' => $invoice->token]]);
         $this->assertSame(1, Transaction::count());
     }
 
@@ -73,16 +73,16 @@ class PaymentsAndIntegrationsTest extends TestCase
         $this->settings(['stripe_secret_key' => 'sk_test_123', 'stripe_webhook_secret' => 'whsec_abc']);
         $invoice = $this->sentInvoice(100);
         $payload = json_encode(['type' => 'checkout.session.completed', 'data' => ['object' => [
-            'id' => 'cs_2', 'payment_status' => 'paid', 'amount_total' => 10000, 'currency' => 'usd', 'payment_intent' => 'pi_2', 'metadata' => ['radpack_invoice' => $invoice->token],
+            'id' => 'cs_2', 'payment_status' => 'paid', 'amount_total' => 10000, 'currency' => 'usd', 'payment_intent' => 'pi_2', 'metadata' => ['alp_invoice' => $invoice->token],
         ]]]);
         $time = time();
         $signature = hash_hmac('sha256', "{$time}.{$payload}", 'whsec_abc');
 
-        $this->call('POST', route('statamic.radpack-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => "t={$time},v1=bad", 'CONTENT_TYPE' => 'application/json'], $payload)->assertStatus(400);
-        $this->call('POST', route('statamic.radpack-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => 't='.($time - 3600).",v1={$signature}", 'CONTENT_TYPE' => 'application/json'], $payload)->assertStatus(400);
+        $this->call('POST', route('statamic.alp-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => "t={$time},v1=bad", 'CONTENT_TYPE' => 'application/json'], $payload)->assertStatus(400);
+        $this->call('POST', route('statamic.alp-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => 't='.($time - 3600).",v1={$signature}", 'CONTENT_TYPE' => 'application/json'], $payload)->assertStatus(400);
         $this->assertSame('sent', $invoice->fresh()->status);
 
-        $this->call('POST', route('statamic.radpack-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => "t={$time},v1={$signature}", 'CONTENT_TYPE' => 'application/json'], $payload)->assertOk();
+        $this->call('POST', route('statamic.alp-crm.webhooks.stripe'), [], [], [], ['HTTP_STRIPE_SIGNATURE' => "t={$time},v1={$signature}", 'CONTENT_TYPE' => 'application/json'], $payload)->assertOk();
         $this->assertSame('paid', $invoice->fresh()->status);
     }
 
@@ -96,7 +96,7 @@ class PaymentsAndIntegrationsTest extends TestCase
             ['id' => 'ch_2', 'status' => 'failed', 'paid' => false, 'amount' => 900, 'currency' => 'gbp', 'created' => now()->timestamp],
         ]])]);
 
-        $this->artisan('radpack-crm:sync', ['service' => 'stripe'])->assertSuccessful();
+        $this->artisan('alp-crm:sync', ['service' => 'stripe'])->assertSuccessful();
 
         $contact = Contact::findByEmail('new@example.com');
         $this->assertSame(['Nina', 'Patel', 'customer'], [$contact->first_name, $contact->last_name, $contact->status]);
@@ -105,7 +105,7 @@ class PaymentsAndIntegrationsTest extends TestCase
         $this->assertSame(10.0, (float) Transaction::where('type', 'refund')->sole()->amount);
 
         // Running again adds nothing.
-        $this->artisan('radpack-crm:sync', ['service' => 'stripe']);
+        $this->artisan('alp-crm:sync', ['service' => 'stripe']);
         $this->assertSame(2, Transaction::count());
         $this->assertSame(0, Stripe::toMinor(0, 'USD'));
         $this->assertSame(1000, Stripe::toMinor(1000, 'JPY'));
@@ -125,10 +125,10 @@ class PaymentsAndIntegrationsTest extends TestCase
             ]]]]]]),
         ]);
 
-        $this->post(route('statamic.radpack-crm.public.invoice.pay', [$invoice->token, 'paypal']))->assertRedirect('https://www.sandbox.paypal.com/checkoutnow?token=ORDER1');
+        $this->post(route('statamic.alp-crm.public.invoice.pay', [$invoice->token, 'paypal']))->assertRedirect('https://www.sandbox.paypal.com/checkoutnow?token=ORDER1');
         Http::assertSent(fn (Request $request) => str_ends_with($request->url(), 'v2/checkout/orders') && $request['purchase_units'][0]['amount']['value'] === '80.00');
 
-        $this->get(route('statamic.radpack-crm.public.invoice.paid', [$invoice->token, 'paypal']).'?token=ORDER1')->assertRedirect();
+        $this->get(route('statamic.alp-crm.public.invoice.paid', [$invoice->token, 'paypal']).'?token=ORDER1')->assertRedirect();
 
         $this->assertSame('paid', $invoice->fresh()->status);
         $this->assertSame(['CAP1', 3.1], [Transaction::sole()->external_id, (float) Transaction::sole()->fee]);
@@ -167,7 +167,7 @@ class PaymentsAndIntegrationsTest extends TestCase
         Http::fake(['api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201)]);
         $contact = Contact::factory()->create(['phone' => '07700 900123', 'first_name' => 'Leo']);
 
-        $this->actingAs($this->admin())->post(cp_route('radpack-crm.contacts.sms.store', $contact), ['body' => 'Running late, 10 mins'])
+        $this->actingAs($this->admin())->post(cp_route('alp-crm.contacts.sms.store', $contact), ['body' => 'Running late, 10 mins'])
             ->assertSessionHas('success');
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://api.twilio.com/2010-04-01/Accounts/AC1/Messages.json'
@@ -220,9 +220,9 @@ class PaymentsAndIntegrationsTest extends TestCase
         $admin = $this->makeUser('super@example.com');
         $admin->makeSuper()->save();
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.integrations'))->assertOk();
-        $this->actingAs($admin)->get(cp_route('radpack-crm.dashboard'))->assertInertia(fn ($page) => $page->where('crmName', 'Pipeline'));
-        $this->actingAs($admin)->get(cp_route('radpack-crm.integrations.callback', 'google').'?code=x&state=forged')
-            ->assertRedirect(cp_route('radpack-crm.integrations'))->assertSessionHas('error');
+        $this->actingAs($admin)->get(cp_route('alp-crm.integrations'))->assertOk();
+        $this->actingAs($admin)->get(cp_route('alp-crm.dashboard'))->assertInertia(fn ($page) => $page->where('crmName', 'Pipeline'));
+        $this->actingAs($admin)->get(cp_route('alp-crm.integrations.callback', 'google').'?code=x&state=forged')
+            ->assertRedirect(cp_route('alp-crm.integrations'))->assertSessionHas('error');
     }
 }

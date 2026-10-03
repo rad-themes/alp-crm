@@ -1,15 +1,15 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Segment;
-use RadThemes\RadpackCrm\Scopes\CrmSegment;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Segment;
+use RadThemes\AlpCrm\Scopes\CrmSegment;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 
@@ -19,20 +19,20 @@ class SegmentsController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Segments/Index', [
+        return Inertia::render('alp-crm::Segments/Index', [
             'segments' => Segment::orderBy('name')->get()->map(fn (Segment $segment) => [
                 'id' => $segment->id,
                 'name' => $segment->name,
                 'rules' => count((array) $segment->conditions),
                 'contacts' => $segment->contacts()->count(),
                 'url' => CrmSegment::url($segment),
-                'export_url' => cp_route('radpack-crm.export', ['type' => 'contacts', 'segment' => $segment->id]),
-                'tag_url' => cp_route('radpack-crm.segments.tag', $segment),
-                'edit_url' => cp_route('radpack-crm.segments.edit', $segment),
-                'destroy_url' => cp_route('radpack-crm.segments.destroy', $segment),
-                'campaign_url' => cp_route('radpack-crm.campaigns.create', ['segment' => $segment->id]),
+                'export_url' => cp_route('alp-crm.export', ['type' => 'contacts', 'segment' => $segment->id]),
+                'tag_url' => cp_route('alp-crm.segments.tag', $segment),
+                'edit_url' => cp_route('alp-crm.segments.edit', $segment),
+                'destroy_url' => cp_route('alp-crm.segments.destroy', $segment),
+                'campaign_url' => cp_route('alp-crm.campaigns.create', ['segment' => $segment->id]),
             ]),
-            'createUrl' => cp_route('radpack-crm.segments.create'),
+            'createUrl' => cp_route('alp-crm.segments.create'),
             'canEdit' => User::current()->can('edit crm'),
         ]);
     }
@@ -50,7 +50,7 @@ class SegmentsController extends CpController
 
         Segment::create($this->validated($request));
 
-        return redirect()->to(cp_route('radpack-crm.segments.index'));
+        return redirect()->to(cp_route('alp-crm.segments.index'));
     }
 
     public function edit(Segment $segment): Response
@@ -66,7 +66,7 @@ class SegmentsController extends CpController
 
         $segment->update($this->validated($request));
 
-        return redirect()->to(cp_route('radpack-crm.segments.index'));
+        return redirect()->to(cp_route('alp-crm.segments.index'));
     }
 
     public function destroy(Segment $segment): RedirectResponse
@@ -117,13 +117,13 @@ class SegmentsController extends CpController
 
     private function editor(Segment $segment): Response
     {
-        return Inertia::render('radpack-crm::Segments/Edit', Segment::editorOptions() + [
+        return Inertia::render('alp-crm::Segments/Edit', Segment::editorOptions() + [
             'title' => $segment->exists ? $segment->name : __('Create Segment'),
             'values' => ['name' => $segment->name, 'match' => $segment->match, 'conditions' => array_values((array) $segment->conditions)],
-            'previewUrl' => cp_route('radpack-crm.segments.preview'),
-            'submitUrl' => $segment->exists ? cp_route('radpack-crm.segments.update', $segment) : cp_route('radpack-crm.segments.store'),
+            'previewUrl' => cp_route('alp-crm.segments.preview'),
+            'submitUrl' => $segment->exists ? cp_route('alp-crm.segments.update', $segment) : cp_route('alp-crm.segments.store'),
             'submitMethod' => $segment->exists ? 'patch' : 'post',
-            'cancelUrl' => cp_route('radpack-crm.segments.index'),
+            'cancelUrl' => cp_route('alp-crm.segments.index'),
         ]);
     }
 

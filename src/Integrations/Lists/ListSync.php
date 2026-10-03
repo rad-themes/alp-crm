@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations\Lists;
+namespace RadThemes\AlpCrm\Integrations\Lists;
 
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Jobs\SyncContactToLists;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Jobs\SyncContactToLists;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * Keeps Mailchimp, Kit and AWeber in step with CRM contacts.

@@ -1,18 +1,18 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\File;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Password;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Portal\PortalPages;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\File;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Password;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Portal\PortalPages;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class ClientFilesTest extends TestCase
 {
@@ -33,7 +33,7 @@ class ClientFilesTest extends TestCase
         $contact = Contact::factory()->create();
         $admin = $this->admin();
 
-        $this->actingAs($admin)->post(cp_route('radpack-crm.files.store', ['contact', $contact->id]), [
+        $this->actingAs($admin)->post(cp_route('alp-crm.files.store', ['contact', $contact->id]), [
             'files' => [UploadedFile::fake()->createWithContent('brief.pdf', 'PDF!'), UploadedFile::fake()->createWithContent('logo.svg', '<svg/>')],
             'portal' => true,
         ])->assertRedirect()->assertSessionHas('success', 'Uploaded 2 files');
@@ -41,13 +41,13 @@ class ClientFilesTest extends TestCase
         $file = File::where('name', 'brief.pdf')->sole();
         $this->assertTrue($file->portal);
         Storage::disk('local')->assertExists($file->path);
-        $this->assertStringStartsWith("radpack-crm/files/contacts/{$contact->id}/", $file->path);
+        $this->assertStringStartsWith("alp-crm/files/contacts/{$contact->id}/", $file->path);
 
-        $download = $this->actingAs($admin)->get(cp_route('radpack-crm.files.download', $file))->assertOk();
+        $download = $this->actingAs($admin)->get(cp_route('alp-crm.files.download', $file))->assertOk();
         $this->assertSame('PDF!', $download->streamedContent());
         $this->assertStringContainsString('attachment', $download->headers->get('Content-Disposition'));
 
-        $this->actingAs($admin)->delete(cp_route('radpack-crm.files.destroy', $file));
+        $this->actingAs($admin)->delete(cp_route('alp-crm.files.destroy', $file));
         Storage::disk('local')->assertMissing($file->path);
 
         // Deleting the contact deletes the rest of their files.
@@ -63,9 +63,9 @@ class ClientFilesTest extends TestCase
         $company = Company::factory()->create();
         $vault = $this->makeUser('vault@example.com', 'crm_vault');
 
-        $this->actingAs($this->admin())->postJson(cp_route('radpack-crm.passwords.store', ['company', $company->id]), ['label' => 'Hosting'])->assertForbidden();
+        $this->actingAs($this->admin())->postJson(cp_route('alp-crm.passwords.store', ['company', $company->id]), ['label' => 'Hosting'])->assertForbidden();
 
-        $this->actingAs($vault)->post(cp_route('radpack-crm.passwords.store', ['company', $company->id]), [
+        $this->actingAs($vault)->post(cp_route('alp-crm.passwords.store', ['company', $company->id]), [
             'label' => 'Hosting', 'url' => 'https://host.example.com', 'username' => 'acme', 'password' => 's3cret!', 'notes' => 'PIN 1234',
         ])->assertRedirect();
 
@@ -74,16 +74,16 @@ class ClientFilesTest extends TestCase
         $this->assertStringNotContainsString('s3cret', $raw->password);
         $this->assertStringNotContainsString('1234', $raw->notes);
 
-        $this->actingAs($vault)->get(cp_route('radpack-crm.companies.show', $company))
+        $this->actingAs($vault)->get(cp_route('alp-crm.companies.show', $company))
             ->assertInertia(fn ($page) => $page->where('passwords.0.label', 'Hosting')->missing('passwords.0.password'));
-        $this->actingAs($this->admin())->get(cp_route('radpack-crm.companies.show', $company))
+        $this->actingAs($this->admin())->get(cp_route('alp-crm.companies.show', $company))
             ->assertInertia(fn ($page) => $page->where('passwords', null));
 
-        $this->actingAs($vault)->postJson(cp_route('radpack-crm.passwords.reveal', $password))->assertOk()->assertJson(['password' => 's3cret!', 'notes' => 'PIN 1234']);
+        $this->actingAs($vault)->postJson(cp_route('alp-crm.passwords.reveal', $password))->assertOk()->assertJson(['password' => 's3cret!', 'notes' => 'PIN 1234']);
         $this->assertSame('password_viewed', $company->activities()->latest('id')->first()->event);
 
         // Leaving the password empty keeps it.
-        $this->actingAs($vault)->patch(cp_route('radpack-crm.passwords.update', $password), ['label' => 'Hosting panel', 'password' => '']);
+        $this->actingAs($vault)->patch(cp_route('alp-crm.passwords.update', $password), ['label' => 'Hosting panel', 'password' => '']);
         $this->assertSame(['Hosting panel', 's3cret!'], [$password->fresh()->label, $password->fresh()->password]);
     }
 
@@ -105,17 +105,17 @@ class ClientFilesTest extends TestCase
         $this->assertEqualsCanonicalizing([$mine->id, $companyInvoice->id], PortalPages::documents(Invoice::query(), $user)->pluck('id')->all());
         $this->assertSame(1, PortalPages::documents(Quote::query(), $user)->count());
 
-        $shared = File::create(['contact_id' => $maya->id, 'name' => 'contract.pdf', 'disk' => 'local', 'path' => 'radpack-crm/files/a.pdf', 'portal' => true]);
-        $private = File::create(['contact_id' => $maya->id, 'name' => 'notes.pdf', 'disk' => 'local', 'path' => 'radpack-crm/files/b.pdf', 'portal' => false]);
-        $theirs = File::create(['contact_id' => $stranger->id, 'name' => 'x.pdf', 'disk' => 'local', 'path' => 'radpack-crm/files/c.pdf', 'portal' => true]);
-        Storage::disk('local')->put('radpack-crm/files/a.pdf', 'contract');
+        $shared = File::create(['contact_id' => $maya->id, 'name' => 'contract.pdf', 'disk' => 'local', 'path' => 'alp-crm/files/a.pdf', 'portal' => true]);
+        $private = File::create(['contact_id' => $maya->id, 'name' => 'notes.pdf', 'disk' => 'local', 'path' => 'alp-crm/files/b.pdf', 'portal' => false]);
+        $theirs = File::create(['contact_id' => $stranger->id, 'name' => 'x.pdf', 'disk' => 'local', 'path' => 'alp-crm/files/c.pdf', 'portal' => true]);
+        Storage::disk('local')->put('alp-crm/files/a.pdf', 'contract');
 
-        $this->get(route('statamic.radpack-crm.portal.file', $shared))->assertForbidden();
-        $this->actingAs($user)->get(route('statamic.radpack-crm.portal.file', $shared))->assertOk();
-        $this->actingAs($user)->get(route('statamic.radpack-crm.portal.file', $private))->assertNotFound();
-        $this->actingAs($user)->get(route('statamic.radpack-crm.portal.file', $theirs))->assertNotFound();
+        $this->get(route('statamic.alp-crm.portal.file', $shared))->assertForbidden();
+        $this->actingAs($user)->get(route('statamic.alp-crm.portal.file', $shared))->assertOk();
+        $this->actingAs($user)->get(route('statamic.alp-crm.portal.file', $private))->assertNotFound();
+        $this->actingAs($user)->get(route('statamic.alp-crm.portal.file', $theirs))->assertNotFound();
 
-        $html = view('radpack-crm::portal.billing', ['invoices' => collect([$mine]), 'quotes' => collect(), 'payments' => collect()])->render();
+        $html = view('alp-crm::portal.billing', ['invoices' => collect([$mine]), 'quotes' => collect(), 'payments' => collect()])->render();
         $this->assertStringContainsString($mine->number, $html);
         $this->assertStringContainsString('View &amp; pay', $html);
     }

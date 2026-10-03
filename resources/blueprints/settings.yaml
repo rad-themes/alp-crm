@@ -156,7 +156,7 @@ tabs:
               type: text
               input_type: password
               display: 'Secret key'
-              instructions: 'Or set RADPACK_CRM_STRIPE_SECRET_KEY in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_STRIPE_SECRET_KEY in .env to keep it out of version control.'
               width: 50
           -
             handle: stripe_webhook_secret
@@ -164,7 +164,7 @@ tabs:
               type: text
               input_type: password
               display: 'Webhook signing secret'
-              instructions: 'Or set RADPACK_CRM_STRIPE_WEBHOOK_SECRET in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_STRIPE_WEBHOOK_SECRET in .env to keep it out of version control.'
               width: 50
           -
             handle: stripe_sync
@@ -182,7 +182,7 @@ tabs:
               type: text
               input_type: password
               display: 'Client ID'
-              instructions: 'Or set RADPACK_CRM_PAYPAL_CLIENT_ID in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_PAYPAL_CLIENT_ID in .env to keep it out of version control.'
               width: 50
           -
             handle: paypal_secret
@@ -190,7 +190,7 @@ tabs:
               type: text
               input_type: password
               display: 'Secret'
-              instructions: 'Or set RADPACK_CRM_PAYPAL_SECRET in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_PAYPAL_SECRET in .env to keep it out of version control.'
               width: 50
           -
             handle: paypal_mode
@@ -228,7 +228,7 @@ tabs:
               type: text
               input_type: password
               display: 'API key'
-              instructions: 'Or set RADPACK_CRM_MAILCHIMP_API_KEY in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_MAILCHIMP_API_KEY in .env to keep it out of version control.'
               width: 50
           -
             handle: mailchimp_list_id
@@ -251,7 +251,7 @@ tabs:
               type: text
               input_type: password
               display: 'API key (v4)'
-              instructions: 'Or set RADPACK_CRM_KIT_API_KEY in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_KIT_API_KEY in .env to keep it out of version control.'
               width: 50
           -
             handle: kit_form_id
@@ -270,7 +270,7 @@ tabs:
               type: text
               input_type: password
               display: 'Client ID'
-              instructions: 'Or set RADPACK_CRM_AWEBER_CLIENT_ID in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_AWEBER_CLIENT_ID in .env to keep it out of version control.'
               width: 33
           -
             handle: aweber_client_secret
@@ -278,7 +278,7 @@ tabs:
               type: text
               input_type: password
               display: 'Client secret'
-              instructions: 'Or set RADPACK_CRM_AWEBER_CLIENT_SECRET in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_AWEBER_CLIENT_SECRET in .env to keep it out of version control.'
               width: 33
           -
             handle: aweber_list_id
@@ -306,7 +306,7 @@ tabs:
               type: text
               input_type: password
               display: 'Account SID'
-              instructions: 'Or set RADPACK_CRM_TWILIO_SID in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_TWILIO_SID in .env to keep it out of version control.'
               width: 50
           -
             handle: twilio_token
@@ -314,7 +314,7 @@ tabs:
               type: text
               input_type: password
               display: 'Auth token'
-              instructions: 'Or set RADPACK_CRM_TWILIO_TOKEN in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_TWILIO_TOKEN in .env to keep it out of version control.'
               width: 50
           -
             handle: twilio_from
@@ -340,7 +340,7 @@ tabs:
               type: text
               input_type: password
               display: 'Client ID'
-              instructions: 'Or set RADPACK_CRM_GOOGLE_CLIENT_ID in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_GOOGLE_CLIENT_ID in .env to keep it out of version control.'
               width: 50
           -
             handle: google_client_secret
@@ -348,7 +348,7 @@ tabs:
               type: text
               input_type: password
               display: 'Client secret'
-              instructions: 'Or set RADPACK_CRM_GOOGLE_CLIENT_SECRET in .env to keep it out of version control.'
+              instructions: 'Or set ALP_CRM_GOOGLE_CLIENT_SECRET in .env to keep it out of version control.'
               width: 50
           -
             handle: google_status

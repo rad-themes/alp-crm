@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Events;
+namespace RadThemes\AlpCrm\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Payload;
 
 /**
  * Something happened in the CRM, e.g. "contact.created" or "invoice.paid".

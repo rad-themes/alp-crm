@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,8 +38,8 @@ class File extends Model
 
     public static function store(UploadedFile $upload, Contact|Company $owner, ?string $userId = null): self
     {
-        $disk = config('radpack-crm.files_disk') ?: 'local';
-        $folder = 'radpack-crm/files/'.($owner instanceof Contact ? 'contacts' : 'companies').'/'.$owner->id;
+        $disk = config('alp-crm.files_disk') ?: 'local';
+        $folder = 'alp-crm/files/'.($owner instanceof Contact ? 'contacts' : 'companies').'/'.$owner->id;
         $path = $upload->storeAs($folder, Str::random(16).'.'.strtolower($upload->getClientOriginalExtension() ?: 'bin'), ['disk' => $disk]);
 
         return static::create([

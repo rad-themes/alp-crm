@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Console;
+namespace RadThemes\AlpCrm\Console;
 
 use Illuminate\Console\Command;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Notifications\TaskReminder;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Notifications\TaskReminder;
 use Statamic\Console\RunsInPlease;
 
 class SendTaskReminders extends Command
 {
     use RunsInPlease;
 
-    protected $signature = 'radpack-crm:task-reminders';
+    protected $signature = 'alp-crm:task-reminders';
 
     protected $description = 'Email task reminders to assignees (runs every five minutes on the scheduler)';
 

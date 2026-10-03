@@ -1,5 +1,5 @@
 @php
-    /** @var \RadThemes\RadpackCrm\Models\Quote|\RadThemes\RadpackCrm\Models\Invoice $document */
+    /** @var \RadThemes\AlpCrm\Models\Quote|\RadThemes\AlpCrm\Models\Invoice $document */
     $isInvoice = $type === 'invoice';
     $status = $document->displayStatus();
     $client = $document->contact;
@@ -149,32 +149,32 @@
     @endif
 
     @unless ($forPdf)
-        @if (session('radpack_crm_status'))
-            <div class="notice">{{ session('radpack_crm_status') }}</div>
+        @if (session('alp_crm_status'))
+            <div class="notice">{{ session('alp_crm_status') }}</div>
         @endif
 
         <div class="actions">
             @if (! $isInvoice && $document->canBeRespondedTo())
-                <form method="POST" action="{{ route('statamic.radpack-crm.public.quote.respond', $document->token) }}">
+                <form method="POST" action="{{ route('statamic.alp-crm.public.quote.respond', $document->token) }}">
                     @csrf
                     <input type="hidden" name="accepted" value="1">
                     <button class="button" type="submit">{{ __('Accept quote') }}</button>
                 </form>
-                <form method="POST" action="{{ route('statamic.radpack-crm.public.quote.respond', $document->token) }}">
+                <form method="POST" action="{{ route('statamic.alp-crm.public.quote.respond', $document->token) }}">
                     @csrf
                     <input type="hidden" name="accepted" value="0">
                     <button class="button secondary" type="submit">{{ __('Decline') }}</button>
                 </form>
             @endif
             @if ($isInvoice && $document->isPayable() && $document->balance() > 0)
-                @foreach (\RadThemes\RadpackCrm\Payments\Payments::gateways() as $gateway => $label)
-                    <form method="POST" action="{{ route('statamic.radpack-crm.public.invoice.pay', [$document->token, $gateway]) }}">
+                @foreach (\RadThemes\AlpCrm\Payments\Payments::gateways() as $gateway => $label)
+                    <form method="POST" action="{{ route('statamic.alp-crm.public.invoice.pay', [$document->token, $gateway]) }}">
                         @csrf
                         <button class="button" type="submit">{{ $label }} · {{ $document->money($document->balance()) }}</button>
                     </form>
                 @endforeach
             @endif
-            <a class="button secondary" href="{{ route('statamic.radpack-crm.public.'.$type.'.pdf', $document->token) }}">{{ __('Download PDF') }}</a>
+            <a class="button secondary" href="{{ route('statamic.alp-crm.public.'.$type.'.pdf', $document->token) }}">{{ __('Download PDF') }}</a>
         </div>
     @endunless
 </div>

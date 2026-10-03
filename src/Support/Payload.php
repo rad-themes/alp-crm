@@ -1,15 +1,15 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\LineItem;
-use RadThemes\RadpackCrm\Models\Note;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Models\Transaction;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\LineItem;
+use RadThemes\AlpCrm\Models\Note;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Models\Transaction;
 
 /**
  * The public JSON shape of CRM records, used by the REST API and webhooks.

@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
-use RadThemes\RadpackCrm\Portal\PortalPages;
+use RadThemes\AlpCrm\Portal\PortalPages;
 use Statamic\Facades\User;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 

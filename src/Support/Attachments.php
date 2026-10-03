@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\File;
+use RadThemes\AlpCrm\Models\Password;
 use RadThemes\ClientPortal\Extensions;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\File;
-use RadThemes\RadpackCrm\Models\Password;
 use Statamic\Facades\User;
 
 /**
@@ -31,9 +31,9 @@ class Attachments
                 'portal' => $file->portal,
                 'created_at' => $file->created_at?->toIso8601String(),
                 'author' => $file->user_id ? User::find($file->user_id)?->name() : null,
-                'download_url' => cp_route('radpack-crm.files.download', $file),
-                'update_url' => cp_route('radpack-crm.files.update', $file),
-                'destroy_url' => cp_route('radpack-crm.files.destroy', $file),
+                'download_url' => cp_route('alp-crm.files.download', $file),
+                'update_url' => cp_route('alp-crm.files.update', $file),
+                'destroy_url' => cp_route('alp-crm.files.destroy', $file),
             ]),
             'passwords' => $canSeePasswords ? Password::where($column, $owner->id)->orderBy('label')->get()->map(fn (Password $password) => [
                 'id' => $password->id,
@@ -41,13 +41,13 @@ class Attachments
                 'url' => $password->url,
                 'username' => $password->username,
                 'has_notes' => filled($password->notes),
-                'reveal_url' => cp_route('radpack-crm.passwords.reveal', $password),
-                'update_url' => cp_route('radpack-crm.passwords.update', $password),
-                'destroy_url' => cp_route('radpack-crm.passwords.destroy', $password),
+                'reveal_url' => cp_route('alp-crm.passwords.reveal', $password),
+                'update_url' => cp_route('alp-crm.passwords.update', $password),
+                'destroy_url' => cp_route('alp-crm.passwords.destroy', $password),
             ]) : null,
             'attachmentUrls' => [
-                'files' => cp_route('radpack-crm.files.store', [$type, $owner->id]),
-                'passwords' => cp_route('radpack-crm.passwords.store', [$type, $owner->id]),
+                'files' => cp_route('alp-crm.files.store', [$type, $owner->id]),
+                'passwords' => cp_route('alp-crm.passwords.store', [$type, $owner->id]),
             ],
             'portalInstalled' => class_exists(Extensions::class),
         ];

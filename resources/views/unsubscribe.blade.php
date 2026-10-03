@@ -21,7 +21,7 @@
     @else
         <h1>{{ __('Unsubscribe?') }}</h1>
         <p>{{ __('Stop marketing emails from :business to :email.', ['business' => $business['name'], 'email' => $recipient->email]) }}</p>
-        <form method="POST" action="{{ route('statamic.radpack-crm.unsubscribe.confirm', $recipient->token) }}">
+        <form method="POST" action="{{ route('statamic.alp-crm.unsubscribe.confirm', $recipient->token) }}">
             <button type="submit">{{ __('Unsubscribe') }}</button>
         </form>
     @endif

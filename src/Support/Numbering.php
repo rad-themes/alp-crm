@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 use Illuminate\Database\Eloquent\Model;
 

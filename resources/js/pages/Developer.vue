@@ -77,7 +77,7 @@ const statusColor = (status) => (!status ? 'red' : status < 300 ? 'green' : 'red
                 <TableRows>
                     <TableRow v-for="key in keys" :key="key.id">
                         <TableCell class="font-medium">{{ key.name }}</TableCell>
-                        <TableCell><code class="text-xs">rpk_…{{ key.hint }}</code></TableCell>
+                        <TableCell><code class="text-xs">alp_…{{ key.hint }}</code></TableCell>
                         <TableCell><Badge :text="key.can_write ? __('Read & write') : __('Read only')" size="sm" /></TableCell>
                         <TableCell>{{ key.last_used_at ? fromNow(key.last_used_at) : __('Never') }}</TableCell>
                         <TableCell class="text-end">
@@ -93,7 +93,7 @@ const statusColor = (status) => (!status ? 'red' : status < 300 ? 'green' : 'red
                 <Button :text="__('Add webhook')" size="sm" icon="plus" @click="openWebhook()" />
             </template>
             <Card v-if="!webhooks.length">
-                <Description :text="__('Webhooks POST a JSON event to your URL when something happens in the CRM — use them with Zapier, Make, n8n or your own code. Each request is signed: X-Radpack-Signature is sha256=HMAC(body, secret).')" />
+                <Description :text="__('Webhooks POST a JSON event to your URL when something happens in the CRM — use them with Zapier, Make, n8n or your own code. Each request is signed: X-Alp-Signature is sha256=HMAC(body, secret).')" />
             </Card>
             <Table v-else>
                 <TableColumns>

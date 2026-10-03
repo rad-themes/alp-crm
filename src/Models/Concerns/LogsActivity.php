@@ -1,9 +1,9 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models\Concerns;
+namespace RadThemes\AlpCrm\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use RadThemes\RadpackCrm\Models\Activity;
+use RadThemes\AlpCrm\Models\Activity;
 use Statamic\Facades\User;
 
 /**

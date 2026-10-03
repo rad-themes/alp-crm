@@ -1,9 +1,9 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Database\Factories;
+namespace RadThemes\AlpCrm\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RadThemes\RadpackCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Company;
 
 /**
  * @extends Factory<Company>

@@ -42,7 +42,7 @@ const parameters = computed(() => (status.value ? { status: status.value } : {})
         :allow-bulk-actions="false"
         sort-column="date"
         sort-direction="desc"
-        preferences-prefix="radpack-crm.transactions"
+        preferences-prefix="alp-crm.transactions"
     >
         <template #cell-date="{ value }">{{ formatDate(value) }}</template>
         <template #cell-title="{ row }">

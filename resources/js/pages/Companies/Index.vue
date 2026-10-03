@@ -41,7 +41,7 @@ defineProps({
         :action-context="{ model: 'company' }"
         sort-column="name"
         sort-direction="asc"
-        preferences-prefix="radpack-crm.companies"
+        preferences-prefix="alp-crm.companies"
         push-query
     >
         <template #cell-name="{ row }">

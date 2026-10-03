@@ -1,16 +1,16 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Console;
+namespace RadThemes\AlpCrm\Console;
 
 use Illuminate\Console\Command;
-use RadThemes\RadpackCrm\Integrations\Sync;
-use RadThemes\RadpackCrm\Payments\Payments;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Integrations\Sync;
+use RadThemes\AlpCrm\Payments\Payments;
+use RadThemes\AlpCrm\Support\Settings;
 use Throwable;
 
 class SyncIntegrations extends Command
 {
-    protected $signature = 'radpack-crm:sync {service? : stripe, paypal, lists or google (default: every scheduled sync that is turned on)}';
+    protected $signature = 'alp-crm:sync {service? : stripe, paypal, lists or google (default: every scheduled sync that is turned on)}';
 
     protected $description = 'Import payments from Stripe/PayPal, contacts from Google, or push contacts to mailing lists';
 

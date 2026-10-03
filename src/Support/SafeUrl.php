@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Support;
+namespace RadThemes\AlpCrm\Support;
 
 /**
  * Guards outgoing webhook requests against server-side request forgery:
@@ -16,7 +16,7 @@ class SafeUrl
             return false;
         }
 
-        if (config('radpack-crm.allow_private_webhooks')) {
+        if (config('alp-crm.allow_private_webhooks')) {
             return true;
         }
 

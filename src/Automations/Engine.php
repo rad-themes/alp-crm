@@ -1,13 +1,13 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Automations;
+namespace RadThemes\AlpCrm\Automations;
 
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Automation;
-use RadThemes\RadpackCrm\Models\AutomationRun;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Segment;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Automation;
+use RadThemes\AlpCrm\Models\AutomationRun;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Segment;
 use Throwable;
 
 /**

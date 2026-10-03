@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Email;
+namespace RadThemes\AlpCrm\Email;
 
-use RadThemes\RadpackCrm\Models\CampaignRecipient;
+use RadThemes\AlpCrm\Models\CampaignRecipient;
 
 /**
  * Signed click-tracking and unsubscribe links for campaign emails.
@@ -16,7 +16,7 @@ class Tracking
 
     public static function clickUrl(CampaignRecipient $recipient, string $url): string
     {
-        return route('statamic.radpack-crm.track.click', [
+        return route('statamic.alp-crm.track.click', [
             'token' => $recipient->token,
             'u' => rtrim(strtr(base64_encode($url), '+/', '-_'), '='),
             's' => self::signature($recipient->token, $url),
@@ -48,6 +48,6 @@ class Tracking
 
     public static function unsubscribeUrl(CampaignRecipient $recipient): string
     {
-        return route('statamic.radpack-crm.unsubscribe', $recipient->token);
+        return route('statamic.alp-crm.unsubscribe', $recipient->token);
     }
 }

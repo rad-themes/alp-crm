@@ -1,18 +1,18 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests\Feature;
+namespace RadThemes\AlpCrm\Tests\Feature;
 
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\Test;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Notifications\TaskReminder;
-use RadThemes\RadpackCrm\Tests\TestCase;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Notifications\TaskReminder;
+use RadThemes\AlpCrm\Tests\TestCase;
 
 class TasksTest extends TestCase
 {
@@ -26,7 +26,7 @@ class TasksTest extends TestCase
         $admin = $this->admin();
 
         // The CP sends date-times as UTC.
-        $this->actingAs($admin)->postJson(cp_route('radpack-crm.tasks.store'), [
+        $this->actingAs($admin)->postJson(cp_route('alp-crm.tasks.store'), [
             'title' => 'Call about the proposal',
             'type' => 'call',
             'priority' => 'high',
@@ -34,7 +34,7 @@ class TasksTest extends TestCase
             'reminder_minutes' => '60',
             'assigned_to' => [$admin->id()],
             'contact' => [$contact->id],
-        ])->assertOk()->assertJson(['redirect' => cp_route('radpack-crm.contacts.show', $contact)]);
+        ])->assertOk()->assertJson(['redirect' => cp_route('alp-crm.contacts.show', $contact)]);
 
         $task = Task::firstOrFail();
         $this->assertSame('2026-10-05 10:30', $task->starts_at->format('Y-m-d H:i'), '14:30 UTC is 10:30 in New York');
@@ -43,7 +43,7 @@ class TasksTest extends TestCase
         $this->assertSame($admin->id(), $task->assigned_to);
 
         // Editing round-trips the same instant.
-        $this->actingAs($admin)->get(cp_route('radpack-crm.tasks.edit', $task))
+        $this->actingAs($admin)->get(cp_route('alp-crm.tasks.edit', $task))
             ->assertInertia(fn (AssertableInertia $page) => $page->component('PublishForm')->where('values.starts_at', '2026-10-05T14:30:00.000Z'));
 
         date_default_timezone_set('UTC');
@@ -55,11 +55,11 @@ class TasksTest extends TestCase
         $contact = Contact::factory()->create();
         $task = Task::factory()->create(['contact_id' => $contact->id, 'title' => 'Send contract']);
 
-        $this->actingAs($this->admin())->post(cp_route('radpack-crm.tasks.toggle', $task), ['done' => true])->assertRedirect();
+        $this->actingAs($this->admin())->post(cp_route('alp-crm.tasks.toggle', $task), ['done' => true])->assertRedirect();
         $this->assertTrue($task->fresh()->isDone());
         $this->assertSame('Completed “Send contract”', $contact->activities()->first()->description);
 
-        $this->actingAs($this->admin())->post(cp_route('radpack-crm.tasks.toggle', $task), ['done' => false]);
+        $this->actingAs($this->admin())->post(cp_route('alp-crm.tasks.toggle', $task), ['done' => false]);
         $this->assertFalse($task->fresh()->isDone());
     }
 
@@ -72,7 +72,7 @@ class TasksTest extends TestCase
         Task::factory()->overdue()->create(['title' => 'Late']);
         Task::factory()->done()->create(['title' => 'Finished']);
 
-        $titles = fn (string $view) => $this->actingAs($admin)->getJson(cp_route('radpack-crm.tasks.json', ['view' => $view]))->json('data.*.title');
+        $titles = fn (string $view) => $this->actingAs($admin)->getJson(cp_route('alp-crm.tasks.json', ['view' => $view]))->json('data.*.title');
 
         $this->assertSame(['Mine'], $titles('mine'));
         $this->assertEqualsCanonicalizing(['Mine', 'Theirs', 'Late'], $titles('open'));
@@ -93,8 +93,8 @@ class TasksTest extends TestCase
         Task::factory()->done()->create(['starts_at' => '2026-10-05 09:30:00', 'reminder_minutes' => 60, 'assigned_to' => $admin->id()]);
         Task::factory()->create(['starts_at' => '2026-10-05 09:30:00', 'reminder_minutes' => null, 'assigned_to' => $admin->id()]);
 
-        $this->artisan('radpack-crm:task-reminders')->assertSuccessful();
-        $this->artisan('radpack-crm:task-reminders')->assertSuccessful();
+        $this->artisan('alp-crm:task-reminders')->assertSuccessful();
+        $this->artisan('alp-crm:task-reminders')->assertSuccessful();
 
         Notification::assertSentToTimes($admin, TaskReminder::class, 1);
         Notification::assertSentTo($admin, TaskReminder::class, fn (TaskReminder $reminder) => $reminder->task->is($due));
@@ -127,18 +127,18 @@ class TasksTest extends TestCase
         Task::factory()->create(['title' => 'Someone else', 'starts_at' => '2026-10-15 10:00:00', 'assigned_to' => 'other']);
         Invoice::factory()->sent()->withItems()->create(['number' => 'INV-0042', 'due_date' => '2026-10-20']);
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.calendar', ['month' => '2026-10']))
+        $this->actingAs($admin)->get(cp_route('alp-crm.calendar', ['month' => '2026-10']))
             ->assertInertia(fn (AssertableInertia $page) => $page
-                ->component('radpack-crm::Calendar')
+                ->component('alp-crm::Calendar')
                 ->where('events.2026-10-14.0.title', 'Workshop')
                 ->where('events.2026-10-20.0.title', 'INV-0042 due')
                 ->has('events.2026-10-15')
                 ->missing('events.2026-12-01'));
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.calendar', ['month' => '2026-10', 'mine' => 1]))
+        $this->actingAs($admin)->get(cp_route('alp-crm.calendar', ['month' => '2026-10', 'mine' => 1]))
             ->assertInertia(fn (AssertableInertia $page) => $page->missing('events.2026-10-15'));
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.calendar', ['month' => 'nonsense']))->assertOk();
+        $this->actingAs($admin)->get(cp_route('alp-crm.calendar', ['month' => 'nonsense']))->assertOk();
     }
 
     #[Test]
@@ -148,10 +148,10 @@ class TasksTest extends TestCase
         $contact = Contact::factory()->create();
         Task::factory()->create(['contact_id' => $contact->id, 'title' => 'Follow up', 'assigned_to' => $admin->id(), 'starts_at' => now()->addDay()]);
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.contacts.show', $contact))
+        $this->actingAs($admin)->get(cp_route('alp-crm.contacts.show', $contact))
             ->assertInertia(fn (AssertableInertia $page) => $page->where('tasks.0.title', 'Follow up'));
 
-        $this->actingAs($admin)->get(cp_route('radpack-crm.dashboard'))
+        $this->actingAs($admin)->get(cp_route('alp-crm.dashboard'))
             ->assertInertia(fn (AssertableInertia $page) => $page->where('myTasks.0.title', 'Follow up'));
     }
 
@@ -177,14 +177,14 @@ class TasksTest extends TestCase
     {
         $tasks = Task::factory()->count(2)->create();
 
-        $this->actingAs($this->admin())->postJson(cp_route('radpack-crm.tasks.actions.run'), [
+        $this->actingAs($this->admin())->postJson(cp_route('alp-crm.tasks.actions.run'), [
             'action' => 'crm_complete_tasks', 'selections' => $tasks->pluck('id')->all(), 'values' => [],
         ])->assertOk();
 
         $this->assertSame(2, Task::whereNotNull('completed_at')->count());
 
         $this->actingAs($this->makeUser('viewer@example.com', 'crm_viewer'))
-            ->postJson(cp_route('radpack-crm.tasks.toggle', $tasks->first()), ['done' => false])
+            ->postJson(cp_route('alp-crm.tasks.toggle', $tasks->first()), ['done' => false])
             ->assertForbidden();
     }
 }

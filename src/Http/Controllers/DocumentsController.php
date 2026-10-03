@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Mail\DocumentMail;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\ListingColumns;
-use RadThemes\RadpackCrm\Support\Presenter;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Mail\DocumentMail;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\ListingColumns;
+use RadThemes\AlpCrm\Support\Presenter;
+use RadThemes\AlpCrm\Support\Settings;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
 use Statamic\Statamic;
@@ -42,12 +42,12 @@ abstract class DocumentsController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Documents/Index', [
+        return Inertia::render('alp-crm::Documents/Index', [
             'type' => $this->type(),
             'title' => $this->type() === 'invoice' ? __('Invoices') : __('Quotes'),
             'columns' => ListingColumns::for('documents', $this->type()),
-            'jsonUrl' => cp_route("radpack-crm.{$this->plural()}.json"),
-            'createUrl' => cp_route("radpack-crm.{$this->plural()}.create"),
+            'jsonUrl' => cp_route("alp-crm.{$this->plural()}.json"),
+            'createUrl' => cp_route("alp-crm.{$this->plural()}.create"),
             'statuses' => $this->statusOptions(),
             'canEdit' => User::current()->can('edit crm'),
         ]);
@@ -79,8 +79,8 @@ abstract class DocumentsController extends CpController
 
         return response()->json([
             'data' => collect($page->items())->map(fn ($document) => array_merge(Documents::toArray($document), [
-                'show_url' => cp_route("radpack-crm.{$this->plural()}.show", $document),
-                'edit_url' => cp_route("radpack-crm.{$this->plural()}.edit", $document),
+                'show_url' => cp_route("alp-crm.{$this->plural()}.show", $document),
+                'edit_url' => cp_route("alp-crm.{$this->plural()}.edit", $document),
             ]))->all(),
             'meta' => [
                 'columns' => ListingColumns::fromRequest($request, 'documents', $this->type()),
@@ -120,7 +120,7 @@ abstract class DocumentsController extends CpController
         $document = $this->model()::create($this->validatedAttributes($request));
         $document->syncItems($request->input('items', []), (float) $request->input('discount', 0));
 
-        return redirect()->to(cp_route("radpack-crm.{$this->plural()}.show", $document))->with('success', __('Saved'));
+        return redirect()->to(cp_route("alp-crm.{$this->plural()}.show", $document))->with('success', __('Saved'));
     }
 
     public function edit(int $id): Response
@@ -140,7 +140,7 @@ abstract class DocumentsController extends CpController
         $document->update($this->validatedAttributes($request, $document));
         $document->syncItems($request->input('items', []), (float) $request->input('discount', 0));
 
-        return redirect()->to(cp_route("radpack-crm.{$this->plural()}.show", $document));
+        return redirect()->to(cp_route("alp-crm.{$this->plural()}.show", $document));
     }
 
     public function show(int $id): Response
@@ -149,7 +149,7 @@ abstract class DocumentsController extends CpController
 
         $document = $this->model()::with(['items', 'contact', 'company'])->findOrFail($id);
 
-        return Inertia::render('radpack-crm::Documents/Show', array_merge([
+        return Inertia::render('alp-crm::Documents/Show', array_merge([
             'document' => Documents::toArray($document),
             'activities' => Presenter::activities($document->activities),
             'urls' => $this->urls($document),
@@ -164,7 +164,7 @@ abstract class DocumentsController extends CpController
 
         $this->model()::findOrFail($id)->delete();
 
-        return redirect()->to(cp_route("radpack-crm.{$this->plural()}.index"));
+        return redirect()->to(cp_route("alp-crm.{$this->plural()}.index"));
     }
 
     public function send(Request $request, int $id): RedirectResponse
@@ -221,7 +221,7 @@ abstract class DocumentsController extends CpController
     {
         $exists = $document->exists;
 
-        return Inertia::render('radpack-crm::Documents/Edit', [
+        return Inertia::render('alp-crm::Documents/Edit', [
             'type' => $this->type(),
             'title' => $exists ? $document->number : ($this->type() === 'invoice' ? __('Create Invoice') : __('Create Quote')),
             'values' => [
@@ -240,10 +240,10 @@ abstract class DocumentsController extends CpController
             'currencies' => collect(Settings::currencyOptions())->map(fn ($label, $code) => ['value' => $code, 'label' => $label])->values(),
             'taxRates' => Settings::taxRates(),
             'pricesIncludeTax' => (bool) Settings::get('prices_include_tax'),
-            'contactSearchUrl' => cp_route('radpack-crm.contacts.search'),
-            'submitUrl' => $exists ? cp_route("radpack-crm.{$this->plural()}.update", $document) : cp_route("radpack-crm.{$this->plural()}.store"),
+            'contactSearchUrl' => cp_route('alp-crm.contacts.search'),
+            'submitUrl' => $exists ? cp_route("alp-crm.{$this->plural()}.update", $document) : cp_route("alp-crm.{$this->plural()}.store"),
             'submitMethod' => $exists ? 'patch' : 'post',
-            'cancelUrl' => $exists ? cp_route("radpack-crm.{$this->plural()}.show", $document) : cp_route("radpack-crm.{$this->plural()}.index"),
+            'cancelUrl' => $exists ? cp_route("alp-crm.{$this->plural()}.show", $document) : cp_route("alp-crm.{$this->plural()}.index"),
             'secondDateLabel' => $this->type() === 'invoice' ? __('Due date') : __('Valid until'),
         ]);
     }
@@ -300,13 +300,13 @@ abstract class DocumentsController extends CpController
     protected function urls(Quote|Invoice $document): array
     {
         return [
-            'index' => cp_route("radpack-crm.{$this->plural()}.index"),
-            'edit' => cp_route("radpack-crm.{$this->plural()}.edit", $document),
-            'destroy' => cp_route("radpack-crm.{$this->plural()}.destroy", $document),
-            'send' => cp_route("radpack-crm.{$this->plural()}.send", $document),
-            'markSent' => cp_route("radpack-crm.{$this->plural()}.mark-sent", $document),
-            'pdf' => cp_route("radpack-crm.{$this->plural()}.pdf", $document),
-            'duplicate' => cp_route("radpack-crm.{$this->plural()}.create", ['duplicate' => $document->id]),
+            'index' => cp_route("alp-crm.{$this->plural()}.index"),
+            'edit' => cp_route("alp-crm.{$this->plural()}.edit", $document),
+            'destroy' => cp_route("alp-crm.{$this->plural()}.destroy", $document),
+            'send' => cp_route("alp-crm.{$this->plural()}.send", $document),
+            'markSent' => cp_route("alp-crm.{$this->plural()}.mark-sent", $document),
+            'pdf' => cp_route("alp-crm.{$this->plural()}.pdf", $document),
+            'duplicate' => cp_route("alp-crm.{$this->plural()}.create", ['duplicate' => $document->id]),
         ];
     }
 

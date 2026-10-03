@@ -1,23 +1,23 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Email\MergeTags;
-use RadThemes\RadpackCrm\Http\Resources\ContactResource;
-use RadThemes\RadpackCrm\Integrations\Twilio;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Email;
-use RadThemes\RadpackCrm\Models\EmailTemplate;
-use RadThemes\RadpackCrm\Support\Attachments;
-use RadThemes\RadpackCrm\Support\ListingColumns;
-use RadThemes\RadpackCrm\Support\Presenter;
-use RadThemes\RadpackCrm\Support\Sales;
-use RadThemes\RadpackCrm\Support\Tasks;
+use RadThemes\AlpCrm\Email\MergeTags;
+use RadThemes\AlpCrm\Http\Resources\ContactResource;
+use RadThemes\AlpCrm\Integrations\Twilio;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Email;
+use RadThemes\AlpCrm\Models\EmailTemplate;
+use RadThemes\AlpCrm\Support\Attachments;
+use RadThemes\AlpCrm\Support\ListingColumns;
+use RadThemes\AlpCrm\Support\Presenter;
+use RadThemes\AlpCrm\Support\Sales;
+use RadThemes\AlpCrm\Support\Tasks;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\Scope;
 use Statamic\Facades\User;
@@ -36,14 +36,14 @@ class ContactsController extends CpController
     {
         $this->authorize('view crm');
 
-        return Inertia::render('radpack-crm::Contacts/Index', [
-            'filters' => Scope::filters('radpack-crm.contacts'),
+        return Inertia::render('alp-crm::Contacts/Index', [
+            'filters' => Scope::filters('alp-crm.contacts'),
             'columns' => ListingColumns::for('contacts'),
-            'jsonUrl' => cp_route('radpack-crm.contacts.json'),
-            'actionUrl' => cp_route('radpack-crm.contacts.actions.run'),
-            'createUrl' => cp_route('radpack-crm.contacts.create'),
-            'importUrl' => cp_route('radpack-crm.import.create', ['type' => 'contacts']),
-            'exportUrl' => cp_route('radpack-crm.export', ['type' => 'contacts']),
+            'jsonUrl' => cp_route('alp-crm.contacts.json'),
+            'actionUrl' => cp_route('alp-crm.contacts.actions.run'),
+            'createUrl' => cp_route('alp-crm.contacts.create'),
+            'importUrl' => cp_route('alp-crm.import.create', ['type' => 'contacts']),
+            'exportUrl' => cp_route('alp-crm.export', ['type' => 'contacts']),
             'canEdit' => $this->canEdit(),
         ]);
     }
@@ -103,7 +103,7 @@ class ContactsController extends CpController
             ->icon('users')
             ->title(__('Create Contact'))
             ->values(['status' => 'lead'])
-            ->submittingTo(cp_route('radpack-crm.contacts.store'), 'POST');
+            ->submittingTo(cp_route('alp-crm.contacts.store'), 'POST');
     }
 
     /**
@@ -116,7 +116,7 @@ class ContactsController extends CpController
         $contact = (new Contact)->fillFromBlueprint(PublishForm::make(Contact::blueprint())->submit($request->all()));
         $contact->save();
 
-        return ['redirect' => cp_route('radpack-crm.contacts.show', $contact)];
+        return ['redirect' => cp_route('alp-crm.contacts.show', $contact)];
     }
 
     public function show(Contact $contact): Response
@@ -125,7 +125,7 @@ class ContactsController extends CpController
 
         $contact->load(['company', 'tags', 'aliases', 'notes', 'activities']);
 
-        return Inertia::render('radpack-crm::Contacts/Show', Attachments::for($contact) + [
+        return Inertia::render('alp-crm::Contacts/Show', Attachments::for($contact) + [
             'contact' => [
                 'id' => $contact->id,
                 'name' => $contact->name(),
@@ -135,7 +135,7 @@ class ContactsController extends CpController
                 'status_label' => Presenter::optionLabel(Contact::blueprint(), 'status', $contact->status),
                 'avatar' => $contact->avatarUrl(160),
                 'initials' => Presenter::initials($contact->name()),
-                'company' => $contact->company ? ['name' => $contact->company->name, 'url' => cp_route('radpack-crm.companies.show', $contact->company)] : null,
+                'company' => $contact->company ? ['name' => $contact->company->name, 'url' => cp_route('alp-crm.companies.show', $contact->company)] : null,
                 'owner' => $contact->owner()?->name(),
                 'aliases' => $contact->aliases->pluck('email'),
                 'tags' => $contact->tags->pluck('name'),
@@ -157,18 +157,18 @@ class ContactsController extends CpController
                 'error' => $email->error,
                 'sender' => $email->sender()?->name(),
                 'date' => ($email->sent_at ?? $email->scheduled_at ?? $email->created_at)?->toIso8601String(),
-                'cancel_url' => cp_route('radpack-crm.emails.cancel', $email),
+                'cancel_url' => cp_route('alp-crm.emails.cancel', $email),
             ]),
             'templates' => EmailTemplate::orderBy('name')->get(['id', 'name', 'subject', 'body']),
             'mergeTags' => MergeTags::available(),
-            'sms' => Twilio::configured() ? ['url' => cp_route('radpack-crm.contacts.sms.store', $contact), 'phone' => $contact->phone] : null,
+            'sms' => Twilio::configured() ? ['url' => cp_route('alp-crm.contacts.sms.store', $contact), 'phone' => $contact->phone] : null,
             'urls' => [
-                'edit' => cp_route('radpack-crm.contacts.edit', $contact),
-                'email' => cp_route('radpack-crm.contacts.emails.store', $contact),
-                'destroy' => cp_route('radpack-crm.contacts.destroy', $contact),
-                'notes' => cp_route('radpack-crm.notes.store', ['contact', $contact->id]),
-                'index' => cp_route('radpack-crm.contacts.index'),
-                'createTask' => cp_route('radpack-crm.tasks.create', ['contact' => $contact->id]),
+                'edit' => cp_route('alp-crm.contacts.edit', $contact),
+                'email' => cp_route('alp-crm.contacts.emails.store', $contact),
+                'destroy' => cp_route('alp-crm.contacts.destroy', $contact),
+                'notes' => cp_route('alp-crm.notes.store', ['contact', $contact->id]),
+                'index' => cp_route('alp-crm.contacts.index'),
+                'createTask' => cp_route('alp-crm.tasks.create', ['contact' => $contact->id]),
             ],
             'canEdit' => $this->canEdit(),
         ]);
@@ -182,7 +182,7 @@ class ContactsController extends CpController
             ->icon('users')
             ->title($contact->name())
             ->values($contact->blueprintValues())
-            ->submittingTo(cp_route('radpack-crm.contacts.update', $contact));
+            ->submittingTo(cp_route('alp-crm.contacts.update', $contact));
     }
 
     /**
@@ -194,7 +194,7 @@ class ContactsController extends CpController
 
         $contact->fillFromBlueprint(PublishForm::make(Contact::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => cp_route('radpack-crm.contacts.show', $contact)];
+        return ['redirect' => cp_route('alp-crm.contacts.show', $contact)];
     }
 
     public function destroy(Contact $contact): RedirectResponse
@@ -203,7 +203,7 @@ class ContactsController extends CpController
 
         $contact->delete();
 
-        return redirect()->route('statamic.cp.radpack-crm.contacts.index');
+        return redirect()->route('statamic.cp.alp-crm.contacts.index');
     }
 
     private function canEdit(): bool

@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Actions;
+namespace RadThemes\AlpCrm\Actions;
 
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Task;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Task;
 use Statamic\Actions\Action;
 
 class DeleteRecords extends Action

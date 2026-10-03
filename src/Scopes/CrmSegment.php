@@ -1,8 +1,8 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Scopes;
+namespace RadThemes\AlpCrm\Scopes;
 
-use RadThemes\RadpackCrm\Models\Segment;
+use RadThemes\AlpCrm\Models\Segment;
 use Statamic\Query\Scopes\Filter;
 
 class CrmSegment extends Filter
@@ -40,7 +40,7 @@ class CrmSegment extends Filter
 
     public function visibleTo($key)
     {
-        return $key === 'radpack-crm.contacts';
+        return $key === 'alp-crm.contacts';
     }
 
     /**
@@ -48,7 +48,7 @@ class CrmSegment extends Filter
      */
     public static function url(Segment $segment): string
     {
-        return cp_route('radpack-crm.contacts.index', [
+        return cp_route('alp-crm.contacts.index', [
             'filters' => base64_encode(json_encode([static::$handle => ['segment' => (string) $segment->id]])),
         ]);
     }

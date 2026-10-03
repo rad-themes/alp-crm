@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers\Api;
+namespace RadThemes\AlpCrm\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Quote;
-use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Quote;
+use RadThemes\AlpCrm\Support\Payload;
 
 /**
  * Read-only quotes and invoices (create them in the Control Panel, where line items are edited).

@@ -4,16 +4,16 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
-use RadThemes\RadpackCrm\Http\Controllers\Api;
-use RadThemes\RadpackCrm\Http\Middleware\AuthenticateApiKey;
+use RadThemes\AlpCrm\Http\Controllers\Api;
+use RadThemes\AlpCrm\Http\Middleware\AuthenticateApiKey;
 use Statamic\StaticCaching\Middleware\Cache;
 
 /*
- * REST API: /api/radpack-crm/v1/... authenticated with an API key (CRM → API & webhooks).
+ * REST API: /api/alp-crm/v1/... authenticated with an API key (CRM → API & webhooks).
  * Registered as a web route so it comes before Statamic's front-end catch-all; CSRF doesn't apply to key auth.
  */
-Route::prefix('api/radpack-crm/v1')
-    ->name('radpack-crm.api.')
+Route::prefix('api/alp-crm/v1')
+    ->name('alp-crm.api.')
     ->withoutMiddleware([VerifyCsrfToken::class, ValidateCsrfToken::class, PreventRequestForgery::class, Cache::class])
     ->middleware([AuthenticateApiKey::class, 'throttle:120,1'])
     ->group(function () {

@@ -1,4 +1,4 @@
-@include('radpack-crm::portal._styles')
+@include('alp-crm::portal._styles')
 
 <section class="rp-section">
     <div class="rp-card rp-scroll">
@@ -17,7 +17,7 @@
                         <td><strong>{{ $file->name }}</strong></td>
                         <td class="rp-hide-sm">{{ $file->created_at?->isoFormat('ll') }}</td>
                         <td class="rp-num rp-muted">{{ $file->humanSize() }}</td>
-                        <td><div class="rp-actions"><a class="rp-link" href="{{ route('statamic.radpack-crm.portal.file', $file) }}">{{ __('Download') }}</a></div></td>
+                        <td><div class="rp-actions"><a class="rp-link" href="{{ route('statamic.alp-crm.portal.file', $file) }}">{{ __('Download') }}</a></div></td>
                     </tr>
                 @endforeach
             </tbody>

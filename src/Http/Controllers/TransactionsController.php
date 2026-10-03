@@ -1,16 +1,16 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Support\ListingColumns;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Support\ListingColumns;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Settings;
 use Statamic\CP\PublishForm;
 use Statamic\Facades\User;
 use Statamic\Http\Controllers\CP\CpController;
@@ -25,10 +25,10 @@ class TransactionsController extends CpController
         $thisMonth = Transaction::query()->where('currency', Settings::currency())->whereDate('date', '>=', now()->startOfMonth());
         $lastMonth = Transaction::query()->where('currency', Settings::currency())->whereBetween('date', [now()->subMonthNoOverflow()->startOfMonth(), now()->subMonthNoOverflow()->endOfMonth()]);
 
-        return Inertia::render('radpack-crm::Transactions/Index', [
+        return Inertia::render('alp-crm::Transactions/Index', [
             'columns' => ListingColumns::for('transactions'),
-            'jsonUrl' => cp_route('radpack-crm.transactions.json'),
-            'createUrl' => cp_route('radpack-crm.transactions.create'),
+            'jsonUrl' => cp_route('alp-crm.transactions.json'),
+            'createUrl' => cp_route('alp-crm.transactions.create'),
             'statuses' => collect(Transaction::STATUSES)->map(fn ($status) => ['value' => $status, 'label' => __(ucfirst($status))]),
             'summary' => [
                 ['label' => __('Revenue this month'), 'value' => Money::format(Transaction::revenue($thisMonth), Settings::currency())],
@@ -65,15 +65,15 @@ class TransactionsController extends CpController
                 'title' => $transaction->name(),
                 'reference' => $transaction->reference,
                 'contact' => $transaction->contact?->name(),
-                'contact_url' => $transaction->contact ? cp_route('radpack-crm.contacts.show', $transaction->contact) : null,
+                'contact_url' => $transaction->contact ? cp_route('alp-crm.contacts.show', $transaction->contact) : null,
                 'invoice' => $transaction->invoice?->number,
-                'invoice_url' => $transaction->invoice ? cp_route('radpack-crm.invoices.show', $transaction->invoice) : null,
+                'invoice_url' => $transaction->invoice ? cp_route('alp-crm.invoices.show', $transaction->invoice) : null,
                 'amount' => $transaction->money(),
                 'type' => $transaction->type,
                 'status' => $transaction->status,
                 'source' => $transaction->source,
                 'date' => $transaction->date?->format('Y-m-d'),
-                'edit_url' => cp_route('radpack-crm.transactions.edit', $transaction),
+                'edit_url' => cp_route('alp-crm.transactions.edit', $transaction),
             ])->all(),
             'meta' => [
                 'columns' => ListingColumns::fromRequest($request, 'transactions'),
@@ -102,7 +102,7 @@ class TransactionsController extends CpController
                 'type' => 'sale',
                 'status' => 'succeeded',
             ])
-            ->submittingTo(cp_route('radpack-crm.transactions.store'), 'POST');
+            ->submittingTo(cp_route('alp-crm.transactions.store'), 'POST');
     }
 
     /**
@@ -115,7 +115,7 @@ class TransactionsController extends CpController
         $transaction = (new Transaction)->fillFromBlueprint(PublishForm::make(Transaction::blueprint())->submit($request->all()));
         $transaction->save();
 
-        return ['redirect' => cp_route('radpack-crm.transactions.index')];
+        return ['redirect' => cp_route('alp-crm.transactions.index')];
     }
 
     public function edit(Transaction $transaction): PublishForm
@@ -126,7 +126,7 @@ class TransactionsController extends CpController
             ->icon('money-cashier-price-tag')
             ->title($transaction->name())
             ->values($transaction->blueprintValues())
-            ->submittingTo(cp_route('radpack-crm.transactions.update', $transaction));
+            ->submittingTo(cp_route('alp-crm.transactions.update', $transaction));
     }
 
     /**
@@ -138,7 +138,7 @@ class TransactionsController extends CpController
 
         $transaction->fillFromBlueprint(PublishForm::make(Transaction::blueprint())->submit($request->all()))->save();
 
-        return ['redirect' => $transaction->invoice ? cp_route('radpack-crm.invoices.show', $transaction->invoice) : cp_route('radpack-crm.transactions.index')];
+        return ['redirect' => $transaction->invoice ? cp_route('alp-crm.invoices.show', $transaction->invoice) : cp_route('alp-crm.transactions.index')];
     }
 
     public function destroy(Transaction $transaction): RedirectResponse
@@ -147,6 +147,6 @@ class TransactionsController extends CpController
 
         $transaction->delete();
 
-        return redirect()->to(cp_route('radpack-crm.transactions.index'));
+        return redirect()->to(cp_route('alp-crm.transactions.index'));
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Integrations;
+namespace RadThemes\AlpCrm\Integrations;
 
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Capture\LeadCapture;
-use RadThemes\RadpackCrm\Support\Settings;
-use RadThemes\RadpackCrm\Support\TokenStore;
+use RadThemes\AlpCrm\Capture\LeadCapture;
+use RadThemes\AlpCrm\Support\Settings;
+use RadThemes\AlpCrm\Support\TokenStore;
 use RuntimeException;
 
 /**

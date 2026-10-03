@@ -40,7 +40,7 @@ defineProps({
         :action-url="actionUrl"
         sort-column="created_at"
         sort-direction="desc"
-        preferences-prefix="radpack-crm.contacts"
+        preferences-prefix="alp-crm.contacts"
         push-query
     >
         <template #cell-name="{ row }">

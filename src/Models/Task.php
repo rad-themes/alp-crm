@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use RadThemes\RadpackCrm\Database\Factories\TaskFactory;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
+use RadThemes\AlpCrm\Database\Factories\TaskFactory;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Concerns\HasBlueprint;
 use Statamic\Contracts\Auth\User as UserContract;
 use Statamic\Facades\User;
 

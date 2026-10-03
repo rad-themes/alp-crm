@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use RadThemes\RadpackCrm\Database\Factories\TransactionFactory;
-use RadThemes\RadpackCrm\Events\CrmEvent;
-use RadThemes\RadpackCrm\Models\Concerns\HasBlueprint;
-use RadThemes\RadpackCrm\Models\Concerns\HasTags;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Database\Factories\TransactionFactory;
+use RadThemes\AlpCrm\Events\CrmEvent;
+use RadThemes\AlpCrm\Models\Concerns\HasBlueprint;
+use RadThemes\AlpCrm\Models\Concerns\HasTags;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * A sale or refund — entered by hand, synced from a payment provider, or a payment against an invoice.

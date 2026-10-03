@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Automations;
+namespace RadThemes\AlpCrm\Automations;
 
 /**
  * Ready-made automations to start from.

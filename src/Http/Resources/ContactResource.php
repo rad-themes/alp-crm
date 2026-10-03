@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Resources;
+namespace RadThemes\AlpCrm\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Presenter;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Presenter;
 
 /**
  * @mixin Contact
@@ -28,8 +28,8 @@ class ContactResource extends JsonResource
             'tags' => $this->tags->pluck('name'),
             'created_at' => $this->created_at?->toIso8601String(),
             'last_contacted_at' => $this->last_contacted_at?->toIso8601String(),
-            'show_url' => cp_route('radpack-crm.contacts.show', $this->resource),
-            'edit_url' => cp_route('radpack-crm.contacts.edit', $this->resource),
+            'show_url' => cp_route('alp-crm.contacts.show', $this->resource),
+            'edit_url' => cp_route('alp-crm.contacts.edit', $this->resource),
         ];
     }
 }

@@ -37,7 +37,7 @@ const isInvoice = props.type === 'invoice';
         :allow-bulk-actions="false"
         sort-column="issue_date"
         sort-direction="desc"
-        :preferences-prefix="`radpack-crm.${type}s`"
+        :preferences-prefix="`alp-crm.${type}s`"
     >
         <template #cell-number="{ row }">
             <Link :href="row.show_url" class="title-index-field">{{ row.number }}</Link>

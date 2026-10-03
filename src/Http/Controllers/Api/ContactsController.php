@@ -1,12 +1,12 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers\Api;
+namespace RadThemes\AlpCrm\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Support\Payload;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Support\Payload;
 
 class ContactsController extends RecordsController
 {

@@ -1,33 +1,33 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use RadThemes\RadpackCrm\Http\Controllers\AutomationsController;
-use RadThemes\RadpackCrm\Http\Controllers\CalendarController;
-use RadThemes\RadpackCrm\Http\Controllers\CampaignsController;
-use RadThemes\RadpackCrm\Http\Controllers\CompaniesController;
-use RadThemes\RadpackCrm\Http\Controllers\CompanyActionController;
-use RadThemes\RadpackCrm\Http\Controllers\ContactActionController;
-use RadThemes\RadpackCrm\Http\Controllers\ContactsController;
-use RadThemes\RadpackCrm\Http\Controllers\DashboardController;
-use RadThemes\RadpackCrm\Http\Controllers\DeveloperController;
-use RadThemes\RadpackCrm\Http\Controllers\EmailsController;
-use RadThemes\RadpackCrm\Http\Controllers\EmailTemplatesController;
-use RadThemes\RadpackCrm\Http\Controllers\FilesController;
-use RadThemes\RadpackCrm\Http\Controllers\ImportExportController;
-use RadThemes\RadpackCrm\Http\Controllers\IntegrationsController;
-use RadThemes\RadpackCrm\Http\Controllers\InvoicesController;
-use RadThemes\RadpackCrm\Http\Controllers\NotesController;
-use RadThemes\RadpackCrm\Http\Controllers\PasswordsController;
-use RadThemes\RadpackCrm\Http\Controllers\QuotesController;
-use RadThemes\RadpackCrm\Http\Controllers\ReportsController;
-use RadThemes\RadpackCrm\Http\Controllers\SegmentsController;
-use RadThemes\RadpackCrm\Http\Controllers\SmsController;
-use RadThemes\RadpackCrm\Http\Controllers\TaskActionController;
-use RadThemes\RadpackCrm\Http\Controllers\TasksController;
-use RadThemes\RadpackCrm\Http\Controllers\TransactionsController;
+use RadThemes\AlpCrm\Http\Controllers\AutomationsController;
+use RadThemes\AlpCrm\Http\Controllers\CalendarController;
+use RadThemes\AlpCrm\Http\Controllers\CampaignsController;
+use RadThemes\AlpCrm\Http\Controllers\CompaniesController;
+use RadThemes\AlpCrm\Http\Controllers\CompanyActionController;
+use RadThemes\AlpCrm\Http\Controllers\ContactActionController;
+use RadThemes\AlpCrm\Http\Controllers\ContactsController;
+use RadThemes\AlpCrm\Http\Controllers\DashboardController;
+use RadThemes\AlpCrm\Http\Controllers\DeveloperController;
+use RadThemes\AlpCrm\Http\Controllers\EmailsController;
+use RadThemes\AlpCrm\Http\Controllers\EmailTemplatesController;
+use RadThemes\AlpCrm\Http\Controllers\FilesController;
+use RadThemes\AlpCrm\Http\Controllers\ImportExportController;
+use RadThemes\AlpCrm\Http\Controllers\IntegrationsController;
+use RadThemes\AlpCrm\Http\Controllers\InvoicesController;
+use RadThemes\AlpCrm\Http\Controllers\NotesController;
+use RadThemes\AlpCrm\Http\Controllers\PasswordsController;
+use RadThemes\AlpCrm\Http\Controllers\QuotesController;
+use RadThemes\AlpCrm\Http\Controllers\ReportsController;
+use RadThemes\AlpCrm\Http\Controllers\SegmentsController;
+use RadThemes\AlpCrm\Http\Controllers\SmsController;
+use RadThemes\AlpCrm\Http\Controllers\TaskActionController;
+use RadThemes\AlpCrm\Http\Controllers\TasksController;
+use RadThemes\AlpCrm\Http\Controllers\TransactionsController;
 
-Route::prefix('crm')->name('radpack-crm.')->group(function () {
-    Route::get('/', fn () => redirect()->route('statamic.cp.radpack-crm.dashboard'))->name('home');
+Route::prefix('crm')->name('alp-crm.')->group(function () {
+    Route::get('/', fn () => redirect()->route('statamic.cp.alp-crm.dashboard'))->name('home');
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('contacts/json', [ContactsController::class, 'json'])->name('contacts.json');

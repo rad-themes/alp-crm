@@ -1,17 +1,17 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Payments;
+namespace RadThemes\AlpCrm\Payments;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use RadThemes\RadpackCrm\Capture\LeadCapture;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Invoice;
-use RadThemes\RadpackCrm\Models\Transaction;
-use RadThemes\RadpackCrm\Support\Documents;
-use RadThemes\RadpackCrm\Support\Money;
-use RadThemes\RadpackCrm\Support\Settings;
-use RadThemes\RadpackCrm\Support\TokenStore;
+use RadThemes\AlpCrm\Capture\LeadCapture;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
+use RadThemes\AlpCrm\Models\Transaction;
+use RadThemes\AlpCrm\Support\Documents;
+use RadThemes\AlpCrm\Support\Money;
+use RadThemes\AlpCrm\Support\Settings;
+use RadThemes\AlpCrm\Support\TokenStore;
 use RuntimeException;
 
 /**
@@ -56,9 +56,9 @@ class Stripe
                     'product_data' => ['name' => __('Invoice :number', ['number' => $invoice->number]).($invoice->title ? ' — '.$invoice->title : '')],
                 ],
             ]],
-            'metadata' => ['radpack_invoice' => $invoice->token],
-            'payment_intent_data' => ['metadata' => ['radpack_invoice' => $invoice->token]],
-            'success_url' => route('statamic.radpack-crm.public.invoice.paid', ['token' => $invoice->token, 'gateway' => 'stripe']).'?session_id={CHECKOUT_SESSION_ID}',
+            'metadata' => ['alp_invoice' => $invoice->token],
+            'payment_intent_data' => ['metadata' => ['alp_invoice' => $invoice->token]],
+            'success_url' => route('statamic.alp-crm.public.invoice.paid', ['token' => $invoice->token, 'gateway' => 'stripe']).'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => Documents::publicUrl($invoice),
         ]);
 
@@ -84,7 +84,7 @@ class Stripe
      */
     public static function recordSession(array $session): ?Invoice
     {
-        $token = $session['metadata']['radpack_invoice'] ?? $session['client_reference_id'] ?? null;
+        $token = $session['metadata']['alp_invoice'] ?? $session['client_reference_id'] ?? null;
         $invoice = $token ? Invoice::where('token', $token)->first() : null;
 
         if ($invoice && ($session['payment_status'] ?? null) === 'paid') {
@@ -180,7 +180,7 @@ class Stripe
         $added = 0;
 
         if (! Transaction::where('source', 'stripe')->where('external_id', $externalId)->exists()) {
-            $invoice = ($token = $charge['metadata']['radpack_invoice'] ?? null) ? Invoice::where('token', $token)->first() : null;
+            $invoice = ($token = $charge['metadata']['alp_invoice'] ?? null) ? Invoice::where('token', $token)->first() : null;
             $fee = is_array($charge['balance_transaction'] ?? null) ? self::fromMinor($charge['balance_transaction']['fee'] ?? 0, $currency) : 0;
 
             $invoice

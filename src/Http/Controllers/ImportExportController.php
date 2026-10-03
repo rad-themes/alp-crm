@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -9,11 +9,11 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Csv\CsvExporter;
-use RadThemes\RadpackCrm\Csv\CsvImporter;
-use RadThemes\RadpackCrm\Models\Company;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Segment;
+use RadThemes\AlpCrm\Csv\CsvExporter;
+use RadThemes\AlpCrm\Csv\CsvImporter;
+use RadThemes\AlpCrm\Models\Company;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Segment;
 use Statamic\Http\Controllers\CP\CpController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -23,9 +23,9 @@ class ImportExportController extends CpController
     {
         $this->authorize('edit crm');
 
-        return Inertia::render('radpack-crm::Import', [
+        return Inertia::render('alp-crm::Import', [
             'type' => $request->query('type') === 'companies' ? 'companies' : 'contacts',
-            'uploadUrl' => cp_route('radpack-crm.import.upload'),
+            'uploadUrl' => cp_route('alp-crm.import.upload'),
             'step' => 'upload',
         ]);
     }
@@ -43,7 +43,7 @@ class ImportExportController extends CpController
         File::ensureDirectoryExists(self::directory());
         $data['file']->move(self::directory(), "{$token}.csv");
 
-        return redirect()->to(cp_route('radpack-crm.import.map', ['token' => $token, 'type' => $data['type']]));
+        return redirect()->to(cp_route('alp-crm.import.map', ['token' => $token, 'type' => $data['type']]));
     }
 
     public function map(Request $request, string $token): Response
@@ -53,14 +53,14 @@ class ImportExportController extends CpController
         $type = $request->query('type') === 'companies' ? 'companies' : 'contacts';
         $preview = CsvImporter::preview(self::path($token));
 
-        return Inertia::render('radpack-crm::Import', [
+        return Inertia::render('alp-crm::Import', [
             'type' => $type,
             'step' => 'map',
             'preview' => $preview,
             'mapping' => CsvImporter::guess($type, $preview['headers']),
             'targets' => collect(CsvImporter::targets($type))->map(fn ($label, $handle) => ['value' => $handle, 'label' => $label])->values(),
-            'importUrl' => cp_route('radpack-crm.import.run', $token),
-            'cancelUrl' => cp_route('radpack-crm.import.create', ['type' => $type]),
+            'importUrl' => cp_route('alp-crm.import.run', $token),
+            'cancelUrl' => cp_route('alp-crm.import.create', ['type' => $type]),
         ]);
     }
 
@@ -86,7 +86,7 @@ class ImportExportController extends CpController
 
         $message = __('Imported: :created created, :updated updated, :skipped skipped.', collect($result)->except('errors')->all());
 
-        return redirect()->to(cp_route("radpack-crm.{$data['type']}.index"))
+        return redirect()->to(cp_route("alp-crm.{$data['type']}.index"))
             ->with($result['errors'] ? 'info' : 'success', $result['errors'] ? $message.' '.implode(' · ', array_slice($result['errors'], 0, 5)) : $message);
     }
 
@@ -109,7 +109,7 @@ class ImportExportController extends CpController
 
     private static function directory(): string
     {
-        return storage_path('app/radpack-crm/imports');
+        return storage_path('app/alp-crm/imports');
     }
 
     private static function path(string $token): string

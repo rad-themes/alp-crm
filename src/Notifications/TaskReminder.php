@@ -1,11 +1,11 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Notifications;
+namespace RadThemes\AlpCrm\Notifications;
 
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use RadThemes\RadpackCrm\Models\Task;
-use RadThemes\RadpackCrm\Support\Tasks;
+use RadThemes\AlpCrm\Models\Task;
+use RadThemes\AlpCrm\Support\Tasks;
 
 class TaskReminder extends Notification
 {
@@ -34,6 +34,6 @@ class TaskReminder extends Notification
             ]))
             ->when($this->task->contact, fn (MailMessage $message) => $message->line(__('With :name', ['name' => $this->task->contact->name()])))
             ->when($this->task->description, fn (MailMessage $message) => $message->line($this->task->description))
-            ->action(__('Open task'), cp_route('radpack-crm.tasks.edit', $this->task));
+            ->action(__('Open task'), cp_route('alp-crm.tasks.edit', $this->task));
     }
 }

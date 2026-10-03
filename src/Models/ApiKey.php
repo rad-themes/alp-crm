@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models;
+namespace RadThemes\AlpCrm\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -30,7 +30,7 @@ class ApiKey extends Model
      */
     public static function generate(string $name, bool $canWrite = true, ?string $userId = null): array
     {
-        $plain = 'rpk_'.Str::random(40);
+        $plain = 'alp_'.Str::random(40);
 
         $key = static::create([
             'name' => $name,

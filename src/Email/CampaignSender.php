@@ -1,14 +1,14 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Email;
+namespace RadThemes\AlpCrm\Email;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use RadThemes\RadpackCrm\Models\Campaign;
-use RadThemes\RadpackCrm\Models\CampaignRecipient;
-use RadThemes\RadpackCrm\Models\Contact;
-use RadThemes\RadpackCrm\Models\Email;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\Campaign;
+use RadThemes\AlpCrm\Models\CampaignRecipient;
+use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Email;
+use RadThemes\AlpCrm\Support\Settings;
 use Throwable;
 
 /**

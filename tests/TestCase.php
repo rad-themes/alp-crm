@@ -1,10 +1,10 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Tests;
+namespace RadThemes\AlpCrm\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
-use RadThemes\RadpackCrm\ServiceProvider;
+use RadThemes\AlpCrm\ServiceProvider;
 use Statamic\Contracts\Auth\User as UserContract;
 use Statamic\Facades\Addon;
 use Statamic\Facades\User;
@@ -23,7 +23,7 @@ abstract class TestCase extends AddonTestCase
         parent::setUp();
 
         // Addon settings are saved to a file; start every test from the defaults.
-        Addon::get('rad-themes/radpack-crm')->settings()->delete();
+        Addon::get('rad-themes/alp-crm')->settings()->delete();
 
         $this->setTestRoles([
             'crm_viewer' => ['access cp', 'view crm'],

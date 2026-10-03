@@ -1,23 +1,23 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Http\Controllers;
+namespace RadThemes\AlpCrm\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use RadThemes\RadpackCrm\Integrations\GoogleContacts;
-use RadThemes\RadpackCrm\Integrations\Lists\AWeber;
-use RadThemes\RadpackCrm\Integrations\Lists\Kit;
-use RadThemes\RadpackCrm\Integrations\Lists\Mailchimp;
-use RadThemes\RadpackCrm\Integrations\Sync;
-use RadThemes\RadpackCrm\Integrations\Twilio;
-use RadThemes\RadpackCrm\Payments\Payments;
-use RadThemes\RadpackCrm\Payments\PayPal;
-use RadThemes\RadpackCrm\Payments\Stripe;
-use RadThemes\RadpackCrm\Support\Settings;
-use RadThemes\RadpackCrm\Support\TokenStore;
+use RadThemes\AlpCrm\Integrations\GoogleContacts;
+use RadThemes\AlpCrm\Integrations\Lists\AWeber;
+use RadThemes\AlpCrm\Integrations\Lists\Kit;
+use RadThemes\AlpCrm\Integrations\Lists\Mailchimp;
+use RadThemes\AlpCrm\Integrations\Sync;
+use RadThemes\AlpCrm\Integrations\Twilio;
+use RadThemes\AlpCrm\Payments\Payments;
+use RadThemes\AlpCrm\Payments\PayPal;
+use RadThemes\AlpCrm\Payments\Stripe;
+use RadThemes\AlpCrm\Support\Settings;
+use RadThemes\AlpCrm\Support\TokenStore;
 use Statamic\Facades\Addon;
 use Statamic\Http\Controllers\CP\CpController;
 use Throwable;
@@ -35,13 +35,13 @@ class IntegrationsController extends CpController
             'key' => $key, 'name' => $name, 'description' => $description, 'configured' => $configured,
         ] + $extra;
 
-        return Inertia::render('radpack-crm::Integrations', [
-            'settingsUrl' => Addon::get('rad-themes/radpack-crm')->settingsUrl(),
+        return Inertia::render('alp-crm::Integrations', [
+            'settingsUrl' => Addon::get('rad-themes/alp-crm')->settingsUrl(),
             'groups' => [
                 ['heading' => __('Payments'), 'items' => [
                     $card('stripe', 'Stripe', __('Card payments on invoices, and importing Stripe charges and refunds as transactions.'), Stripe::configured(), [
                         'sync' => Stripe::configured(), 'syncing' => Payments::enabledForSync('stripe'),
-                        'note' => __('Webhook URL: :url (events: checkout.session.completed, charge.succeeded, charge.refunded)', ['url' => route('statamic.radpack-crm.webhooks.stripe')]),
+                        'note' => __('Webhook URL: :url (events: checkout.session.completed, charge.succeeded, charge.refunded)', ['url' => route('statamic.alp-crm.webhooks.stripe')]),
                     ]),
                     $card('paypal', 'PayPal', __('PayPal payments on invoices, and importing PayPal transactions.'), PayPal::configured(), [
                         'sync' => PayPal::configured(), 'syncing' => Payments::enabledForSync('paypal'),
@@ -53,7 +53,7 @@ class IntegrationsController extends CpController
                     $card('aweber', 'AWeber', __('Keep an AWeber list in sync with your contacts and tags.'), AWeber::configured(), [
                         'connectable' => Settings::secret('aweber_client_id') && Settings::secret('aweber_client_secret'),
                         'connected' => (bool) TokenStore::get('aweber_refresh_token'),
-                        'note' => __('Redirect URL for your AWeber app: :url', ['url' => cp_route('radpack-crm.integrations.callback', 'aweber')]),
+                        'note' => __('Redirect URL for your AWeber app: :url', ['url' => cp_route('alp-crm.integrations.callback', 'aweber')]),
                     ]),
                     ['key' => 'lists', 'name' => __('Sync every contact now'), 'description' => __('Pushes all contacts to the connected lists (normally they sync as they change).'), 'configured' => Sync::available('lists'), 'sync' => Sync::available('lists')],
                 ]],
@@ -64,7 +64,7 @@ class IntegrationsController extends CpController
                         'sync' => Sync::available('google'),
                         'syncing' => (bool) Settings::get('google_sync', false),
                         'last' => TokenStore::get('google_last_import'),
-                        'note' => __('Redirect URI for your Google OAuth client: :url', ['url' => cp_route('radpack-crm.integrations.callback', 'google')]),
+                        'note' => __('Redirect URI for your Google OAuth client: :url', ['url' => cp_route('alp-crm.integrations.callback', 'google')]),
                     ]),
                     $card('twilio', 'Twilio', __('Send text messages to contacts and from automations.'), Twilio::configured()),
                 ]],
@@ -77,8 +77,8 @@ class IntegrationsController extends CpController
         $this->authorize('configure addons');
 
         $state = Str::random(40);
-        $request->session()->put("radpack_crm_oauth_{$service}", $state);
-        $redirect = cp_route('radpack-crm.integrations.callback', $service);
+        $request->session()->put("alp_crm_oauth_{$service}", $state);
+        $redirect = cp_route('alp-crm.integrations.callback', $service);
 
         return redirect()->away($service === 'google' ? GoogleContacts::authorizeUrl($redirect, $state) : AWeber::authorizeUrl($redirect, $state));
     }
@@ -87,8 +87,8 @@ class IntegrationsController extends CpController
     {
         $this->authorize('configure addons');
 
-        $expected = $request->session()->pull("radpack_crm_oauth_{$service}");
-        $back = redirect()->to(cp_route('radpack-crm.integrations'));
+        $expected = $request->session()->pull("alp_crm_oauth_{$service}");
+        $back = redirect()->to(cp_route('alp-crm.integrations'));
 
         if (! $expected || ! hash_equals($expected, (string) $request->query('state')) || ! $request->filled('code')) {
             return $back->with('error', __('The connection was cancelled or expired. Please try again.'));
@@ -96,8 +96,8 @@ class IntegrationsController extends CpController
 
         try {
             $service === 'google'
-                ? GoogleContacts::connect((string) $request->query('code'), cp_route('radpack-crm.integrations.callback', 'google'))
-                : AWeber::connect((string) $request->query('code'), cp_route('radpack-crm.integrations.callback', 'aweber'));
+                ? GoogleContacts::connect((string) $request->query('code'), cp_route('alp-crm.integrations.callback', 'google'))
+                : AWeber::connect((string) $request->query('code'), cp_route('alp-crm.integrations.callback', 'aweber'));
         } catch (Throwable $e) {
             report($e);
 

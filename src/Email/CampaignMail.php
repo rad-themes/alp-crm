@@ -1,14 +1,14 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Email;
+namespace RadThemes\AlpCrm\Email;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
-use RadThemes\RadpackCrm\Models\CampaignRecipient;
-use RadThemes\RadpackCrm\Support\Settings;
+use RadThemes\AlpCrm\Models\CampaignRecipient;
+use RadThemes\AlpCrm\Support\Settings;
 
 /**
  * A campaign email to one recipient: personalised, with tracked links, an open pixel and an unsubscribe link.
@@ -42,12 +42,12 @@ class CampaignMail extends Mailable
         $markdown = MergeTags::render($this->recipient->campaign->body, MergeTags::for($this->recipient->contact));
 
         return new Content(
-            view: 'radpack-crm::mail.layout',
+            view: 'alp-crm::mail.layout',
             with: [
                 'html' => Tracking::trackLinks(MergeTags::html($markdown), $this->recipient),
                 'business' => Settings::business(),
                 'unsubscribeUrl' => Tracking::unsubscribeUrl($this->recipient),
-                'pixelUrl' => route('statamic.radpack-crm.track.open', $this->recipient->token),
+                'pixelUrl' => route('statamic.alp-crm.track.open', $this->recipient->token),
             ],
         );
     }

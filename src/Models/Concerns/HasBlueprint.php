@@ -1,6 +1,6 @@
 <?php
 
-namespace RadThemes\RadpackCrm\Models\Concerns;
+namespace RadThemes\AlpCrm\Models\Concerns;
 
 use Illuminate\Support\Arr;
 use Statamic\Facades\Blueprint as BlueprintFacade;
@@ -23,7 +23,7 @@ trait HasBlueprint
 
     public static function blueprint(): Blueprint
     {
-        return BlueprintFacade::find('radpack-crm::'.static::blueprintHandle());
+        return BlueprintFacade::find('alp-crm::'.static::blueprintHandle());
     }
 
     /**
