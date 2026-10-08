@@ -164,7 +164,7 @@ composer update rad-themes/alp-crm
 php artisan migrate
 ```
 
-Version 2.1 changes **client portal authorization**. A matching email address or contact alias no longer grants portal access. For every existing client who should see billing or shared files, open their CRM contact, set **Portal user** to the correct Statamic account, and save. Check the portal as that account. A registration that creates a new contact links only that newly created contact; a registration matching an existing contact does not link it. This prevents an unverified registration from inheriting another contact's records.
+Version 2.1 changes **client portal authorization**. A matching email address or contact alias no longer grants portal access. For every existing client who should see billing or shared files, open their CRM contact, set **Portal user** to the correct Statamic account, and save. Check the portal as that account. A registration links the account only when it created the contact and any company it named was new; a registration matching an existing contact, or naming an existing company, does not link. This prevents an unverified registration from inheriting another contact's or company's records.
 
 Outgoing webhooks now reject redirects, unresolved hosts and private or reserved addresses. If an endpoint has moved, update its saved URL to the final public HTTPS address. Webhook delivery needs PHP cURL; a missing extension blocks the request rather than allowing an unchecked DNS lookup. The `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS` override is intended for development only.
 
@@ -188,9 +188,9 @@ Contacts, companies, tasks and transactions use blueprints. Edit them in **Field
 
 In **Settings → Lead capture**, pick the Statamic forms that should create contacts. Submissions are matched to contacts by email: new people become leads, and existing contacts get any missing details filled in, without overwriting what you have. Fields are mapped by handle: `email`, `name`, `first_name`, `last_name`, `phone`, `company`, and any contact field handle such as `city`. Other fields are saved as a note. The form's title is added as a tag.
 
-Turn on **Add users who register to the CRM** to do the same for site registrations. A contact created by a registration is linked to that user account. A registration that matches an *existing* contact only fills in missing details — it does not link, because Statamic doesn't verify email addresses on front-end registration. Link those yourself with the contact's **Portal user** field.
+Turn on **Add users who register to the CRM** to do the same for site registrations. A registration links the user account to the contact only when it created that contact *and* any company it named was new. It does not link when the email matches an existing contact, or when the company name matches an existing company — Statamic verifies neither, so an unverified registration can't inherit a contact's or a company's billing. The contact is still filed under the matching company; link the account yourself with the contact's **Portal user** field once you've checked it.
 
-For public registration forms, treat submitted names, phone numbers and company names as unverified lead information. Review a captured contact before using those details for billing or portal access.
+For public registration forms, treat submitted names, phone numbers and company names as unverified lead information. Review a captured contact before using those details for billing or portal access — a contact filed under an existing company by a registration is never linked to that user account automatically.
 
 ### Import and export
 
@@ -248,7 +248,7 @@ Install [Client Portal](https://github.com/rad-themes/client-portal) (`composer 
 - **Billing:** their invoices (with *View & pay*), quotes (with *Review*) and payments, including their company's
 - **Files:** files you've shared with them from their profile
 
-A client only sees a contact's records once you link their user account to that contact, in the contact's **Portal user** field (or automatically, when the contact was created by their own registration). Matching on the email address is deliberately not enough: Statamic doesn't verify email addresses on front-end registration, so on a site with open registration anyone could sign up as `someone@theirclient.com` and read their billing.
+A client only sees a contact's records once you link their user account to that contact, in the contact's **Portal user** field (or automatically, when their own registration created both the contact and its company). Matching on the email address is deliberately not enough: Statamic doesn't verify email addresses on front-end registration, so on a site with open registration anyone could sign up as `someone@theirclient.com` and read their billing.
 
 To give an existing client access:
 
@@ -395,7 +395,7 @@ Every string goes through Laravel's translator, using the English text as the ke
 
 - Client pages for quotes and invoices use long random links and are not indexed by search engines.
 - Client files are stored on a private disk and always downloaded, never displayed inline. Uploads are limited to the file types in `config/alp-crm.php`.
-- Client portal access needs an explicit link between a user account and a contact (the contact's **Portal user** field), never a matching email address.
+- Client portal access needs an explicit link between a user account and a contact (the contact's **Portal user** field), never a matching email address or company name.
 - Saved client passwords and OAuth tokens are encrypted with your app key; API keys are stored as hashes.
 - Stripe webhooks and campaign links are signed and verified.
 - Webhooks and automation webhook steps won't call private or local addresses, won't call a host that doesn't resolve, and don't follow redirects — the request goes to the address that was checked. PHP's cURL extension is required for public webhook delivery; without it, delivery is blocked rather than falling back to an unpinned DNS lookup. Set `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS=true` only for development when private addresses are needed.

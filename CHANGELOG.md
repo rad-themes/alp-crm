@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2 — 2026-10-08
+
+- **Security: a registration can no longer join an existing company.** `CaptureRegisteredUser` linked the user account to any contact it created, and `LeadCapture::upsert()` files a new contact under an existing company whose name matches the submitted *company*, *organisation* or *business* value. On a site with **Add users who register to the CRM** turned on and a registration form with a company field, someone could sign up with a fresh email address and a client's company name, and the portal would show them that company's invoices, quotes and shared files. A registration now links the account only when it created the contact *and* any company it named was new. The contact is still filed under the matching company — only the portal link waits for the contact's **Portal user** field.
+
 ## 2.1.1 — 2026-10-08
 
 - Expanded README into the installation and operations guide used by the Statamic Marketplace listing. It now covers first-run setup, scheduler and queue requirements, the 2.1 portal-link migration, integrations, API examples, webhook delivery, and troubleshooting. No application behavior changed.

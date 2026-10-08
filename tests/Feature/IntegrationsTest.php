@@ -8,7 +8,9 @@ use PHPUnit\Framework\Attributes\Test;
 use RadThemes\AlpCrm\Models\ApiKey;
 use RadThemes\AlpCrm\Models\Company;
 use RadThemes\AlpCrm\Models\Contact;
+use RadThemes\AlpCrm\Models\Invoice;
 use RadThemes\AlpCrm\Models\Webhook;
+use RadThemes\AlpCrm\Portal\PortalPages;
 use RadThemes\AlpCrm\Support\SafeUrl;
 use RadThemes\AlpCrm\Tests\TestCase;
 use Statamic\Events\UserRegistered;
@@ -94,6 +96,55 @@ class IntegrationsTest extends TestCase
         $contact = Contact::sole();
         $this->assertSame($client->id, $contact->id);
         $this->assertNull($contact->user_id);
+    }
+
+    #[Test]
+    public function registering_with_an_existing_companys_name_does_not_link_to_it(): void
+    {
+        $this->settings(['capture_registrations' => true]);
+        $company = Company::factory()->create(['name' => 'Northwind']);
+        $client = Contact::factory()->create(['company_id' => $company->id]);
+        Invoice::factory()->create(['contact_id' => $client->id, 'company_id' => $company->id, 'status' => 'sent']);
+
+        $impostor = tap(User::make()->email('impostor@example.test')->data(['name' => 'Not Maya', 'company' => 'Northwind']))->save();
+
+        UserRegistered::dispatch($impostor);
+
+        // The contact joins the company, which is useful in the CRM, but the account is
+        // not linked to it — so the portal shows the impostor nothing.
+        $contact = Contact::where('email', 'impostor@example.test')->sole();
+        $this->assertSame($company->id, $contact->company_id);
+        $this->assertNull($contact->user_id);
+        $this->assertSame(0, PortalPages::documents(Invoice::query(), $impostor)->count());
+        $this->assertSame(0, PortalPages::files($impostor)->count());
+    }
+
+    #[Test]
+    public function the_api_cannot_grant_portal_access(): void
+    {
+        $user = $this->makeUser('client@example.test');
+
+        $created = $this->api('POST', 'contacts', ['email' => 'new@example.test', 'status' => 'lead', 'portal_user' => [$user->id()]])->assertCreated();
+        $this->assertNull(Contact::find($created->json('data.id'))->user_id);
+
+        $linked = Contact::factory()->create(['user_id' => $user->id()]);
+        $this->api('PATCH', "contacts/{$linked->id}", ['portal_user' => [], 'first_name' => 'Maya'])->assertOk();
+
+        // The existing link is neither cleared nor repointed by an API write.
+        $this->assertSame([$user->id(), 'Maya'], [$linked->fresh()->user_id, $linked->fresh()->first_name]);
+    }
+
+    #[Test]
+    public function registering_with_a_new_company_still_links_the_contact(): void
+    {
+        $this->settings(['capture_registrations' => true]);
+        $user = tap(User::make()->email('leo@example.test')->data(['name' => 'Leo Martins', 'company' => 'Globex']))->save();
+
+        UserRegistered::dispatch($user);
+
+        $contact = Contact::sole();
+        $this->assertSame($user->id(), $contact->user_id);
+        $this->assertSame('Globex', $contact->company->name);
     }
 
     #[Test]

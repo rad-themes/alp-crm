@@ -56,6 +56,10 @@ abstract class RecordsController
         }
         unset($input['fields']);
 
+        // Portal access is granted in the Control Panel only. An API key can edit CRM
+        // records, but it can't hand a site visitor another client's billing.
+        unset($input['portal_user']);
+
         return $input;
     }
 
