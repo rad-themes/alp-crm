@@ -4,7 +4,9 @@
 
 A complete, free CRM inside your Statamic Control Panel: contacts and companies, quotes and invoices with online payments, tasks and a calendar, email campaigns, segments, automations, reports, a REST API and webhooks. It's built with Statamic's own UI components, so it looks and feels like the rest of the Control Panel.
 
-Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#upgrading-from-radpack-crm)). It's inspired by [Jetpack CRM](https://jetpackcrm.com) — a CRM that lives in your CMS — and is free and open source under the MIT license. It isn't affiliated with Jetpack CRM or Automattic.
+Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#from-radpack-crm)). It's inspired by [Jetpack CRM](https://jetpackcrm.com) — a CRM that lives in your CMS — and is free and open source under the MIT license. It isn't affiliated with Jetpack CRM or Automattic.
+
+**Start here:** [Requirements](#requirements) · [Installation](#installation) · [Settings](#settings) · [Using the CRM](#using-the-crm) · [REST API](#rest-api) · [Webhooks](#webhooks) · [Operations and troubleshooting](#operations-and-troubleshooting) · [Upgrading](#upgrading)
 
 ## Screenshots
 
@@ -65,6 +67,8 @@ Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#upg
 - A database (SQLite, MySQL, MariaDB or PostgreSQL), as for any Laravel app
 - A mail driver, for sending documents, emails and reminders
 - The Laravel scheduler (`* * * * * php artisan schedule:run`), for reminders, scheduled emails, campaigns, automations and syncing
+- PHP's cURL extension for public webhook delivery. Alp CRM blocks delivery if it cannot pin a checked DNS address to the outgoing request.
+- If your app uses a worker-backed Laravel queue connection such as `database`, `redis` or `sqs`, a running queue worker for webhook deliveries.
 
 ## Installation
 
@@ -74,6 +78,17 @@ php artisan migrate
 ```
 
 Open the CRM from **CRM** at the top of the Control Panel sidebar, under Dashboard. All its pages are also in the **CRM** section at the bottom of the sidebar; drag sections into the order you like in **Preferences → CP Navigation**. Super users can use everything straight away; other users need the permissions below.
+
+### First-run checklist
+
+1. In **CRM → Settings → Business**, enter the business name, address, contact details and optional logo. These appear on client documents.
+2. In **Sales**, choose the currency, invoice and quote prefixes, payment terms and tax rates before sending your first document.
+3. Configure your mail driver and send a test email through your app. Document emails, reminders and campaigns use that driver.
+4. Set up Laravel's scheduler. If your queue connection uses workers, run one too; webhook deliveries use the queue.
+5. Create a test contact and a draft quote or invoice. Review the PDF and the client-facing link before sending real documents.
+6. Add payment, mailing-list and other integration credentials only for services you plan to use. Each integration is optional.
+
+No sample CRM records are installed. Your contacts, documents and settings start with your own data.
 
 ### Permissions
 
@@ -88,6 +103,8 @@ Under **Users → Permissions**, each role can get:
 
 Settings, integrations, API keys and webhooks need **Configure addons**.
 
+Give the **Manage client passwords** permission only to staff who should reveal saved client credentials. API keys are managed separately under **Configure addons** and can expose CRM data; use a read-only key when an integration only needs to read.
+
 ## Settings
 
 **CRM → Settings** (or **Tools → Addons → Alp CRM → Settings**):
@@ -100,6 +117,8 @@ Settings, integrations, API keys and webhooks need **Configure addons**.
 - **Lead capture:** which forms create contacts, and whether registrations do
 - **Email:** campaign sending speed, and the wording of invoice and quote emails
 - **White label:** what to call the CRM in the navigation
+
+Settings are separate from your Statamic blueprints. Use the settings screen for site-wide behavior, and [custom fields](#custom-fields) for data stored on each record. Changes to the default currency or tax configuration do not rewrite previously saved invoices.
 
 ### Keeping secrets out of git
 
@@ -124,7 +143,32 @@ Publish the config with `php artisan vendor:publish --tag=alp-crm-config` to cha
 
 OAuth tokens (AWeber, Google) and sync positions are stored encrypted in `storage/app/alp-crm`.
 
-## Upgrading from Radpack CRM
+### Scheduler and queue
+
+Add this cron entry on the server that runs your Statamic site, with the correct PHP binary and project path:
+
+```cron
+* * * * * cd /path/to/statamic && php artisan schedule:run >> /dev/null 2>&1
+```
+
+The addon registers its own scheduled commands; there is no separate Alp CRM cron entry. For a worker-backed queue connection such as `database`, `redis` or `sqs`, run your normal Laravel worker as well (for example, `php artisan queue:work`). The `sync`, `background` and `deferred` connections do not need a separate worker. The scheduler handles campaigns, scheduled emails, reminders, delayed automations and enabled hourly imports. See [Scheduled commands](#scheduled-commands) for frequencies and manual commands.
+
+## Upgrading
+
+### From Alp CRM 2.0.x to 2.1.x
+
+Update the package and run migrations as you normally would for a Statamic addon:
+
+```bash
+composer update rad-themes/alp-crm
+php artisan migrate
+```
+
+Version 2.1 changes **client portal authorization**. A matching email address or contact alias no longer grants portal access. For every existing client who should see billing or shared files, open their CRM contact, set **Portal user** to the correct Statamic account, and save. Check the portal as that account. A registration that creates a new contact links only that newly created contact; a registration matching an existing contact does not link it. This prevents an unverified registration from inheriting another contact's records.
+
+Outgoing webhooks now reject redirects, unresolved hosts and private or reserved addresses. If an endpoint has moved, update its saved URL to the final public HTTPS address. Webhook delivery needs PHP cURL; a missing extension blocks the request rather than allowing an unchecked DNS lookup. The `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS` override is intended for development only.
+
+### From Radpack CRM
 
 Alp CRM is the same addon under a new name: Radpack is Statamic's own brand, so we renamed ours. Your data stays where it is.
 
@@ -146,9 +190,13 @@ In **Settings → Lead capture**, pick the Statamic forms that should create con
 
 Turn on **Add users who register to the CRM** to do the same for site registrations. A contact created by a registration is linked to that user account. A registration that matches an *existing* contact only fills in missing details — it does not link, because Statamic doesn't verify email addresses on front-end registration. Link those yourself with the contact's **Portal user** field.
 
+For public registration forms, treat submitted names, phone numbers and company names as unverified lead information. Review a captured contact before using those details for billing or portal access.
+
 ### Import and export
 
 **Contacts → Import** takes a CSV (comma, semicolon or tab separated). Match each column to a field, choose whether to update existing contacts (by email) or companies (by name), and tag everyone imported. Columns named *Company* create or link companies; *Tags* columns can hold several tags separated by commas.
+
+The import flow has two steps: upload the file, then review its preview and column mapping before importing. The maximum upload is 20 MB. The result reports created, updated and skipped rows, with a sample of errors. A completed import deletes its temporary CSV; abandoned uploads older than a day are cleaned up when the next file is uploaded. Keep your source CSV until you have checked the imported records.
 
 Export contacts or companies from the **…** menu on their list, or a segment from the segments list. Values that spreadsheet apps would run as formulas are escaped.
 
@@ -156,16 +204,22 @@ Export contacts or companies from the **…** menu on their list, or a segment f
 
 Create a quote, send it, and the client can accept or decline it on its page. Convert an accepted quote to an invoice in one click. Invoices track payments and their balance, and become *Overdue* after their due date.
 
+Draft documents are only in the Control Panel. Sending a quote or invoice creates a client-facing link with a long random token; the client can view or download its PDF without a portal account. Configure **Business**, **Sales** and your mail driver before using **Send**. Use **Record payment** for offline payments; Stripe and PayPal payments are recorded through their checkout flows.
+
 To take payments online:
 
 - **Stripe:** add your secret key. In Stripe, add a webhook to the URL shown on **CRM → Settings → Integrations** for the events `checkout.session.completed`, `charge.succeeded` and `charge.refunded`, and paste its signing secret. Payments are also confirmed when the client comes back from Stripe, so they're recorded even before the webhook is set up.
 - **PayPal:** add the client ID and secret of a REST app (sandbox or live).
+
+Set PayPal's **Mode** to match the credentials you entered. Enable hourly transaction import only if you want payments outside Alp CRM invoices reflected in CRM reports; PayPal's import also requires **Transaction search** on the REST app. The **Create contacts for new payers** switch controls whether imports create contacts for unfamiliar payers.
 
 Turn on the imports to add your other Stripe and PayPal payments as transactions every hour, creating contacts for new customers.
 
 ### Email, segments and campaigns
 
 Write to a contact from the **Emails** tab of their profile, now or later. **Email templates** are reusable messages with merge tags: `{{ first_name }}`, `{{ last_name }}`, `{{ name }}`, `{{ email }}`, `{{ company }}`, `{{ business_name }}` and any contact field. Templates can only use variables, not Antlers tags.
+
+Before sending a campaign, create a segment, review its audience, then use **Send test** on the campaign. Campaigns do not send to unsubscribed contacts, and the batch size in **CRM → Settings → Email** limits how many recipients are attempted each minute. A stopped scheduler leaves scheduled messages and campaign recipients waiting; resume it to continue processing.
 
 **Segments** group contacts by rules and update automatically. Use them to filter the contacts list, export, bulk tag, or send a **campaign**. Campaigns:
 
@@ -196,6 +250,15 @@ Install [Client Portal](https://github.com/rad-themes/client-portal) (`composer 
 
 A client only sees a contact's records once you link their user account to that contact, in the contact's **Portal user** field (or automatically, when the contact was created by their own registration). Matching on the email address is deliberately not enough: Statamic doesn't verify email addresses on front-end registration, so on a site with open registration anyone could sign up as `someone@theirclient.com` and read their billing.
 
+To give an existing client access:
+
+1. Create or identify the client's Statamic user account through your own trusted onboarding process.
+2. Open the contact in **CRM → Contacts → Edit**, choose that account in **Portal user**, and save.
+3. Mark only the intended contact or company files as shared with the portal.
+4. Sign in as that client to verify billing and files. Remove the **Portal user** selection to revoke access.
+
+Billing includes documents for the linked contact and their company. Check the contact's company assignment before linking a user, because company invoices and quotes may also become visible. Shared file downloads enforce the same link and are served as downloads from the configured files disk.
+
 ### Integrations
 
 **CRM → Settings → Integrations** shows each connection's status, with *Connect* buttons for AWeber and Google and *Sync now* for imports.
@@ -203,6 +266,8 @@ A client only sees a contact's records once you link their user account to that 
 - **Mailchimp, Kit, AWeber:** contacts sync as they change, with their tags. Unsubscribing in the CRM unsubscribes them in the list. Optionally only sync contacts with certain tags.
 - **Twilio:** text contacts from their profile and from automations. Messages are logged as notes.
 - **Google Contacts:** import contacts with an email address, once or every hour.
+
+Mailchimp needs an API key and audience ID; Kit needs a v4 API key and can optionally add subscribers to a form; AWeber needs app credentials and a list ID, followed by **Connect**. Use **Only sync contacts with these tags** to narrow the mailing-list audience. Google Contacts needs an OAuth web client with the People API enabled; enter the credentials, connect the account, and choose whether to import hourly. **Sync now** runs the selected configured import or list sync without waiting for the next schedule tick.
 
 ## REST API
 
@@ -212,6 +277,19 @@ Create an API key in **CRM → Settings → API & webhooks**. Keys can be read-o
 curl https://example.com/api/alp-crm/v1/contacts?tag=vip \
   -H "Authorization: Bearer alp_…"
 ```
+
+Copy the key when it is first displayed; Alp CRM stores only its hash and cannot show the full key again. Revoke a key you no longer use. A read-only key can use safe methods such as `GET`, while write methods return `403`. Missing or invalid keys return `401`. You can also send the key in `X-Api-Key`.
+
+For example, create a contact with a write-enabled key:
+
+```bash
+curl -X POST https://example.com/api/alp-crm/v1/contacts \
+  -H "Authorization: Bearer alp_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Ada","last_name":"Lovelace","email":"ada@example.com","status":"lead"}'
+```
+
+The API returns a `data` object for one record and `data` plus `meta` for a paginated list. A create returns `201`, an update returns `200`, and a delete returns `204`. Blueprint validation errors use Laravel's JSON validation response. Use `GET /me` to check a key before configuring a third-party integration.
 
 | Endpoint | |
 |---|---|
@@ -228,6 +306,8 @@ curl https://example.com/api/alp-crm/v1/contacts?tag=vip \
 | `POST /hooks`, `DELETE /hooks/{id}` | REST hook subscriptions (Zapier, Make, n8n) |
 
 Writes are validated with the same blueprints as the Control Panel, so required fields and custom fields work the same way. Send relations as `company_id`, `contact_id`, `owner_id` and `assigned_to`, and custom fields at the top level or inside `fields`. Lists are paginated (`per_page` up to 100) and limited to 120 requests a minute per IP.
+
+`POST /contacts/upsert` matches the primary email or an alias and either creates the contact or updates the match. Protect write-enabled keys like administrator credentials: they can change CRM data and subscribe webhooks. A successful API call does not automatically grant a Statamic user portal access; set **Portal user** deliberately.
 
 ## Webhooks
 
@@ -249,6 +329,10 @@ Verify the `X-Alp-Signature` header, an HMAC-SHA256 of the raw body using the we
 $expected = 'sha256='.hash_hmac('sha256', $request->getContent(), $secret);
 abort_unless(hash_equals($expected, $request->header('X-Alp-Signature')), 401);
 ```
+
+The request also carries `X-Alp-Event` and `X-Alp-Delivery`. Verify the signature against the **raw** request body before parsing JSON. Keep the signing secret private; it is separate from the API key. In the Control Panel, use a webhook's **Test** action to send a sample `contact.created` event. Its last status, error and send time help diagnose delivery. A REST hook subscription that responds `410 Gone` is removed.
+
+The delivery URL must use HTTP or HTTPS and resolve to public IP addresses. Alp CRM checks the address, pins it for the request, and does not follow redirects. A `3xx` response means you should replace the saved URL with its final public destination. Delivery will not follow a redirect to `127.0.0.1`, a link-local metadata address or another internal service.
 
 Events: `contact.created`, `contact.updated`, `contact.status_changed`, `contact.tagged`, `contact.unsubscribed`, `contact.deleted`, `company.created`, `company.updated`, `company.deleted`, `form.submitted`, `quote.created`, `quote.sent`, `quote.accepted`, `quote.declined`, `invoice.created`, `invoice.sent`, `invoice.paid`, `transaction.created`, `task.created`, `task.completed`.
 
@@ -289,6 +373,19 @@ Registered automatically; they need the Laravel scheduler.
 | `alp-crm:automations` | Every minute: delayed automation steps |
 | `alp-crm:task-reminders` | Every five minutes |
 | `alp-crm:sync` | Hourly: Stripe, PayPal and Google imports that are turned on. Run `alp-crm:sync stripe` (or `paypal`, `google`, `lists`) any time. |
+
+## Operations and troubleshooting
+
+| Symptom | Check |
+|---|---|
+| Scheduled email, campaign, reminder or delayed automation is not running | Run `php artisan schedule:list` to confirm the commands are registered, then make sure the server invokes `schedule:run` every minute. Check the app's mail configuration and logs. |
+| Webhook remains unsent | If the app uses a worker-backed queue connection, check the queue worker and failed jobs. Then use **API & webhooks → Test** and inspect the last status or error. |
+| Webhook is blocked or answers `3xx` | Use the final public HTTP(S) URL, check its DNS records, and confirm PHP cURL is installed. Private and unresolved destinations and redirects are refused. |
+| Client cannot see billing or files in Client Portal | Confirm Client Portal is installed, the contact's **Portal user** is the correct account, and the contact or company owns the document or shared file. Email matching alone gives no access. |
+| Payment button is missing | Check that the invoice is payable and that the relevant Stripe or PayPal credentials and mode are configured under **Settings → Payments**. |
+| CSV row was skipped | Check the mapping preview, required email or name fields, the update-existing option, and the import result's errors. |
+
+Back up both the Laravel database (`crm_*` tables) and the storage disk used for uploaded client files. The database contains the CRM records; file metadata alone cannot restore the uploaded bytes. Keep `APP_KEY` safe as encrypted client passwords and OAuth tokens depend on it.
 
 ## Translations
 
