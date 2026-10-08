@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 — 2026-10-08
+
+- Expanded README into the installation and operations guide used by the Statamic Marketplace listing. It now covers first-run setup, scheduler and queue requirements, the 2.1 portal-link migration, integrations, API examples, webhook delivery, and troubleshooting. No application behavior changed.
+
 ## 2.1.0 — 2026-10-08
 
 - **Security: webhooks no longer follow redirects.** The URL check happened once, then the request followed redirects, so a public URL that redirected to `127.0.0.1` or `169.254.169.254` got through — and the response was readable afterwards as the webhook's last error. Webhook deliveries and automation webhook steps now refuse redirects, refuse a host that doesn't resolve, and send the request to the address that was checked. Public deliveries fail closed if PHP's cURL extension is unavailable.
