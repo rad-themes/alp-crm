@@ -41,6 +41,7 @@ class ImportExportController extends CpController
 
         $token = Str::random(32);
         File::ensureDirectoryExists(self::directory());
+        self::sweepAbandonedUploads();
         $data['file']->move(self::directory(), "{$token}.csv");
 
         return redirect()->to(cp_route('alp-crm.import.map', ['token' => $token, 'type' => $data['type']]));
@@ -105,6 +106,20 @@ class ImportExportController extends CpController
         }
 
         return CsvExporter::download($type, $query, "{$name}-".now()->format('Y-m-d').'.csv');
+    }
+
+    /**
+     * Delete CSVs from imports that were uploaded but never run.
+     */
+    private static function sweepAbandonedUploads(): void
+    {
+        $cutoff = now()->subDay()->getTimestamp();
+
+        foreach (File::glob(self::directory().'/*.csv') as $path) {
+            if (File::lastModified($path) < $cutoff) {
+                File::delete($path);
+            }
+        }
     }
 
     private static function directory(): string

@@ -34,7 +34,7 @@ class LeadCapture
     {
         $aliases = collect(self::ALIASES)->flatMap(fn ($handles, $target) => array_fill_keys($handles, $target));
         $custom = collect(Contact::blueprint()->fields()->all())->keys()
-            ->diff(['first_name', 'last_name', 'email', 'phone', 'company', 'owner', 'tags', 'aliases', 'status'])
+            ->diff(['first_name', 'last_name', 'email', 'phone', 'company', 'owner', 'portal_user', 'tags', 'aliases', 'status'])
             ->all();
 
         $mapped = [];

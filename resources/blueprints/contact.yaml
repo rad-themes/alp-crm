@@ -143,6 +143,14 @@ tabs:
               max_items: 1
               mode: select
           -
+            handle: portal_user
+            field:
+              type: users
+              display: 'Portal user'
+              instructions: "The user account that sees this contact's invoices, quotes, payments and shared files in the client portal. Only link an account you know belongs to this contact."
+              max_items: 1
+              mode: select
+          -
             handle: tags
             field:
               type: taggable

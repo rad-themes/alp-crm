@@ -9,6 +9,15 @@ return [
     // Where client files are stored. Use a private disk.
     'files_disk' => env('ALP_CRM_FILES_DISK', 'local'),
 
+    // File types that may be attached to a contact or company. Anything a web server might
+    // execute or render inline is left off, in case the disk above is a public one.
+    'file_extensions' => [
+        'pdf', 'doc', 'docx', 'odt', 'rtf', 'txt', 'md',
+        'xls', 'xlsx', 'ods', 'csv', 'ppt', 'pptx', 'odp',
+        'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'heic',
+        'zip', 'mp3', 'wav', 'm4a', 'mp4', 'mov', 'webm',
+    ],
+
     // Let webhooks and automation webhook steps call private or local addresses (e.g. during development).
     'allow_private_webhooks' => env('ALP_CRM_ALLOW_PRIVATE_WEBHOOKS', false),
 

@@ -34,7 +34,7 @@ class ClientFilesTest extends TestCase
         $admin = $this->admin();
 
         $this->actingAs($admin)->post(cp_route('alp-crm.files.store', ['contact', $contact->id]), [
-            'files' => [UploadedFile::fake()->createWithContent('brief.pdf', 'PDF!'), UploadedFile::fake()->createWithContent('logo.svg', '<svg/>')],
+            'files' => [UploadedFile::fake()->createWithContent('brief.pdf', 'PDF!'), UploadedFile::fake()->createWithContent('logo.png', 'PNG!')],
             'portal' => true,
         ])->assertRedirect()->assertSessionHas('success', 'Uploaded 2 files');
 
@@ -88,13 +88,49 @@ class ClientFilesTest extends TestCase
     }
 
     #[Test]
+    public function uploads_are_limited_to_the_allowed_file_types(): void
+    {
+        $contact = Contact::factory()->create();
+
+        $this->actingAs($this->admin())
+            ->post(cp_route('alp-crm.files.store', ['contact', $contact->id]), [
+                'files' => [UploadedFile::fake()->createWithContent('payload.phtml', '<?php ?>')],
+            ])
+            ->assertSessionHasErrors('files.0');
+
+        $this->assertSame(0, File::count());
+    }
+
+    #[Test]
+    public function the_portal_ignores_an_unlinked_account_with_a_matching_email(): void
+    {
+        $maya = Contact::factory()->create(['email' => 'maya@example.com']);
+        Invoice::factory()->create(['contact_id' => $maya->id, 'status' => 'sent']);
+        $impostor = $this->makeUser('maya@example.com');
+
+        $this->assertSame(0, PortalPages::documents(Invoice::query(), $impostor)->count());
+    }
+
+    #[Test]
+    public function portal_contact_lookup_is_isolated_for_each_user(): void
+    {
+        $maya = $this->makeUser('maya@example.com');
+        $alex = $this->makeUser('alex@example.com');
+        $mayaContact = Contact::factory()->create(['user_id' => $maya->id()]);
+        $alexContact = Contact::factory()->create(['user_id' => $alex->id()]);
+
+        $this->assertSame([$mayaContact->id], PortalPages::contactsFor($maya)->pluck('id')->all());
+        $this->assertSame([$alexContact->id], PortalPages::contactsFor($alex)->pluck('id')->all());
+    }
+
+    #[Test]
     public function portal_clients_only_see_their_own_documents_and_shared_files(): void
     {
         $company = Company::factory()->create();
-        $maya = Contact::factory()->create(['email' => 'maya@example.com', 'company_id' => $company->id]);
+        $user = $this->makeUser('maya@example.com');
+        $maya = Contact::factory()->create(['email' => 'maya@example.com', 'company_id' => $company->id, 'user_id' => $user->id()]);
         $colleague = Contact::factory()->create(['company_id' => $company->id]);
         $stranger = Contact::factory()->create();
-        $user = $this->makeUser('MAYA@example.com');
 
         $mine = Invoice::factory()->create(['contact_id' => $maya->id, 'status' => 'sent', 'total' => 120]);
         $companyInvoice = Invoice::factory()->create(['contact_id' => $colleague->id, 'company_id' => $company->id, 'status' => 'paid']);

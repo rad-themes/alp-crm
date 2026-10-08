@@ -27,6 +27,7 @@ use Statamic\Facades\User;
  * @property ?string $phone
  * @property ?int $company_id
  * @property ?string $owner_id
+ * @property ?string $user_id
  * @property ?array<string, mixed> $data
  */
 class Contact extends Model
@@ -103,7 +104,7 @@ class Contact extends Model
 
     protected function relationBlueprintHandles(): array
     {
-        return ['company', 'owner', 'tags', 'aliases'];
+        return ['company', 'owner', 'portal_user', 'tags', 'aliases'];
     }
 
     protected function relationBlueprintValues(): array
@@ -111,6 +112,7 @@ class Contact extends Model
         return [
             'company' => $this->company_id ? [$this->company_id] : [],
             'owner' => $this->owner_id ? [$this->owner_id] : [],
+            'portal_user' => $this->user_id ? [$this->user_id] : [],
             'tags' => $this->tags->pluck('name')->all(),
             'aliases' => $this->aliases->pluck('email')->all(),
         ];
@@ -124,6 +126,10 @@ class Contact extends Model
 
         if (array_key_exists('owner', $values)) {
             $this->owner_id = collect($values['owner'])->first();
+        }
+
+        if (array_key_exists('portal_user', $values)) {
+            $this->user_id = collect($values['portal_user'])->first();
         }
 
         if (array_key_exists('tags', $values)) {

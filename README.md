@@ -4,7 +4,7 @@
 
 A complete, free CRM inside your Statamic Control Panel: contacts and companies, quotes and invoices with online payments, tasks and a calendar, email campaigns, segments, automations, reports, a REST API and webhooks. It's built with Statamic's own UI components, so it looks and feels like the rest of the Control Panel.
 
-Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#upgrading-from-radpack-crm)). It brings every feature of [Jetpack CRM](https://jetpackcrm.com) to Statamic, including all of its paid extensions, free and open source under the MIT license.
+Alp CRM was previously called Radpack CRM (see [Upgrading from Radpack CRM](#upgrading-from-radpack-crm)). It's inspired by [Jetpack CRM](https://jetpackcrm.com) — a CRM that lives in your CMS — and is free and open source under the MIT license. It isn't affiliated with Jetpack CRM or Automattic.
 
 ## Screenshots
 
@@ -120,7 +120,7 @@ ALP_CRM_GOOGLE_CLIENT_ID=
 ALP_CRM_GOOGLE_CLIENT_SECRET=
 ```
 
-Publish the config with `php artisan vendor:publish --tag=alp-crm-config` to change it. It also sets the disk for client files (`ALP_CRM_FILES_DISK`, default `local`, which is private).
+Publish the config with `php artisan vendor:publish --tag=alp-crm-config` to change it. It also sets the disk for client files (`ALP_CRM_FILES_DISK`, default `local`, which is private) and the file types that may be attached (`file_extensions`).
 
 OAuth tokens (AWeber, Google) and sync positions are stored encrypted in `storage/app/alp-crm`.
 
@@ -144,7 +144,7 @@ Contacts, companies, tasks and transactions use blueprints. Edit them in **Field
 
 In **Settings → Lead capture**, pick the Statamic forms that should create contacts. Submissions are matched to contacts by email: new people become leads, and existing contacts get any missing details filled in, without overwriting what you have. Fields are mapped by handle: `email`, `name`, `first_name`, `last_name`, `phone`, `company`, and any contact field handle such as `city`. Other fields are saved as a note. The form's title is added as a tag.
 
-Turn on **Add users who register to the CRM** to do the same for site registrations; the contact is linked to the user.
+Turn on **Add users who register to the CRM** to do the same for site registrations. A contact created by a registration is linked to that user account. A registration that matches an *existing* contact only fills in missing details — it does not link, because Statamic doesn't verify email addresses on front-end registration. Link those yourself with the contact's **Portal user** field.
 
 ### Import and export
 
@@ -189,10 +189,12 @@ Start from a recipe such as *Welcome new leads* or *Accepted quote → customer*
 
 ### Client portal
 
-Install [Client Portal](https://github.com/rad-themes/client-portal) (`composer require rad-themes/client-portal`, version 1.1 or later). Clients who log in and have a CRM contact with the same email, or are linked by registration, get:
+Install [Client Portal](https://github.com/rad-themes/client-portal) (`composer require rad-themes/client-portal`, version 1.1 or later). A logged-in client sees:
 
 - **Billing:** their invoices (with *View & pay*), quotes (with *Review*) and payments, including their company's
 - **Files:** files you've shared with them from their profile
+
+A client only sees a contact's records once you link their user account to that contact, in the contact's **Portal user** field (or automatically, when the contact was created by their own registration). Matching on the email address is deliberately not enough: Statamic doesn't verify email addresses on front-end registration, so on a site with open registration anyone could sign up as `someone@theirclient.com` and read their billing.
 
 ### Integrations
 
@@ -295,10 +297,12 @@ Every string goes through Laravel's translator, using the English text as the ke
 ## Security notes
 
 - Client pages for quotes and invoices use long random links and are not indexed by search engines.
-- Client files are stored on a private disk and always downloaded, never displayed inline.
+- Client files are stored on a private disk and always downloaded, never displayed inline. Uploads are limited to the file types in `config/alp-crm.php`.
+- Client portal access needs an explicit link between a user account and a contact (the contact's **Portal user** field), never a matching email address.
 - Saved client passwords and OAuth tokens are encrypted with your app key; API keys are stored as hashes.
 - Stripe webhooks and campaign links are signed and verified.
-- Webhooks and automation webhook steps won't call private or local addresses (set `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS=true` to allow them, e.g. in development).
+- Webhooks and automation webhook steps won't call private or local addresses, won't call a host that doesn't resolve, and don't follow redirects — the request goes to the address that was checked. PHP's cURL extension is required for public webhook delivery; without it, delivery is blocked rather than falling back to an unpinned DNS lookup. Set `ALP_CRM_ALLOW_PRIVATE_WEBHOOKS=true` only for development when private addresses are needed.
+- PDFs are rendered with remote file fetching turned off; your logo is embedded in the document.
 - Email templates can't run Antlers tags or PHP.
 
 Found a security issue? Please report it privately through the repository's **Security → Report a vulnerability** page rather than opening an issue.

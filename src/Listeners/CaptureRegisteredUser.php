@@ -7,7 +7,7 @@ use RadThemes\AlpCrm\Support\Settings;
 use Statamic\Events\UserRegistered;
 
 /**
- * New site registrations → CRM contacts, linked to the user.
+ * New site registrations → CRM contacts.
  */
 class CaptureRegisteredUser
 {
@@ -23,9 +23,18 @@ class CaptureRegisteredUser
 
         $contact = LeadCapture::upsert($attributes, (string) Settings::get('registration_status', 'lead'), (array) Settings::get('registration_tags', []));
 
-        if ($contact) {
-            $contact->forceFill(['user_id' => $user->id()])->saveQuietly();
-            $contact->logActivity('registered', __('Registered on the site'));
+        if (! $contact) {
+            return;
         }
+
+        // Only a contact this registration created is linked to the user. An existing
+        // contact is left alone: Statamic doesn't verify email addresses, so anyone could
+        // register with a client's address and inherit their portal billing. Linking those
+        // is a deliberate act — the contact's "Portal user" field in the Control Panel.
+        if ($contact->wasRecentlyCreated) {
+            $contact->forceFill(['user_id' => $user->id()])->saveQuietly();
+        }
+
+        $contact->logActivity('registered', __('Registered on the site'));
     }
 }

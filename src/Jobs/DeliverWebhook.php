@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use RadThemes\AlpCrm\Models\Webhook;
 use RadThemes\AlpCrm\Support\SafeUrl;
@@ -39,8 +38,8 @@ class DeliverWebhook implements ShouldQueue
             return;
         }
 
-        if (! SafeUrl::allowed($webhook->url)) {
-            $webhook->forceFill(['last_status' => null, 'last_error' => __('Blocked: the URL points to a private or local address.'), 'last_sent_at' => now()])->save();
+        if (! $request = SafeUrl::request($webhook->url)) {
+            $webhook->forceFill(['last_status' => null, 'last_error' => __('Blocked: the URL is invalid, or it doesn’t resolve to a public address.'), 'last_sent_at' => now()])->save();
 
             return;
         }
@@ -48,7 +47,7 @@ class DeliverWebhook implements ShouldQueue
         $json = json_encode($this->body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         try {
-            $response = Http::timeout(10)
+            $response = $request
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                     'User-Agent' => 'AlpCRM-Webhooks/1.0',

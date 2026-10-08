@@ -12,6 +12,7 @@ use RadThemes\AlpCrm\Models\Note;
 use RadThemes\AlpCrm\Models\Quote;
 use RadThemes\AlpCrm\Models\Transaction;
 use Statamic\Facades\Dictionary;
+use Statamic\Facades\User;
 use Statamic\Fields\Blueprint;
 use Statamic\Fields\Field;
 
@@ -87,6 +88,10 @@ class Presenter
             $options = (array) $field->get('options');
 
             return collect($value)->map(fn ($v) => $options[$v] ?? $v)->implode(', ');
+        }
+
+        if ($field->type() === 'users') {
+            return collect($value)->map(fn ($id) => User::find($id)?->email() ?? $id)->implode(', ');
         }
 
         if ($field->type() === 'toggle') {

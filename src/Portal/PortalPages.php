@@ -14,7 +14,11 @@ use Statamic\Contracts\Auth\User;
 
 /**
  * Adds "Billing" and "Files" pages to rad-themes/client-portal, for clients whose
- * user account is linked to a CRM contact (by the contact's user or email address).
+ * user account is linked to a CRM contact.
+ *
+ * The link is always explicit — the contact's "Portal user" field. Matching on the
+ * email address would be enough to see someone's billing on a site with open
+ * registration, because Statamic doesn't verify email addresses.
  */
 class PortalPages
 {
@@ -44,11 +48,7 @@ class PortalPages
      */
     public static function contactsFor(User $user): Collection
     {
-        return once(function () use ($user) {
-            $byEmail = $user->email() ? Contact::findByEmail($user->email()) : null;
-
-            return Contact::where('user_id', $user->id())->get()->push($byEmail)->filter()->unique('id')->values();
-        });
+        return Contact::where('user_id', $user->id())->get();
     }
 
     public static function documents(Builder $query, User $user): Builder

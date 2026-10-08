@@ -87,10 +87,17 @@ class Documents
     {
         $document->loadMissing(['items', 'contact', 'company']);
 
+        $business = Settings::business();
+
+        // Dompdf fetches nothing of its own, so the logo travels inside the HTML.
+        if ($forPdf) {
+            $business['logo'] = self::embeddedLogo();
+        }
+
         return view('alp-crm::documents.show', [
             'document' => $document,
             'type' => self::type($document),
-            'business' => Settings::business(),
+            'business' => $business,
             'labels' => self::statusLabels(),
             'forPdf' => $forPdf,
         ])->render();
@@ -99,7 +106,7 @@ class Documents
     public static function pdf(Quote|Invoice $document): string
     {
         $options = new Options;
-        $options->set('isRemoteEnabled', true);
+        $options->set('isRemoteEnabled', false);
         $options->set('defaultFont', 'Helvetica');
 
         $pdf = new Dompdf($options);
@@ -108,6 +115,21 @@ class Documents
         $pdf->render();
 
         return $pdf->output();
+    }
+
+    /**
+     * The business logo as a data URI, in a raster format Dompdf can draw.
+     */
+    private static function embeddedLogo(): ?string
+    {
+        $asset = Settings::logoAsset();
+        $extension = $asset ? strtolower((string) $asset->extension()) : null;
+
+        if (! in_array($extension, ['png', 'jpg', 'jpeg', 'gif'], true)) {
+            return null;
+        }
+
+        return 'data:image/'.($extension === 'jpg' ? 'jpeg' : $extension).';base64,'.base64_encode($asset->contents());
     }
 
     public static function filename(Quote|Invoice $document): string

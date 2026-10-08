@@ -20,7 +20,7 @@ class FilesController extends CpController
         $owner = ($type === 'company' ? Company::class : Contact::class)::findOrFail($id);
         $data = $request->validate([
             'files' => ['required', 'array', 'max:20'],
-            'files.*' => ['file', 'max:51200'],
+            'files.*' => ['file', 'max:51200', 'extensions:'.implode(',', (array) config('alp-crm.file_extensions'))],
             'portal' => ['boolean'],
         ]);
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.1.0 — 2026-10-08
+
+- **Security: webhooks no longer follow redirects.** The URL check happened once, then the request followed redirects, so a public URL that redirected to `127.0.0.1` or `169.254.169.254` got through — and the response was readable afterwards as the webhook's last error. Webhook deliveries and automation webhook steps now refuse redirects, refuse a host that doesn't resolve, and send the request to the address that was checked. Public deliveries fail closed if PHP's cURL extension is unavailable.
+- **Security: client portal access needs an explicit link.** A contact's records were shown to any logged-in user with a matching email address, including an alias. Statamic doesn't verify email addresses on front-end registration, so on a site with open registration someone could sign up as a client and read their invoices, quotes, payments and shared files, including their company's. Portal access now follows the contact's new **Portal user** field only.
+  - A registration still links the contact it creates. A registration that matches an existing contact fills in missing details without linking — link those yourself on the contact.
+  - **If you relied on email matching, set each client's Portal user field** (CRM → the contact → sidebar) to restore their portal access.
+- PDFs are rendered with Dompdf's remote file fetching turned off; the business logo is embedded in the document instead.
+- Client file uploads are limited to a list of file types (`file_extensions` in `config/alp-crm.php`), so pointing `ALP_CRM_FILES_DISK` at a public disk can't serve something executable.
+- CSVs from abandoned imports are deleted after a day instead of sitting in storage.
+- Control Panel: user fields on a profile show the account's email address rather than its ID.
+- README: Alp CRM is described as inspired by Jetpack CRM, without claiming feature parity.
+
 ## 2.0.0 — 2026-10-03
 
 - **Renamed from Radpack CRM to Alp CRM** (`rad-themes/alp-crm`, namespace `RadThemes\AlpCrm`), because Radpack is Statamic's brand. See "Upgrading from Radpack CRM" in the README.

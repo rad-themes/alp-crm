@@ -2,6 +2,7 @@
 
 namespace RadThemes\AlpCrm\Support;
 
+use Statamic\Contracts\Assets\Asset as AssetContract;
 use Statamic\Facades\Addon;
 use Statamic\Facades\Asset;
 use Statamic\Facades\Dictionary;
@@ -77,15 +78,20 @@ class Settings
      */
     public static function business(): array
     {
-        $logo = collect(self::get('business_logo'))->first();
-
         return [
             'name' => self::get('business_name') ?: config('app.name'),
             'address' => self::get('business_address'),
             'email' => self::get('business_email'),
             'phone' => self::get('business_phone'),
             'tax_number' => self::get('business_tax_number'),
-            'logo' => $logo ? Asset::find(str_contains($logo, '::') ? $logo : "assets::{$logo}")?->absoluteUrl() : null,
+            'logo' => self::logoAsset()?->absoluteUrl(),
         ];
+    }
+
+    public static function logoAsset(): ?AssetContract
+    {
+        $logo = collect(self::get('business_logo'))->first();
+
+        return $logo ? Asset::find(str_contains($logo, '::') ? $logo : "assets::{$logo}") : null;
     }
 }

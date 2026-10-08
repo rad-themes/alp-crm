@@ -138,6 +138,8 @@ class AutomationsTest extends TestCase
     public function sales_events_trigger_automations(): void
     {
         Http::fake();
+        // These hostnames don't resolve, which SafeUrl refuses; SSRF has its own test.
+        config(['alp-crm.allow_private_webhooks' => true]);
         $this->automation(['trigger' => 'quote.accepted', 'actions' => [['type' => 'set_status', 'status' => 'customer']]]);
         $this->automation(['trigger' => 'invoice.paid', 'actions' => [['type' => 'webhook', 'url' => 'https://hooks.example.com/paid']]]);
 

@@ -2,7 +2,6 @@
 
 namespace RadThemes\AlpCrm\Automations;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use RadThemes\AlpCrm\Email\EmailSender;
@@ -184,17 +183,18 @@ class Actions
      */
     private static function webhook(string $url, ?Contact $contact, array $context): string
     {
-        if (! SafeUrl::allowed($url)) {
+        if (! $request = SafeUrl::request($url)) {
             throw new SkipAction(__('The URL is invalid or points to a private address'));
         }
 
-        $response = Http::timeout(10)->post($url, [
+        $response = $request->post($url, [
             'event' => $context['event'] ?? null,
             'data' => $context['payload'] ?? null,
             'contact' => $contact ? Payload::contact($contact) : null,
         ]);
 
-        if ($response->failed()) {
+        // A redirect is reported, not followed — it could point at a private address.
+        if ($response->failed() || $response->redirect()) {
             throw new \RuntimeException(__('The URL answered :status', ['status' => $response->status()]));
         }
 

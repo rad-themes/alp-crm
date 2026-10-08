@@ -97,6 +97,26 @@ class ContactsTest extends TestCase
     }
 
     #[Test]
+    public function an_editor_can_explicitly_link_and_unlink_a_portal_user(): void
+    {
+        $contact = Contact::factory()->create();
+        $client = $this->makeUser('client@example.com');
+        $admin = $this->admin();
+
+        $this->actingAs($admin)->patchJson(cp_route('alp-crm.contacts.update', $contact), array_merge($contact->blueprintValues(), [
+            'portal_user' => [$client->id()],
+        ]))->assertOk();
+
+        $this->assertSame($client->id(), $contact->fresh()->user_id);
+
+        $this->actingAs($admin)->patchJson(cp_route('alp-crm.contacts.update', $contact), array_merge($contact->fresh()->blueprintValues(), [
+            'portal_user' => [],
+        ]))->assertOk();
+
+        $this->assertNull($contact->fresh()->user_id);
+    }
+
+    #[Test]
     public function editing_a_contact_keeps_custom_fields_and_logs_status_changes(): void
     {
         $contact = Contact::factory()->lead()->create(['data' => ['city' => 'Paris', 'favourite_colour' => 'green']]);

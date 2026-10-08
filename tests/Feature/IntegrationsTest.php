@@ -83,6 +83,20 @@ class IntegrationsTest extends TestCase
     }
 
     #[Test]
+    public function registering_with_an_existing_contacts_email_does_not_link_to_it(): void
+    {
+        $this->settings(['capture_registrations' => true]);
+        $client = Contact::factory()->create(['email' => 'maya@example.com', 'phone' => null]);
+        $impostor = tap(User::make()->email('maya@example.com')->data(['name' => 'Not Maya']))->save();
+
+        UserRegistered::dispatch($impostor);
+
+        $contact = Contact::sole();
+        $this->assertSame($client->id, $contact->id);
+        $this->assertNull($contact->user_id);
+    }
+
+    #[Test]
     public function contacts_are_imported_from_csv_with_a_mapping(): void
     {
         Contact::factory()->create(['email' => 'maya@example.com', 'first_name' => 'Maya', 'phone' => null]);
@@ -181,6 +195,8 @@ class IntegrationsTest extends TestCase
     public function webhooks_receive_signed_events_and_rest_hooks_can_subscribe(): void
     {
         Http::fake(['hooks.example.com/*' => Http::response('ok', 200), 'zapier.test/*' => Http::response('', 410)]);
+        // These hostnames don't resolve, which SafeUrl refuses; SSRF has its own test.
+        config(['alp-crm.allow_private_webhooks' => true]);
         $webhook = Webhook::create(['name' => 'All contacts', 'url' => 'https://hooks.example.com/crm', 'events' => ['contact.created', 'contact.tagged']]);
         Webhook::create(['name' => 'Invoices', 'url' => 'https://hooks.example.com/invoices', 'events' => ['invoice.paid']]);
 
@@ -235,8 +251,20 @@ class IntegrationsTest extends TestCase
         $this->assertStringStartsWith('Blocked', $local->fresh()->last_error);
         $this->assertStringStartsWith('Blocked', $metadata->fresh()->last_error);
 
+        // A host that doesn't resolve is refused too, rather than left to the HTTP client.
+        $this->assertFalse(SafeUrl::allowed('http://not-a-real-host.invalid/hook'));
+        $this->assertFalse(SafeUrl::allowed('file:///etc/passwd'));
+
         config(['alp-crm.allow_private_webhooks' => true]);
         $this->assertTrue(SafeUrl::allowed('http://127.0.0.1/'));
-        $this->assertFalse(SafeUrl::allowed('file:///etc/passwd'));
+
+        // Redirects are never followed, so a public URL can't bounce to a local one.
+        $this->assertFalse(SafeUrl::request('http://127.0.0.1/')->getOptions()['allow_redirects']);
+
+        config(['alp-crm.allow_private_webhooks' => false]);
+        $publicRequest = SafeUrl::request('https://8.8.8.8/hook');
+        $this->assertNotNull($publicRequest);
+        $this->assertSame('', $publicRequest->getOptions()['proxy']);
+        $this->assertSame(['8.8.8.8:443:8.8.8.8'], $publicRequest->getOptions()['curl'][CURLOPT_RESOLVE]);
     }
 }
